@@ -95,6 +95,7 @@ namespace Depressurizer {
             this.colAppInfo = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colParent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cmdUpdateHltb = new System.Windows.Forms.Button();
+            this.colOverride = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.mainMenu.SuspendLayout();
             this.grpTypes.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -443,7 +444,8 @@ namespace Depressurizer {
             this.colType,
             this.colScraped,
             this.colAppInfo,
-            this.colParent});
+            this.colParent,
+            this.colOverride});
             this.lstGames.FullRowSelect = true;
             this.lstGames.GridLines = true;
             this.lstGames.HideSelection = false;
@@ -492,6 +494,10 @@ namespace Depressurizer {
             this.cmdUpdateHltb.Name = "cmdUpdateHltb";
             this.cmdUpdateHltb.UseVisualStyleBackColor = true;
             this.cmdUpdateHltb.Click += new System.EventHandler(this.cmdUpdateHltb_Click);
+            // 
+            // colOverride
+            // 
+            resources.ApplyResources(this.colOverride, "colOverride");
             // 
             // DBEditDlg
             // 
@@ -599,6 +605,7 @@ namespace Depressurizer {
         private System.Windows.Forms.Label lblIdRangeSep;
         private System.Windows.Forms.CheckBox chkIdRange;
         private System.Windows.Forms.Button cmdUpdateHltb;
+        private System.Windows.Forms.ColumnHeader colOverride;
     }
 }
 

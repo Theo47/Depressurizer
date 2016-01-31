@@ -901,6 +901,10 @@ Tiempo Restante:</value>
     <value>Parent must be empty or integer.</value>
     <comment>TODO_LOCAL: Requires translation</comment>
   </data>
+  <data name="DlgGameDBEntry_OverrideMustBeInt" xml:space="preserve">
+    <value>App ID Override must be empty or integer.</value>
+    <comment>TODO_LOCAL: Requires translation</comment>
+  </data>
   <data name="MainForm_NoFlags" xml:space="preserve">
     <value>&lt;No Flags&gt;</value>
     <comment>TODO_LOCAL: Requires translation</comment>

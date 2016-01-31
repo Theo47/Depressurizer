@@ -38,6 +38,7 @@ namespace Depressurizer
         public string Name;
         public AppTypes AppType = AppTypes.Unknown;
         public int ParentId = -1;
+        public int ManualOverrideId = -1;
         public AppPlatforms Platforms = AppPlatforms.All;
 
         // Basics:
@@ -417,6 +418,8 @@ namespace Depressurizer
             {
                 if (!string.IsNullOrEmpty(other.Name)) Name = other.Name;
                 if (other.ParentId > 0) ParentId = other.ParentId;
+                if (other.ManualOverrideId > 0) ManualOverrideId = other.ManualOverrideId;
+
             }
 
             if (useScrapeOnlyFields)
@@ -467,6 +470,7 @@ namespace Depressurizer
             XmlName_Game_Type = "type",
             XmlName_Game_Platforms = "platforms",
             XmlName_Game_Parent = "parent",
+            XmlName_Game_ManualOverride = "manualOverride",
             XmlName_Game_Genre = "genre",
             XmlName_Game_Tag = "tag",
             XmlName_Game_Achievements = "achievements",
@@ -519,7 +523,12 @@ namespace Depressurizer
                         res = new List<string>(tags.Intersect(GetAllGenres()));
                     }
                 }
-                if ((res == null || res.Count == 0) && depth > 0 && Games[gameId].ParentId > 0)
+
+                if ((res == null || res.Count == 0) && depth > 0 && Games[gameId].ManualOverrideId > 0)
+                {
+                    res = GetGenreList(Games[gameId].ManualOverrideId, depth - 1, tagFallback);
+                }
+                else if ((res == null || res.Count == 0) && depth > 0 && Games[gameId].ParentId > 0)
                 {
                     res = GetGenreList(Games[gameId].ParentId, depth - 1, tagFallback);
                 }
@@ -533,7 +542,11 @@ namespace Depressurizer
             if (Games.ContainsKey(gameId))
             {
                 List<string> res = Games[gameId].Flags;
-                if ((res == null || res.Count == 0) && depth > 0 && Games[gameId].ParentId > 0)
+                if ((res == null || res.Count == 0) && depth > 0 && Games[gameId].ManualOverrideId > 0)
+                {
+                    res = GetFlagList(Games[gameId].ManualOverrideId, depth - 1);
+                }
+                else if ((res == null || res.Count == 0) && depth > 0 && Games[gameId].ParentId > 0)
                 {
                     res = GetFlagList(Games[gameId].ParentId, depth - 1);
                 }
@@ -547,7 +560,11 @@ namespace Depressurizer
             if (Games.ContainsKey(gameId))
             {
                 List<string> res = Games[gameId].Tags;
-                if ((res == null || res.Count == 0) && depth > 0 && Games[gameId].ParentId > 0)
+                if ((res == null || res.Count == 0) && depth > 0 && Games[gameId].ManualOverrideId > 0)
+                {
+                    res = GetTagList(Games[gameId].ManualOverrideId, depth - 1);
+                }
+                else if ((res == null || res.Count == 0) && depth > 0 && Games[gameId].ParentId > 0)
                 {
                     res = GetTagList(Games[gameId].ParentId, depth - 1);
                 }
@@ -943,6 +960,7 @@ namespace Depressurizer
                     writer.WriteElementString(XmlName_Game_Platforms, g.Platforms.ToString());
 
                     if (g.ParentId >= 0) writer.WriteElementString(XmlName_Game_Parent, g.ParentId.ToString());
+                    if (g.ManualOverrideId >= 0) writer.WriteElementString(XmlName_Game_ManualOverride, g.ManualOverrideId.ToString());
 
                     if (g.Genres != null)
                     {
@@ -1111,6 +1129,7 @@ namespace Depressurizer
                     g.Platforms = XmlUtil.GetEnumFromNode<AppPlatforms>(gameNode[XmlName_Game_Platforms], AppPlatforms.All);
 
                     g.ParentId = XmlUtil.GetIntFromNode(gameNode[XmlName_Game_Parent], -1);
+                    g.ManualOverrideId = XmlUtil.GetIntFromNode(gameNode[XmlName_Game_ManualOverride], -1);
 
                     if (fileVersion < 1)
                     {
@@ -1217,7 +1236,8 @@ namespace Depressurizer
             Type,
             IsScraped,
             HasAppInfo,
-            Parent
+            Parent,
+            ManualOverride
         }
 
         public SortModes SortMode = SortModes.Id;
@@ -1261,6 +1281,9 @@ namespace Depressurizer
                     break;
                 case SortModes.Parent:
                     res = a.ParentId - b.ParentId;
+                    break;
+                case SortModes.ManualOverride:
+                    res = a.ManualOverrideId - b.ManualOverrideId;
                     break;
             }
             return SortDirection * res;
