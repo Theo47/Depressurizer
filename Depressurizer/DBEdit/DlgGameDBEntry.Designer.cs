@@ -88,8 +88,6 @@ namespace Depressurizer {
             this.label2 = new System.Windows.Forms.Label();
             this.numHltbMain = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtOverrideID = new System.Windows.Forms.TextBox();
-            this.lblOverrideID = new System.Windows.Forms.Label();
             this.grpPlat.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numReviewScore)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numReviewCount)).BeginInit();
@@ -246,16 +244,16 @@ namespace Depressurizer {
             // 
             // dateWeb
             // 
-            this.dateWeb.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             resources.ApplyResources(this.dateWeb, "dateWeb");
+            this.dateWeb.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dateWeb.MaxDate = new System.DateTime(2035, 1, 19, 0, 0, 0, 0);
             this.dateWeb.MinDate = new System.DateTime(1970, 1, 1, 0, 0, 0, 0);
             this.dateWeb.Name = "dateWeb";
             // 
             // dateAppInfo
             // 
-            this.dateAppInfo.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             resources.ApplyResources(this.dateAppInfo, "dateAppInfo");
+            this.dateAppInfo.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dateAppInfo.Name = "dateAppInfo";
             // 
             // chkWebUpdate
@@ -383,17 +381,6 @@ namespace Depressurizer {
             resources.ApplyResources(this.label1, "label1");
             this.label1.Name = "label1";
             // 
-            // txtOverrideID
-            // 
-            resources.ApplyResources(this.txtOverrideID, "txtOverrideID");
-            this.txtOverrideID.Name = "txtOverrideID";
-            // 
-            // lblOverrideID
-            // 
-            resources.ApplyResources(this.lblOverrideID, "lblOverrideID");
-            this.lblOverrideID.Name = "lblOverrideID";
-            this.lblOverrideID.Click += new System.EventHandler(this.label4_Click);
-            // 
             // GameDBEntryDialog
             // 
             this.AcceptButton = this.cmdSave;
@@ -401,8 +388,6 @@ namespace Depressurizer {
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cmdCancel;
             this.ControlBox = false;
-            this.Controls.Add(this.lblOverrideID);
-            this.Controls.Add(this.txtOverrideID);
             this.Controls.Add(this.grpHltb);
             this.Controls.Add(this.numAchievements);
             this.Controls.Add(this.lblAchievements);
@@ -507,7 +492,5 @@ namespace Depressurizer {
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.NumericUpDown numHltbMain;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtOverrideID;
-        private System.Windows.Forms.Label lblOverrideID;
     }
 }

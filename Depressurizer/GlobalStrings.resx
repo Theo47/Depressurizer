@@ -880,9 +880,6 @@ Removes any category that consists of the Prefix followed by one of the unchecke
   <data name="DlgGameDBEntry_ParentMustBeInt" xml:space="preserve">
     <value>Parent must be empty or integer.</value>
   </data>
-  <data name="DlgGameDBEntry_OverrideMustBeInt" xml:space="preserve">
-    <value>App ID Override must be empty or integer.</value>
-  </data>
   <data name="DBEditDlg_AppInfoUpdateFailed" xml:space="preserve">
     <value>Failed to update from AppInfo:
 {0}</value>

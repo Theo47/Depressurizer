@@ -45,8 +45,7 @@ namespace Depressurizer {
             { 3, GameDBEntrySorter.SortModes.Type },
             { 4, GameDBEntrySorter.SortModes.IsScraped },
             { 5, GameDBEntrySorter.SortModes.HasAppInfo },
-            { 6, GameDBEntrySorter.SortModes.Parent },
-            { 7, GameDBEntrySorter.SortModes.ManualOverride }
+            { 6, GameDBEntrySorter.SortModes.Parent }
         };
         #endregion
 
@@ -364,8 +363,7 @@ namespace Depressurizer {
                     g.AppType.ToString(),
                     ( g.LastStoreScrape == 0 ) ? "": "X",
                     ( g.LastAppInfoUpdate == 0 ) ? "" : "X",
-                    ( g.ParentId <= 0 ) ? "" : g.ParentId.ToString(),
-                    ( g.ManualOverrideId <= 0 ) ? "" : g.ManualOverrideId.ToString()} );
+                    ( g.ParentId <= 0 ) ? "" : g.ParentId.ToString() } );
         }
 
         void RebuildDisplayList() {

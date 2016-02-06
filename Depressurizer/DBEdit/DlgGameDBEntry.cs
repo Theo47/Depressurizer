@@ -56,7 +56,6 @@ namespace Depressurizer {
                 txtId.Enabled = false;
 
                 txtParent.Text = ( Game.ParentId < 0 ) ? "" : Game.ParentId.ToString();
-                txtOverrideID.Text = (Game.ManualOverrideId < 0) ? "" : Game.ManualOverrideId.ToString();
 
                 cmbType.SelectedItem = Game.AppType;
 
@@ -86,9 +85,8 @@ namespace Depressurizer {
             }
         }
 
-        private bool ValidateEntries( out int id, out int parent, out int overrideId ) {
+        private bool ValidateEntries( out int id, out int parent ) {
             parent = -1;
-            overrideId = -1;
             if( !int.TryParse( txtId.Text, out id ) || id <= 0 ) {
                 MessageBox.Show( GlobalStrings.DlgGameDBEntry_IDMustBeInteger );
                 return false;
@@ -96,17 +94,13 @@ namespace Depressurizer {
             if( !string.IsNullOrEmpty( txtParent.Text ) && !int.TryParse( txtParent.Text, out parent ) ) {
                 MessageBox.Show( GlobalStrings.DlgGameDBEntry_ParentMustBeInt );
             }
-            if (!string.IsNullOrEmpty(txtOverrideID.Text) && !int.TryParse(txtOverrideID.Text, out overrideId))
-            {
-                MessageBox.Show(GlobalStrings.DlgGameDBEntry_OverrideMustBeInt);
-            }
             return true;
         }
 
         private bool SaveToGame() {
 
-            int id, parent, overrideId;
-            if( !ValidateEntries( out id, out parent, out overrideId ) ) {
+            int id, parent;
+            if( !ValidateEntries( out id, out parent ) ) {
                 return false;
             }
 
@@ -116,7 +110,6 @@ namespace Depressurizer {
             }
 
             Game.ParentId = parent;
-            Game.ManualOverrideId = overrideId;
 
             Game.AppType = (AppTypes)cmbType.SelectedItem;
             Game.Name = txtName.Text;
@@ -174,11 +167,6 @@ namespace Depressurizer {
                 DialogResult = System.Windows.Forms.DialogResult.OK;
                 Close();
             }
-        }
-
-        private void label4_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }
