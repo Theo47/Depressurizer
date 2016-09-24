@@ -165,7 +165,7 @@ namespace Depressurizer
                 }
             }
             else
-            { // The URI is right, but it didn't pass the regex check
+            { // We were likely redirected to a page that isn't the game page.
                 Program.Logger.Write(LoggerLevel.Verbose, GlobalStrings.GameDB_ScrapingCouldNotParse, id);
                 result = AppTypes.Unknown;
             }
