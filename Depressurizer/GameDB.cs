@@ -120,98 +120,16 @@ namespace Depressurizer
 
             LastStoreScrape = Utility.GetCurrentUTime();
 
-            HttpWebResponse resp = null;
             try
             {
-                HttpWebRequest req = GetSteamRequest(string.Format(Properties.Resources.UrlSteamStoreApp, id));
-                resp = (HttpWebResponse) req.GetResponse();
+                string store_address = string.Format(Properties.Resources.UrlSteamStoreApp, id);
 
-                int count = 0;
-                while (resp.StatusCode == HttpStatusCode.Found && count<5)
+                using (WebClient client = new WebClient())
                 {
-                    resp.Close();
-                    if (resp.Headers[HttpResponseHeader.Location] == Properties.Resources.UrlSteamStore)
-                    {
-                        // If we are redirected to the store front page
-                        Program.Logger.Write(LoggerLevel.Verbose, GlobalStrings.GameDB_ScrapingRedirectedToMainStorePage, id);
-                        SetTypeFromStoreScrape(AppTypes.Unknown);
-                        return AppTypes.Unknown;
-                    }
-                    if (resp.ResponseUri.ToString() == resp.Headers[HttpResponseHeader.Location])
-                    {
-                        //If page redirects to itself
-                        Program.Logger.Write(LoggerLevel.Verbose, GlobalStrings.GameDB_RedirectsToItself, id);
-                        return AppTypes.Unknown;
-                    }
-                    req = GetSteamRequest(resp.Headers[HttpResponseHeader.Location]);
-                    resp = (HttpWebResponse) req.GetResponse();
-                    count++;
+                    client.Headers.Add(HttpRequestHeader.Cookie, "mature_content=1; birthtime=-2208970799; path=/; domain=store.steampowered.com");
+                    page = client.UploadString(store_address, "snr=1_agecheck_agecheck__age-gate&ageDay=1&ageMonth=January&ageYear=1900");
                 }
 
-                if (count == 5 && resp.StatusCode == HttpStatusCode.Found)
-                {
-                    //If we got too many redirects
-                    Program.Logger.Write(LoggerLevel.Verbose, GlobalStrings.GameDB_TooManyRedirects, id);
-                    return AppTypes.Unknown;
-                }
-                else if (resp.ResponseUri.Segments.Length < 2)
-                {
-                    // If we were redirected to the store front page
-                    Program.Logger.Write(LoggerLevel.Verbose, GlobalStrings.GameDB_ScrapingRedirectedToMainStorePage, id);
-                    SetTypeFromStoreScrape(AppTypes.Unknown);
-                    return AppTypes.Unknown;
-                }
-                else if (resp.ResponseUri.Segments[1] == "agecheck/")
-                {
-                    // If we encountered an age gate (cookies should bypass this, but sometimes they don't seem to)
-                    if (resp.ResponseUri.Segments.Length >= 4 &&
-                        resp.ResponseUri.Segments[3].TrimEnd('/') != id.ToString())
-                    {
-                        // Age check + redirect
-                        Program.Logger.Write(LoggerLevel.Verbose, GlobalStrings.GameDB_ScrapingHitAgeCheck, id,
-                            resp.ResponseUri.Segments[3].TrimEnd('/'));
-                        if (int.TryParse(resp.ResponseUri.Segments[3].TrimEnd('/'), out redirectTarget))
-                        {
-                        }
-                        else
-                        {
-                            // If we got an age check without numeric id (shouldn't happen)
-                            return AppTypes.Unknown;
-                        }
-                    }
-                    else
-                    {
-                        // If we got an age check with no redirect
-                        Program.Logger.Write(LoggerLevel.Verbose, GlobalStrings.GameDB_ScrapingAgeCheckNoRedirect, id);
-                        return AppTypes.Unknown;
-                    }
-                }
-                else if (resp.ResponseUri.Segments[1] != "app/")
-                {
-                    // Redirected outside of the app path
-                    Program.Logger.Write(LoggerLevel.Verbose, GlobalStrings.GameDB_ScrapingRedirectedToNonApp, id);
-                    return AppTypes.Other;
-                }
-                else if (resp.ResponseUri.Segments.Length < 3)
-                {
-                    // The URI ends with "/app/" ?
-                    Program.Logger.Write(LoggerLevel.Verbose, GlobalStrings.GameDB_Log_ScrapingNoAppId, id);
-                    return AppTypes.Unknown;
-                }
-                else if (resp.ResponseUri.Segments[2].TrimEnd('/') != id.ToString())
-                {
-                    // Redirected to a different app id
-                    Program.Logger.Write(LoggerLevel.Verbose, GlobalStrings.GameDB_ScrapingRedirectedToOtherApp, id,
-                        resp.ResponseUri.Segments[2].TrimEnd('/'));
-                    if (!int.TryParse(resp.ResponseUri.Segments[2].TrimEnd('/'), out redirectTarget))
-                    {
-                        // if new app id is an actual number
-                        return AppTypes.Unknown;
-                    }
-                }
-
-                StreamReader sr = new StreamReader(resp.GetResponseStream());
-                page = sr.ReadToEnd();
                 Program.Logger.Write(LoggerLevel.Verbose, GlobalStrings.GameDB_ScrapingPageRead, id);
             }
             catch (Exception e)
@@ -220,13 +138,6 @@ namespace Depressurizer
                 Program.Logger.Write(LoggerLevel.Verbose, GlobalStrings.GameDB_ScrapingPageReadFailed, id, e.Message);
                 LastStoreScrape = oldTime;
                 return AppTypes.Unknown;
-            }
-            finally
-            {
-                if (resp != null)
-                {
-                    resp.Close();
-                }
             }
 
             AppTypes result = AppTypes.Unknown;
@@ -254,7 +165,7 @@ namespace Depressurizer
                 }
             }
             else
-            { // The URI is right, but it didn't pass the regex check
+            { // We were likely redirected to a page that isn't the game page.
                 Program.Logger.Write(LoggerLevel.Verbose, GlobalStrings.GameDB_ScrapingCouldNotParse, id);
                 result = AppTypes.Unknown;
             }
@@ -266,18 +177,6 @@ namespace Depressurizer
             }
 
             return result;
-        }
-
-        private HttpWebRequest GetSteamRequest(string url)
-        {
-            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(url);
-            // Cookie bypasses the age gate
-            req.CookieContainer = new CookieContainer(1);
-            req.CookieContainer.Add(new Cookie("birthtime", "-2208959999", "/", "store.steampowered.com"));
-            req.CookieContainer.Add(new Cookie("mature_content", "1", "/", "store.steampowered.com"));
-            // Cookies get discarded on automatic redirects so we have to follow them manually
-            req.AllowAutoRedirect = false;
-            return req;
         }
 
         /// <summary>
