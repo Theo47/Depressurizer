@@ -236,11 +236,6 @@
     </Compile>
     <Compile Include="GameBanners.cs" />
     <Compile Include="Filter.cs" />
-    <Compile Include="GlobalStrings.nl.Designer.cs">
-      <DependentUpon>GlobalStrings.nl.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Lib\ExtListView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -253,11 +248,6 @@
     <Compile Include="Model\UserScoreRule.cs" />
     <Compile Include="PackageInfo.cs" />
     <Compile Include="Utility.cs" />
-    <Compile Include="GlobalStrings.es.Designer.cs">
-      <DependentUpon>GlobalStrings.es.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="DBEdit\DBEditDlg.cs">
       <SubType>Form</SubType>
     </Compile>
