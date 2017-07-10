@@ -22,7 +22,7 @@ namespace Depressurizer.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Depressurizer.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Depressurizer.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace Depressurizer.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0}\appcache\appinfo.vdf.
         /// </summary>
-        internal static string AppInfoPath {
+        public static string AppInfoPath {
             get {
                 return ResourceManager.GetString("AppInfoPath", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Auto-Categorize ({0} Games).
         /// </summary>
-        internal static string AutoCat_ButtonLabel {
+        public static string AutoCat_ButtonLabel {
             get {
                 return ResourceManager.GetString("AutoCat_ButtonLabel", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0}\userdata\{1}\7\remote\sharedconfig.vdf.
         /// </summary>
-        internal static string ConfigFilePath {
+        public static string ConfigFilePath {
             get {
                 return ResourceManager.GetString("ConfigFilePath", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to https://github.com/Theo47/depressurizer.
         /// </summary>
-        internal static string DepressurizerHomepage {
+        public static string DepressurizerHomepage {
             get {
                 return ResourceManager.GetString("DepressurizerHomepage", resourceCulture);
             }
@@ -99,16 +99,38 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0}\Game Banners\{1}.jpg.
         /// </summary>
-        internal static string GameBannerPath {
+        public static string GameBannerPath {
             get {
                 return ResourceManager.GetString("GameBannerPath", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to                     GNU GENERAL PUBLIC LICENSE
+        ///                       Version 3, 29 June 2007
+        ///
+        /// Copyright (C) 2007 Free Software Foundation, Inc. &lt;http://fsf.org/&gt;
+        /// Everyone is permitted to copy and distribute verbatim copies
+        /// of this license document, but changing it is not allowed.
+        ///
+        ///                            Preamble
+        ///
+        ///  The GNU General Public License is a free, copyleft license for
+        ///software and other kinds of works.
+        ///
+        ///  The licenses for most software and other practical works are designed
+        ///to [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string LICENSE {
+            get {
+                return ResourceManager.GetString("LICENSE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0}\userdata\{1}\config\localconfig.vdf.
         /// </summary>
-        internal static string LocalConfigPath {
+        public static string LocalConfigPath {
             get {
                 return ResourceManager.GetString("LocalConfigPath", resourceCulture);
             }
@@ -117,7 +139,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0}\appcache\packageinfo.vdf.
         /// </summary>
-        internal static string PackageInfoPath {
+        public static string PackageInfoPath {
             get {
                 return ResourceManager.GetString("PackageInfoPath", resourceCulture);
             }
@@ -126,7 +148,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0}\userdata\{1}\760\screenshots.vdf.
         /// </summary>
-        internal static string ScreenshotsFilePath {
+        public static string ScreenshotsFilePath {
             get {
                 return ResourceManager.GetString("ScreenshotsFilePath", resourceCulture);
             }
@@ -135,7 +157,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0}\userdata\{1}\config\shortcuts.vdf.
         /// </summary>
-        internal static string ShortCutsFilePath {
+        public static string ShortCutsFilePath {
             get {
                 return ResourceManager.GetString("ShortCutsFilePath", resourceCulture);
             }
@@ -144,7 +166,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to http://steamcommunity.com/id/{0}/games?tab=all.
         /// </summary>
-        internal static string UrlCustomGameListHtml {
+        public static string UrlCustomGameListHtml {
             get {
                 return ResourceManager.GetString("UrlCustomGameListHtml", resourceCulture);
             }
@@ -153,7 +175,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to http://steamcommunity.com/id/{0}/games?tab=all&amp;xml=1.
         /// </summary>
-        internal static string UrlCustomGameListXml {
+        public static string UrlCustomGameListXml {
             get {
                 return ResourceManager.GetString("UrlCustomGameListXml", resourceCulture);
             }
@@ -162,7 +184,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to http://steamcommunity.com/id/{0}?xml=1.
         /// </summary>
-        internal static string UrlCustomProfileXml {
+        public static string UrlCustomProfileXml {
             get {
                 return ResourceManager.GetString("UrlCustomProfileXml", resourceCulture);
             }
@@ -171,7 +193,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to https://steamcdn-a.akamaihd.net/steam/apps/{0}/capsule_sm_120.jpg.
         /// </summary>
-        internal static string UrlGameBanner {
+        public static string UrlGameBanner {
             get {
                 return ResourceManager.GetString("UrlGameBanner", resourceCulture);
             }
@@ -180,7 +202,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to http://steamcommunity.com/profiles/{0}/games?tab=all.
         /// </summary>
-        internal static string UrlGameListHtml {
+        public static string UrlGameListHtml {
             get {
                 return ResourceManager.GetString("UrlGameListHtml", resourceCulture);
             }
@@ -189,7 +211,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to http://steamcommunity.com/profiles/{0}/games?tab=all&amp;xml=1.
         /// </summary>
-        internal static string UrlGameListXml {
+        public static string UrlGameListXml {
             get {
                 return ResourceManager.GetString("UrlGameListXml", resourceCulture);
             }
@@ -198,7 +220,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to https://www.howlongtobeatsteam.com/api/games/library/cached/all.
         /// </summary>
-        internal static string UrlHLTBAll {
+        public static string UrlHLTBAll {
             get {
                 return ResourceManager.GetString("UrlHLTBAll", resourceCulture);
             }
@@ -207,7 +229,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to https://api.github.com/repos/Theo47/depressurizer/releases/latest.
         /// </summary>
-        internal static string UrlLatestRelease {
+        public static string UrlLatestRelease {
             get {
                 return ResourceManager.GetString("UrlLatestRelease", resourceCulture);
             }
@@ -216,7 +238,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to http://steamcommunity.com/profiles/{0}?xml=1.
         /// </summary>
-        internal static string UrlSteamProfile {
+        public static string UrlSteamProfile {
             get {
                 return ResourceManager.GetString("UrlSteamProfile", resourceCulture);
             }
@@ -225,7 +247,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to http://store.steampowered.com/.
         /// </summary>
-        internal static string UrlSteamStore {
+        public static string UrlSteamStore {
             get {
                 return ResourceManager.GetString("UrlSteamStore", resourceCulture);
             }
@@ -234,7 +256,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to http://store.steampowered.com/app/{0}/.
         /// </summary>
-        internal static string UrlSteamStoreApp {
+        public static string UrlSteamStoreApp {
             get {
                 return ResourceManager.GetString("UrlSteamStoreApp", resourceCulture);
             }
@@ -243,7 +265,7 @@ namespace Depressurizer.Properties {
         /// <summary>
         ///   Looks up a localized string similar to /profile/avatarIcon.
         /// </summary>
-        internal static string XmlNodeAvatar {
+        public static string XmlNodeAvatar {
             get {
                 return ResourceManager.GetString("XmlNodeAvatar", resourceCulture);
             }
