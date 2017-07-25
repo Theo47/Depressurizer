@@ -1,4 +1,4 @@
-**This is a modified version of rallion's ![Depressurizer](https://github.com/rallion/depressurizer)**.
+**This is a modified version of [rallion](https://github.com/rallion)'s [Depressurizer](https://github.com/rallion/depressurizer)**.
 
 ----
 
