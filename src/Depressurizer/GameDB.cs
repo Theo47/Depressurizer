@@ -1439,12 +1439,6 @@ namespace Depressurizer
 
         #region Operations
 
-        public void UpdateAppListFromWeb()
-        {
-            XmlDocument doc = FetchAppListFromWeb();
-            IntegrateAppList(doc);
-        }
-
         public static XmlDocument FetchAppListFromWeb()
         {
             XmlDocument doc = new XmlDocument();
