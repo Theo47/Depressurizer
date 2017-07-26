@@ -1439,7 +1439,6 @@ namespace Depressurizer
 
         #region Operations
 
-        [Obsolete("FetchAppListFromWeb() not supported use Steam.FetchApplist()", false)]
         public static XmlDocument FetchAppListFromWeb()
         {
             XmlDocument doc = new XmlDocument();

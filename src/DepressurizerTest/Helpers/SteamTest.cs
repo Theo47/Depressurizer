@@ -21,6 +21,7 @@ using System.Xml;
 using Depressurizer;
 using Depressurizer.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Rallion;
 
 namespace DepressurizerTest.Helpers
 {
@@ -44,6 +45,7 @@ namespace DepressurizerTest.Helpers
         [TestMethod]
         public void FetchAppList()
         {
+            Program.Logger = new AppLogger();
             XmlDocument expectedDocument = GameDB.FetchAppListFromWeb();
             XmlDocument actualDocument = Steam.FetchAppList();
 
@@ -53,6 +55,7 @@ namespace DepressurizerTest.Helpers
         [TestMethod]
         public void FetchApplistNullGameDb()
         {
+            Program.Logger = new AppLogger();
             XmlDocument expectedDocument = GameDB.FetchAppListFromWeb();
             Assert.IsNotNull(expectedDocument);
         }

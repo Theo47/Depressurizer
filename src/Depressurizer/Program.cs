@@ -23,7 +23,7 @@ using Rallion;
 
 namespace Depressurizer
 {
-    static class Program
+    public static class Program
     {
         public static AppLogger Logger;
         public static GameDB GameDB;
