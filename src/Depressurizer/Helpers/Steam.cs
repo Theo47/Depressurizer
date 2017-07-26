@@ -92,5 +92,35 @@ namespace Depressurizer.Helpers
 
             return steamAvatar;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// TODO: Add proper error handling
+        /// TODO: Improve / extend existing Unit Tests
+        public static XmlDocument FetchAppList()
+        {
+            XmlDocument appList = null;
+            bool parsingSucceeded = false;
+
+            try
+            {
+                appList = new XmlDocument();
+                appList.Load(@"http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=xml");
+                parsingSucceeded = true;
+            }
+            catch (Exception e)
+            {
+                if (!parsingSucceeded)
+                {
+                    // Error Parsing xmlDocument
+                }
+                Debug.WriteLine(e);
+                Console.WriteLine(e);
+            }
+
+            return appList;
+        }
     }
 }
