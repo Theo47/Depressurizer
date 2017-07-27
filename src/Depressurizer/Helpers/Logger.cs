@@ -53,7 +53,7 @@ namespace Depressurizer.Helpers
             FileIndex = 1;
 
             LogPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Depressurizer");
-            LogFile = $"Depressurizer-({DateTime.Now.Date.ToShortDateString()})-{FileIndex}.log";
+            LogFile = $"Depressurizer-({DateTime.Now:dd-MM-yyyy})-{FileIndex}.log";
         }
 
         public static Logger Instance
@@ -102,6 +102,7 @@ namespace Depressurizer.Helpers
             using (StreamWriter streamWriter = new StreamWriter(ActiveLogFile, true))
             {
                 streamWriter.WriteLine($"{DateTime.Now} {logLevel} | {logMessage}");
+                streamWriter.Close();
             }
         }
 
