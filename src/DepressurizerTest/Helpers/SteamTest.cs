@@ -47,7 +47,8 @@ namespace DepressurizerTest.Helpers
             XmlDocument expectedDocument = GameDB.FetchAppListFromWeb();
             XmlDocument actualDocument = Steam.FetchAppList();
 
-            Assert.AreEqual(expectedDocument.GetHashCode(), actualDocument.GetHashCode());
+            Assert.AreEqual(expectedDocument.OuterXml, actualDocument.OuterXml);
+            Assert.AreEqual(expectedDocument.InnerXml, actualDocument.InnerXml);            
         }
 
         [TestMethod]
