@@ -1,9 +1,11 @@
+### Depressurizer (v0.7.4)
 **This is a modified version of [rallion](https://github.com/rallion)'s [Depressurizer](https://github.com/rallion/depressurizer)**.
 
 ----
 
-### Depressurizer
-for v0.7.4.0
+| Master        | Dev           |
+| ------------- |:-------------:|
+| [![Build status](https://ci.appveyor.com/api/projects/status/l92e2kksu0gcsg1k/branch/master?svg=true)](https://ci.appveyor.com/project/mvegter/depressurizer/branch/master)     | [![Build status](https://ci.appveyor.com/api/projects/status/l92e2kksu0gcsg1k/branch/dev?svg=true)](https://ci.appveyor.com/project/mvegter/depressurizer/branch/dev) |
 
 ----
 
