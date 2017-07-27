@@ -99,10 +99,12 @@ namespace Depressurizer.Helpers
                 Directory.CreateDirectory(LogPath);
             }
 
-            using (StreamWriter streamWriter = new StreamWriter(ActiveLogFile, true))
+            lock (SyncRoot)
             {
-                streamWriter.WriteLine($"{DateTime.Now} {logLevel, -7} | {logMessage}");
-                streamWriter.Close();
+                using (StreamWriter streamWriter = new StreamWriter(ActiveLogFile, true))
+                {
+                    streamWriter.WriteLine($"{DateTime.Now} {logLevel,-7} | {logMessage}");
+                }
             }
         }
 
