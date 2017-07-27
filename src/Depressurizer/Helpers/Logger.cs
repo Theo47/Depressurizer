@@ -94,11 +94,6 @@ namespace Depressurizer.Helpers
         /// <param name="logMessage"></param>
         public void Write(LogLevel logLevel, string logMessage)
         {
-            if (!File.Exists(ActiveLogFile))
-            {
-                File.Create(ActiveLogFile);
-            }
-
             using (StreamWriter streamWriter = new StreamWriter(ActiveLogFile, true))
             {
                 streamWriter.WriteLine($"{DateTime.Now} {logLevel} | {logMessage}");
