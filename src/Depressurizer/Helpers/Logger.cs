@@ -101,7 +101,7 @@ namespace Depressurizer.Helpers
 
             using (StreamWriter streamWriter = new StreamWriter(ActiveLogFile, true))
             {
-                streamWriter.WriteLine($"{DateTime.Now} {logLevel} | {logMessage}");
+                streamWriter.WriteLine($"{DateTime.Now} {logLevel, -7} | {logMessage}");
                 streamWriter.Close();
             }
         }

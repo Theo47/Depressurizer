@@ -61,33 +61,16 @@ namespace Depressurizer.Helpers
         public static Image GetAvatar(long steamId64)
         {
             Image steamAvatar = null;
-            bool parsingSucceeded = false;
 
-            try
+            XmlDocument xmlDocument = XmlParser.Load(Resources.UrlSteamProfile, steamId64);
+            if (xmlDocument.DocumentElement != null)
             {
-                XmlDocument xmlDocument = new XmlDocument();
-                xmlDocument.Load(string.Format(Resources.UrlSteamProfile, steamId64));
-                parsingSucceeded = true;
-
-                if (xmlDocument.DocumentElement != null)
+                XmlNode xmlNode = xmlDocument.DocumentElement.SelectSingleNode(Resources.XmlNodeAvatar);
+                if (xmlNode != null)
                 {
-                    XmlNode xmlNode = xmlDocument.DocumentElement.SelectSingleNode(Resources.XmlNodeAvatar);
-
-                    if (xmlNode != null)
-                    {
-                        string steamAvatarLink = xmlNode.InnerText;
-                        steamAvatar = Utility.GetImage(steamAvatarLink, RequestCacheLevel.BypassCache);
-                    }
+                    string steamAvatarLink = xmlNode.InnerText;
+                    steamAvatar = Utility.GetImage(steamAvatarLink, RequestCacheLevel.BypassCache);
                 }
-            }
-            catch (Exception e)
-            {
-                if (!parsingSucceeded)
-                {
-                    // Error Parsing xmlDocument
-                }
-                Debug.WriteLine(e);
-                Console.WriteLine(e);
             }
 
             return steamAvatar;
@@ -101,26 +84,7 @@ namespace Depressurizer.Helpers
         /// TODO: Improve / extend existing Unit Tests
         public static XmlDocument FetchAppList()
         {
-            XmlDocument appList = null;
-            bool parsingSucceeded = false;
-
-            try
-            {
-                appList = new XmlDocument();
-                appList.Load(@"http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=xml");
-                parsingSucceeded = true;
-            }
-            catch (Exception e)
-            {
-                if (!parsingSucceeded)
-                {
-                    // Error Parsing xmlDocument
-                }
-                Debug.WriteLine(e);
-                Console.WriteLine(e);
-            }
-
-            return appList;
+            return XmlParser.Load(@"http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=xml");
         }
     }
 }

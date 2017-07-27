@@ -89,6 +89,7 @@
   <ItemGroup>
     <Compile Include="AutoCat.cs" />
     <Compile Include="Helpers\SteamTest.cs" />
+    <Compile Include="Helpers\XmlParserTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
