@@ -768,13 +768,13 @@ namespace Depressurizer
                 {
                     MessageBox.Show(GlobalStrings.MainForm_ErrorLoadingGameDB +
                                     GlobalStrings.MainForm_GameDBFileNotExist);
-                    Program.Logger.Write(LoggerLevel.Warning, GlobalStrings.MainForm_GameDBFileNotExist);
+                    Logger.Instance.Write(LogLevel.Warn, GlobalStrings.MainForm_GameDBFileNotExist);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(GlobalStrings.MainForm_ErrorLoadingGameDB + ex.Message);
-                Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionOnDBLoad, ex);
+                Logger.Instance.WriteException(GlobalStrings.MainForm_Log_ExceptionOnDBLoad, ex);
                 Program.GameDB = new GameDB();
             }
         }
@@ -791,7 +791,7 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionAutosavingDB, e);
+                Logger.Instance.WriteException(GlobalStrings.MainForm_Log_ExceptionAutosavingDB, e);
                 MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorAutosavingDB, e.Message),
                     GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -814,7 +814,7 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionAppInfo, e);
+                Logger.Instance.WriteException(GlobalStrings.MainForm_Log_ExceptionAppInfo, e);
                 MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorAppInfo, e.Message),
                     GlobalStrings.Gen_Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -832,7 +832,7 @@ namespace Depressurizer
 
             if (dlg.Error != null)
             {
-                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.DBEditDlg_Log_ExceptionHltb, dlg.Error.Message);
+                Logger.Instance.Write(LogLevel.Error, GlobalStrings.DBEditDlg_Log_ExceptionHltb, dlg.Error.Message);
                 MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorHltb, dlg.Error.Message),
                     GlobalStrings.Gen_Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 AddStatus(GlobalStrings.DBEditDlg_ErrorUpdatingHltb);
@@ -990,7 +990,7 @@ namespace Depressurizer
             {
                 MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorLoadingProfile, e.Message),
                     GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionLoadingProfile, e);
+                Logger.Instance.WriteException(GlobalStrings.MainForm_Log_ExceptionLoadingProfile, e);
                 OnProfileChange();
                 AddStatus(GlobalStrings.MainForm_FailedLoadProfile);
                 return;
@@ -1070,7 +1070,7 @@ namespace Depressurizer
             {
                 MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorSavingProfile, e.Message),
                     GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionSavingProfile, e);
+                Logger.Instance.WriteException(GlobalStrings.MainForm_Log_ExceptionSavingProfile, e);
                 AddStatus(GlobalStrings.MainForm_FailedSaveProfile);
                 return false;
             }
@@ -1108,7 +1108,7 @@ namespace Depressurizer
                 {
                     MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_LocalUpdateError, e.Message),
                         GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionLocalUpdate, e);
+                    Logger.Instance.WriteException(GlobalStrings.MainForm_Log_ExceptionLocalUpdate, e);
                     AddStatus(GlobalStrings.MainForm_Status_LocalUpdateFailed);
                     success = false;
                 }
@@ -1129,7 +1129,7 @@ namespace Depressurizer
 
                     if (updateDlg.Error != null)
                     {
-                        Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionWebUpdateDialog,
+                        Logger.Instance.WriteException(GlobalStrings.MainForm_Log_ExceptionWebUpdateDialog,
                             updateDlg.Error);
                         AddStatus(string.Format(GlobalStrings.MainForm_ErrorDownloadingProfileData,
                             updateDlg.UseHtml ? "HTML" : "XML"));
@@ -1167,7 +1167,7 @@ namespace Depressurizer
                 }
                 catch (Exception e)
                 {
-                    Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionWebUpdate, e);
+                    Logger.Instance.WriteException(GlobalStrings.MainForm_Log_ExceptionWebUpdate, e);
                     MessageBox.Show(string.Format(GlobalStrings.MainForm_ErrorDowloadingProfile, e.Message),
                         GlobalStrings.DBEditDlg_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     AddStatus(GlobalStrings.MainForm_DownloadFailed);
@@ -1202,7 +1202,7 @@ namespace Depressurizer
             {
                 MessageBox.Show(string.Format(GlobalStrings.MainForm_ErrorImportingSteamDataList, e.Message),
                     GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                Program.Logger.WriteException("Exception encountered while importing the remoteconfig file.", e);
+                Logger.Instance.WriteException("Exception encountered while importing the remoteconfig file.", e);
                 AddStatus(GlobalStrings.MainForm_ImportFailed);
             }
             Cursor = Cursors.Default;
@@ -1224,7 +1224,7 @@ namespace Depressurizer
                 {
                     MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorExportingToSteam, e.Message),
                         GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionExport, e);
+                    Logger.Instance.WriteException(GlobalStrings.MainForm_Log_ExceptionExport, e);
                     AddStatus(GlobalStrings.MainForm_ExportFailed);
                 }
             }
@@ -1255,7 +1255,7 @@ namespace Depressurizer
                 {
                     MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorManualExport, e.Message),
                         GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionExport, e);
+                    Logger.Instance.WriteException(GlobalStrings.MainForm_Log_ExceptionExport, e);
                     AddStatus(GlobalStrings.MainForm_ExportFailed);
                 }
                 Cursor = Cursors.Default;
@@ -4478,7 +4478,7 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionDepressurizerUpdate, e);
+                Logger.Instance.WriteException(GlobalStrings.MainForm_Log_ExceptionDepressurizerUpdate, e);
                 MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorDepressurizerUpdate, e.Message),
                     GlobalStrings.Gen_Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
