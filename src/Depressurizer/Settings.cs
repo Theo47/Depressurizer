@@ -22,7 +22,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using Depressurizer.Helpers;
 using Rallion;
 
 namespace Depressurizer
@@ -408,6 +407,22 @@ namespace Depressurizer
             }
         }
 
+        private LoggerLevel _logLevel = LoggerLevel.Info;
+
+        public LoggerLevel LogLevel
+        {
+            get { return _logLevel; }
+            set
+            {
+                Program.Logger.Level = value;
+                if (_logLevel != value)
+                {
+                    _logLevel = value;
+                    outOfDate = true;
+                }
+            }
+        }
+
         private int _logSize = 2000000;
 
         public int LogSize
@@ -415,7 +430,7 @@ namespace Depressurizer
             get { return _logSize; }
             set
             {
-                Logger.Instance.MaxFileSize = value;
+                Program.Logger.MaxFileSize = value;
                 if (_logSize != value)
                 {
                     _logSize = value;
@@ -431,7 +446,7 @@ namespace Depressurizer
             get { return _logBackups; }
             set
             {
-                Logger.Instance.MaxBackup = value;
+                Program.Logger.MaxBackup = value;
                 if (_logBackups != value)
                 {
                     _logBackups = value;
@@ -610,8 +625,6 @@ namespace Depressurizer
             }
         }
 
-        public LogLevel LogLevel { get; internal set; }
-
         private Settings()
         {
             FilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
@@ -621,7 +634,7 @@ namespace Depressurizer
         public override void Load()
         {
             base.Load();
-            //   Logger.Instance.Level = LogLevel;
+            //   Program.Logger.Level = LogLevel;
         }
     }
 }

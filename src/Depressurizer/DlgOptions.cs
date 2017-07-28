@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
-using Depressurizer.Helpers;
 using Rallion;
 
 namespace Depressurizer
@@ -37,7 +36,7 @@ namespace Depressurizer
 
         private void OptionsForm_Load(object sender, EventArgs e)
         {
-            string[] levels = Enum.GetNames(typeof(LogLevel));
+            string[] levels = Enum.GetNames(typeof(LoggerLevel));
             cmbLogLevel.Items.AddRange(levels);
 
             //UI languages
@@ -180,7 +179,7 @@ namespace Depressurizer
 
             settings.RemoveExtraEntries = chkRemoveExtraEntries.Checked;
 
-            settings.LogLevel = (LogLevel) cmbLogLevel.SelectedIndex;
+            settings.LogLevel = (LoggerLevel) cmbLogLevel.SelectedIndex;
             settings.LogSize = (int) numLogSize.Value;
             settings.LogBackups = (int) numLogBackup.Value;
 

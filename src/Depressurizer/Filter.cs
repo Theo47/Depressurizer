@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml;
-using Depressurizer.Helpers;
 using Rallion;
 
 namespace Depressurizer
@@ -111,7 +110,7 @@ namespace Depressurizer
 
         public void WriteToXml(XmlWriter writer)
         {
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.Filter_SavingFilter, Name);
+            Program.Logger.Write(LoggerLevel.Info, GlobalStrings.Filter_SavingFilter, Name);
 
             writer.WriteStartElement(TypeIdString);
 
@@ -137,7 +136,7 @@ namespace Depressurizer
 
             writer.WriteEndElement(); // Filter
 
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.Filter_FilterSaveComplete);
+            Program.Logger.Write(LoggerLevel.Info, GlobalStrings.Filter_FilterSaveComplete);
         }
     }
 }

@@ -20,6 +20,7 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Xml;
+using Rallion;
 
 namespace Depressurizer.Helpers
 {
@@ -27,7 +28,7 @@ namespace Depressurizer.Helpers
     {
         public static XmlDocument Load(string xmlPath)
         {
-            Logger.Instance.Write(LogLevel.Info, $"Loading: {xmlPath}");
+            Program.Logger.Write(LoggerLevel.Info, $"Loading: {xmlPath}");
 
             XmlDocument xmlDocument = new XmlDocument();
             bool parsingSucceeded = false;
@@ -46,7 +47,7 @@ namespace Depressurizer.Helpers
                     HttpWebResponse resp = (HttpWebResponse)ex.Response;
                     if (resp.StatusCode == HttpStatusCode.NotFound)
                     {
-                        Logger.Instance.Write(LogLevel.Error, $"Invalid XmlPath supplied: {xmlPath}");
+                        Program.Logger.Write(LoggerLevel.Error, $"Invalid XmlPath supplied: {xmlPath}");
                         xmlDocument = null;
                     }
                 }
@@ -57,12 +58,12 @@ namespace Depressurizer.Helpers
 
                 if (!parsingSucceeded)
                 {
-                    Logger.Instance.Write(LogLevel.Error, $"Error while parsing: {xmlPath}");
+                    Program.Logger.Write(LoggerLevel.Error, $"Error while parsing: {xmlPath}");
                     xmlDocument = null;
                 }
                 else
                 {
-                    Logger.Instance.Write(LogLevel.Fatal, $"Unknown Exception: {ex}");
+                    Program.Logger.Write(LoggerLevel.Error, $"Unknown Exception: {ex}");
                     throw new Exception(ex.Message);
                 }
             }
