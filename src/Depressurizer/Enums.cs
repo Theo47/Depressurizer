@@ -127,4 +127,12 @@ namespace Depressurizer
         NotInDatabase,
         Filtered
     }
+
+    public enum CuratorRecommendation
+    {
+        [Description("Error")] Error,
+        [Description("Recommended")] Recommended,
+        [Description("Not Recommended")] NotRecommended,
+        [Description("Informational")] Informational
+    }
 }
