@@ -117,7 +117,8 @@ namespace Depressurizer
         [Description("AutoCatGroup")] Group,
         [Description("AutoCatName")] Name,
         [Description("AutoCatVrSupport")] VrSupport,
-        [Description("AutoCatLanguage")] Language
+        [Description("AutoCatLanguage")] Language,
+        [Description("AutoCatCurator")] Curator
     }
 
     public enum AutoCatResult
@@ -126,5 +127,13 @@ namespace Depressurizer
         Failure,
         NotInDatabase,
         Filtered
+    }
+
+    public enum CuratorRecommendation
+    {
+        [Description("Error")] Error,
+        [Description("Recommended")] Recommended,
+        [Description("Not Recommended")] NotRecommended,
+        [Description("Informational")] Informational
     }
 }
