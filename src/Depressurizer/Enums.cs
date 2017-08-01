@@ -117,7 +117,8 @@ namespace Depressurizer
         [Description("AutoCatGroup")] Group,
         [Description("AutoCatName")] Name,
         [Description("AutoCatVrSupport")] VrSupport,
-        [Description("AutoCatLanguage")] Language
+        [Description("AutoCatLanguage")] Language,
+        [Description("AutoCatCurator")] Curator
     }
 
     public enum AutoCatResult

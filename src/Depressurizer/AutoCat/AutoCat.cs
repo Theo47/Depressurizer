@@ -1,7 +1,7 @@
 ﻿/*
     This file is part of Depressurizer.
     Original work Copyright 2011, 2012, 2013 Steve Labbe.
-    Modified work Copyright 2017 Martijn Vegter.
+    Modified work Copyright 2017 Theodoros Dimos and Martijn Vegter.
 
     Depressurizer is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ using System.Xml;
  * 
  * Here is a list of everything you need to do to add an additional autocat method.
  * 
- * 1) Add an element to the AutoCatType enum.
+ * 1) Add an element to the AutoCatType enum at Enums.cs file.
  * 
  * 2a) Create a new class that extends the AutoCat abstract base class.
  *    Things to implement in derived classes:
@@ -177,6 +177,8 @@ namespace Depressurizer
                     return AutoCatVrSupport.LoadFromXmlElement(xElement);
                 case AutoCatLanguage.TypeIdString:
                     return AutoCatLanguage.LoadFromXmlElement(xElement);
+                case AutoCatCurator.TypeIdString:
+                    return AutoCatCurator.LoadFromXmlElement(xElement);
                 default:
                     return null;
             }
@@ -210,6 +212,8 @@ namespace Depressurizer
                     return new AutoCatVrSupport(name);
                 case AutoCatType.Language:
                     return new AutoCatLanguage(name);
+                case AutoCatType.Curator:
+                    return new AutoCatCurator(name);
                 case AutoCatType.None:
                     return null;
                 default:
