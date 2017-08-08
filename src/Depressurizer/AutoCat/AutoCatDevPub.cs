@@ -19,6 +19,7 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Xml;
+using System.Xml.Serialization;
 using Rallion;
 
 namespace Depressurizer
@@ -40,27 +41,13 @@ namespace Depressurizer
         public string Prefix { get; set; }
         public bool OwnedOnly { get; set; }
         public int MinCount { get; set; }
+        [XmlArrayItem("Developer")]
         public List<string> Developers { get; set; }
+        [XmlArrayItem("Publisher")]
         public List<string> Publishers { get; set; }
 
         private IEnumerable<Tuple<string, int>> devList;
         private IEnumerable<Tuple<string, int>> pubList;
-
-        // Serialization keys
-        public const string TypeIdString = "AutoCatDevPub";
-
-        private const string
-            XmlName_Name = "Name",
-            XmlName_Filter = "Filter",
-            XmlName_AllDevelopers = "AllDevelopers",
-            XmlName_AllPublishers = "AllPublishers",
-            XmlName_Prefix = "Prefix",
-            XmlName_OwnedOnly = "OwnedOnly",
-            XmlName_MinCount = "MinCount",
-            XmlName_Developers = "Developers",
-            XmlName_Developer = "Developer",
-            XmlName_Publishers = "Publishers",
-            XmlName_Publisher = "Publisher";
 
         private GameList gamelist;
 
@@ -82,6 +69,9 @@ namespace Depressurizer
             Publishers = (publishers == null) ? new List<string>() : publishers;
             Selected = selected;
         }
+
+        //XmlSerializer requires a parameterless constructor
+        private AutoCatDevPub() { }
 
         protected AutoCatDevPub(AutoCatDevPub other)
             : base(other)
@@ -213,94 +203,6 @@ namespace Depressurizer
                 return baseString;
             }
             return Prefix + baseString;
-        }
-
-        public override void WriteToXml(XmlWriter writer)
-        {
-            writer.WriteStartElement(TypeIdString);
-
-            writer.WriteElementString(XmlName_Name, Name);
-            if (Filter != null)
-            {
-                writer.WriteElementString(XmlName_Filter, Filter);
-            }
-            if (Prefix != null)
-            {
-                writer.WriteElementString(XmlName_Prefix, Prefix);
-            }
-            writer.WriteElementString(XmlName_OwnedOnly, OwnedOnly.ToString());
-            writer.WriteElementString(XmlName_MinCount, MinCount.ToString());
-            writer.WriteElementString(XmlName_AllDevelopers, AllDevelopers.ToString());
-            writer.WriteElementString(XmlName_AllPublishers, AllPublishers.ToString());
-
-            if (Developers.Count > 0)
-            {
-                writer.WriteStartElement(XmlName_Developers);
-                foreach (string s in Developers)
-                {
-                    writer.WriteElementString(XmlName_Developer, s);
-                }
-                writer.WriteEndElement();
-            }
-
-            if (Publishers.Count > 0)
-            {
-                writer.WriteStartElement(XmlName_Publishers);
-                foreach (string s in Publishers)
-                {
-                    writer.WriteElementString(XmlName_Publisher, s);
-                }
-                writer.WriteEndElement();
-            }
-
-            writer.WriteEndElement();
-        }
-
-        public static AutoCatDevPub LoadFromXmlElement(XmlElement xElement)
-        {
-            string name = XmlUtil.GetStringFromNode(xElement[XmlName_Name], TypeIdString);
-            string filter = XmlUtil.GetStringFromNode(xElement[XmlName_Filter], null);
-            bool AllDevelopers = XmlUtil.GetBoolFromNode(xElement[XmlName_AllDevelopers], false);
-            bool AllPublishers = XmlUtil.GetBoolFromNode(xElement[XmlName_AllPublishers], false);
-            string prefix = XmlUtil.GetStringFromNode(xElement[XmlName_Prefix], null);
-            bool owned = XmlUtil.GetBoolFromNode(xElement[XmlName_OwnedOnly], false);
-            int count = XmlUtil.GetIntFromNode(xElement[XmlName_MinCount], 0);
-
-            List<string> devs = new List<string>();
-
-            XmlElement devsListElement = xElement[XmlName_Developers];
-            if (devsListElement != null)
-            {
-                XmlNodeList devNodes = devsListElement.SelectNodes(XmlName_Developer);
-                foreach (XmlNode node in devNodes)
-                {
-                    string s;
-                    if (XmlUtil.TryGetStringFromNode(node, out s))
-                    {
-                        devs.Add(s);
-                    }
-                }
-            }
-
-            List<string> pubs = new List<string>();
-
-            XmlElement pubsListElement = xElement[XmlName_Publishers];
-            if (pubsListElement != null)
-            {
-                XmlNodeList pubNodes = pubsListElement.SelectNodes(XmlName_Publisher);
-                foreach (XmlNode node in pubNodes)
-                {
-                    string s;
-                    if (XmlUtil.TryGetStringFromNode(node, out s))
-                    {
-                        pubs.Add(s);
-                    }
-                }
-            }
-
-            AutoCatDevPub result = new AutoCatDevPub(name, filter, prefix, owned, count, AllDevelopers, AllPublishers,
-                devs, pubs);
-            return result;
         }
     }
 }

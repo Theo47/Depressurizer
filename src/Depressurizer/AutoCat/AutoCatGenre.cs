@@ -19,6 +19,7 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Xml;
+using System.Xml.Serialization;
 using Rallion;
 
 namespace Depressurizer
@@ -36,24 +37,13 @@ namespace Depressurizer
         // Autocat configuration
         public int MaxCategories { get; set; }
 
+        [XmlElement("RemoveOthers")]
         public bool RemoveOtherGenres { get; set; }
         public bool TagFallback { get; set; }
         public string Prefix { get; set; }
 
+        [XmlArray("Ignored"), XmlArrayItem("Ignore")]
         public List<string> IgnoredGenres { get; set; }
-
-        // Serialization keys
-        public const string TypeIdString = "AutoCatGenre";
-
-        private const string
-            XmlName_Name = "Name",
-            XmlName_Filter = "Filter",
-            XmlName_RemOther = "RemoveOthers",
-            XmlName_TagFallback = "TagFallback",
-            XmlName_MaxCats = "MaxCategories",
-            XmlName_Prefix = "Prefix",
-            XmlName_IgnoreList = "Ignored",
-            XmlName_IgnoreItem = "Ignore";
 
         const int MAX_PARENT_DEPTH = 3;
 
@@ -78,6 +68,9 @@ namespace Depressurizer
             IgnoredGenres = (ignore == null) ? new List<string>() : ignore;
             Selected = selected;
         }
+
+        //XmlSerializer requires a parameterless constructor
+        private AutoCatGenre() { }
 
         protected AutoCatGenre(AutoCatGenre other)
             : base(other)
@@ -186,64 +179,6 @@ namespace Depressurizer
                 return baseString;
             }
             return Prefix + baseString;
-        }
-
-        public override void WriteToXml(XmlWriter writer)
-        {
-            writer.WriteStartElement(TypeIdString);
-
-            writer.WriteElementString(XmlName_Name, Name);
-            if (Filter != null)
-            {
-                writer.WriteElementString(XmlName_Filter, Filter);
-            }
-            if (Prefix != null)
-            {
-                writer.WriteElementString(XmlName_Prefix, Prefix);
-            }
-            writer.WriteElementString(XmlName_MaxCats, MaxCategories.ToString());
-            writer.WriteElementString(XmlName_RemOther, RemoveOtherGenres.ToString());
-            writer.WriteElementString(XmlName_TagFallback, TagFallback.ToString());
-
-            writer.WriteStartElement(XmlName_IgnoreList);
-
-            foreach (string s in IgnoredGenres)
-            {
-                writer.WriteElementString(XmlName_IgnoreItem, s);
-            }
-
-            writer.WriteEndElement();
-
-            writer.WriteEndElement();
-        }
-
-        public static AutoCatGenre LoadFromXmlElement(XmlElement xElement)
-        {
-            string name = XmlUtil.GetStringFromNode(xElement[XmlName_Name], TypeIdString);
-            string filter = XmlUtil.GetStringFromNode(xElement[XmlName_Filter], null);
-            int maxCats = XmlUtil.GetIntFromNode(xElement[XmlName_MaxCats], 0);
-            bool remOther = XmlUtil.GetBoolFromNode(xElement[XmlName_RemOther], false);
-            bool tagFallback = XmlUtil.GetBoolFromNode(xElement[XmlName_TagFallback], true);
-            string prefix = XmlUtil.GetStringFromNode(xElement[XmlName_Prefix], null);
-
-            List<string> ignore = new List<string>();
-
-            XmlElement ignoreListElement = xElement[XmlName_IgnoreList];
-            if (ignoreListElement != null)
-            {
-                XmlNodeList ignoreNodes = ignoreListElement.SelectNodes(XmlName_IgnoreItem);
-                foreach (XmlNode node in ignoreNodes)
-                {
-                    string s;
-                    if (XmlUtil.TryGetStringFromNode(node, out s))
-                    {
-                        ignore.Add(s);
-                    }
-                }
-            }
-
-            AutoCatGenre result = new AutoCatGenre(name, filter, prefix, maxCats, remOther, tagFallback, ignore);
-            return result;
         }
     }
 }
