@@ -39,12 +39,10 @@ namespace Depressurizer.Helpers
     public class Logger
     {
         public string LogPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Depressurizer", "Logs");
-        public string LogFile => $"Depressurizer-({DateTime.Now:dd-MM-yyyy})-{FileIndex}.log";
+        public string LogFile => $"Depressurizer-({DateTime.Now:dd-MM-yyyy}).log";
         public string CurrentLogFile => Path.Combine(LogPath, LogFile);
 
         public int CurrentFileRecords => new DirectoryInfo(LogPath).GetFiles().Length;
-
-        private int FileIndex { get; } = 1;
 
         public static Logger Instance
         {
@@ -71,6 +69,7 @@ namespace Depressurizer.Helpers
 
         private Logger()
         {
+
             if (!Directory.Exists(LogPath))
             {
                 Directory.CreateDirectory(LogPath);
