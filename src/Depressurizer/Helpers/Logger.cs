@@ -99,7 +99,7 @@ namespace Depressurizer.Helpers
             lock (SyncRoot)
             {
                 WaitHandle.WaitOne();
-
+              
                 Debug.WriteLine($"{logLevel,-7} | {logMessage}");
 
                 using (StreamWriter streamWriter = new StreamWriter(CurrentLogFile, true))

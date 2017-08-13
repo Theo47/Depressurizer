@@ -1,7 +1,7 @@
 ﻿/*
     This file is part of Depressurizer.
     Original work Copyright 2011, 2012, 2013 Steve Labbe.
-    Modified work Copyright 2017 Martijn Vegter.
+    Modified work Copyright 2017 Theodoros Dimos and Martijn Vegter.
 
     Depressurizer is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,12 +19,13 @@
 
 using System;
 using System.Xml;
+using System.Xml.Serialization;
 
 /* ADDING NEW AUTOCAT METHODS
  * 
  * Here is a list of everything you need to do to add an additional autocat method.
  * 
- * 1) Add an element to the AutoCatType enum.
+ * 1) Add an element to the AutoCatType enum at Enums.cs file.
  * 
  * 2a) Create a new class that extends the AutoCat abstract base class.
  *    Things to implement in derived classes:
@@ -34,10 +35,9 @@ using System.Xml;
  *       public abstract AutoCatResult CategorizeGame( GameInfo game ): Perform autocategorization on a game.
  *       [Optional] public override void PreProcess( GameList games, GameDB db ): Do any pre-processing you want to do before a set of autocategorization operations.
  *       [Optional] public override void DeProcess(): Clean up after a set of autocategorization operations.
- *
- *       [Recommended] public string TypeIDString: Just a constant string that serves as a type identifier for serialization purposes.
- *       public override void WriteToXml( XmlWriter writer ): Write an XML object for saving. Write to one element, with a name that matches your type (TypeIDString).
- *       [Recommended] public AutoCat LoadFromXMLElement( XmlElement ): Read the object from an XmlElement.
+ *       
+ *       Parameterless constructor (needed by Xml.Serialization.XmlSerializer()): An empty constructor (e.g "private AutoCatGenre) { }") will suffice.
+ *       [Optional] Apply attributes to control xml serialization (e.g XmlIgnore, XmlArray, XmlArrayItem, XmlElement).
  * 
  * 2b) Update the following static methods in the AutoCat class to include your new class:
  *       LoadACFromXMLElement: Must be able to handle reading an object of your selected type.
@@ -67,6 +67,7 @@ namespace Depressurizer
     /// </summary>
     public abstract class AutoCat : IComparable
     {
+        #region Properties
         protected GameList games;
         protected GameDB db;
 
@@ -78,12 +79,11 @@ namespace Depressurizer
 
         public string Filter { get; set; }
 
+        [XmlIgnore]
         public bool Selected { get; set; }
+        #endregion
 
-        public override string ToString()
-        {
-            return Name;
-        }
+        #region Constructors
 
         protected AutoCat(string name)
         {
@@ -95,6 +95,14 @@ namespace Depressurizer
         {
             Name = other.Name;
             Filter = other.Filter;
+        }
+
+        protected AutoCat() { }
+        #endregion
+
+        public override string ToString()
+        {
+            return Name;
         }
 
         public abstract AutoCat Clone();
@@ -145,42 +153,53 @@ namespace Depressurizer
             db = null;
         }
 
-        public abstract void WriteToXml(XmlWriter writer);
+        #region Serialization
+        public void WriteToXml(XmlWriter writer)
+        {
+            XmlSerializer x = new XmlSerializer(this.GetType());
+            var nameSpace = new XmlSerializerNamespaces();
+            nameSpace.Add("", "");
+            x.Serialize(writer, this, nameSpace);
+        }
+
+        public static AutoCat LoadFromXmlElement(XmlElement xElement, Type type)
+        {
+            XmlReader reader = new XmlNodeReader(xElement);
+            XmlSerializer x = new XmlSerializer(type);
+            var nameSpace = new XmlSerializerNamespaces();
+            nameSpace.Add("", "");
+            return (AutoCat)x.Deserialize(reader);
+        }
 
         public static AutoCat LoadACFromXmlElement(XmlElement xElement)
         {
             string type = xElement.Name;
-
-            switch (type)
+            Type[] types =
             {
-                case AutoCatGenre.TypeIdString:
-                    return AutoCatGenre.LoadFromXmlElement(xElement);
-                case AutoCatFlags.TypeIdString:
-                    return AutoCatFlags.LoadFromXmlElement(xElement);
-                case AutoCatTags.TypeIdString:
-                    return AutoCatTags.LoadFromXmlElement(xElement);
-                case AutoCatYear.TypeIdString:
-                    return AutoCatYear.LoadFromXmlElement(xElement);
-                case AutoCatUserScore.TypeIdString:
-                    return AutoCatUserScore.LoadFromXmlElement(xElement);
-                case AutoCatHltb.TypeIdString:
-                    return AutoCatHltb.LoadFromXmlElement(xElement);
-                case AutoCatManual.TypeIdString:
-                    return AutoCatManual.LoadFromXmlElement(xElement);
-                case AutoCatDevPub.TypeIdString:
-                    return AutoCatDevPub.LoadFromXmlElement(xElement);
-                case AutoCatGroup.TypeIdString:
-                    return AutoCatGroup.LoadFromXmlElement(xElement);
-                case AutoCatName.TypeIdString:
-                    return AutoCatName.LoadFromXmlElement(xElement);
-                case AutoCatVrSupport.TypeIdString:
-                    return AutoCatVrSupport.LoadFromXmlElement(xElement);
-                case AutoCatLanguage.TypeIdString:
-                    return AutoCatLanguage.LoadFromXmlElement(xElement);
-                default:
-                    return null;
+                typeof(AutoCatGenre),
+                typeof(AutoCatFlags),
+                typeof(AutoCatTags),
+                typeof(AutoCatYear),
+                typeof(AutoCatUserScore),
+                typeof(AutoCatHltb),
+                typeof(AutoCatManual),
+                typeof(AutoCatDevPub),
+                typeof(AutoCatGroup),
+                typeof(AutoCatName),
+                typeof(AutoCatVrSupport),
+                typeof(AutoCatLanguage),
+                typeof(AutoCatCurator)
+            };
+
+            foreach (Type t in types)
+            {
+                if (t.Name == type)
+                    return LoadFromXmlElement(xElement, t);
             }
+
+            return null;
         }
+        #endregion
 
         public static AutoCat Create(AutoCatType type, string name)
         {
@@ -210,6 +229,8 @@ namespace Depressurizer
                     return new AutoCatVrSupport(name);
                 case AutoCatType.Language:
                     return new AutoCatLanguage(name);
+                case AutoCatType.Curator:
+                    return new AutoCatCurator(name);
                 case AutoCatType.None:
                     return null;
                 default:

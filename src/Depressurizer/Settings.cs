@@ -22,7 +22,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using Depressurizer.Helpers;
 using Rallion;
 
 namespace Depressurizer
@@ -407,7 +406,7 @@ namespace Depressurizer
                 }
             }
         }
-
+        
         //Language of steam store. Used in browser and when scraping tags, genres, etc
         private StoreLanguage _storeLanguage = StoreLanguage.windows;
 
@@ -473,7 +472,7 @@ namespace Depressurizer
                         g.Flags = null;
                         g.Genres = null;
                         g.SteamReleaseDate = null;
-                        g.LastStoreScrape = 0;
+                        g.LastStoreScrape = 1; //pretend it is really old data
                         g.vrSupport = new VrSupport();
                         g.languageSupport = new LanguageSupport();
                     }
@@ -578,8 +577,6 @@ namespace Depressurizer
             }
         }
 
-        public LogLevel LogLevel { get; internal set; }
-
         private Settings()
         {
             FilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
@@ -589,7 +586,7 @@ namespace Depressurizer
         public override void Load()
         {
             base.Load();
-            //   Logger.Instance.Level = LogLevel;
+            //   Program.Logger.Level = LogLevel;
         }
     }
 }

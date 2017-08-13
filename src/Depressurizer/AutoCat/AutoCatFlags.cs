@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using Depressurizer.Helpers;
+using System.Xml.Serialization;
 using Rallion;
 
 namespace Depressurizer
@@ -35,17 +35,8 @@ namespace Depressurizer
         // AutoCat configuration
         public string Prefix { get; set; }
 
+        [XmlArray("Flags"), XmlArrayItem("Flag")]
         public List<string> IncludedFlags { get; set; }
-
-        // Serialization constants
-        public const string TypeIdString = "AutoCatFlags";
-
-        private const string
-            XmlName_Name = "Name",
-            XmlName_Filter = "Filter",
-            XmlName_Prefix = "Prefix",
-            XmlName_FlagList = "Flags",
-            XmlName_Flag = "Flag";
 
         public AutoCatFlags(string name, string filter = null, string prefix = null, List<string> flags = null,
             bool selected = false)
@@ -56,6 +47,9 @@ namespace Depressurizer
             IncludedFlags = (flags == null) ? (new List<string>()) : flags;
             Selected = selected;
         }
+
+        //XmlSerializer requires a parameterless constructor
+        private AutoCatFlags() { }
 
         protected AutoCatFlags(AutoCatFlags other)
             : base(other)
@@ -75,17 +69,17 @@ namespace Depressurizer
         {
             if (games == null)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.Log_AutoCat_GamelistNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
             if (db == null)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.Log_AutoCat_DBNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
             if (game == null)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.Log_AutoCat_GameNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GameNull);
                 return AutoCatResult.Failure;
             }
 
@@ -121,54 +115,6 @@ namespace Depressurizer
                 return baseString;
             }
             return Prefix + baseString;
-        }
-
-        public override void WriteToXml(XmlWriter writer)
-        {
-            writer.WriteStartElement(TypeIdString);
-
-            writer.WriteElementString(XmlName_Name, Name);
-            if (Filter != null)
-            {
-                writer.WriteElementString(XmlName_Filter, Filter);
-            }
-            if (Prefix != null)
-            {
-                writer.WriteElementString(XmlName_Prefix, Prefix);
-            }
-
-            writer.WriteStartElement(XmlName_FlagList);
-
-            foreach (string s in IncludedFlags)
-            {
-                writer.WriteElementString(XmlName_Flag, s);
-            }
-
-            writer.WriteEndElement(); // flag list
-            writer.WriteEndElement(); // type ID string
-        }
-
-        public static AutoCatFlags LoadFromXmlElement(XmlElement xElement)
-        {
-            string name = XmlUtil.GetStringFromNode(xElement[XmlName_Name], TypeIdString);
-            string filter = XmlUtil.GetStringFromNode(xElement[XmlName_Filter], null);
-            string prefix = XmlUtil.GetStringFromNode(xElement[XmlName_Prefix], null);
-            List<string> flags = new List<string>();
-
-            XmlElement flagListElement = xElement[XmlName_FlagList];
-            if (flagListElement != null)
-            {
-                XmlNodeList flagElements = flagListElement.SelectNodes(XmlName_Flag);
-                foreach (XmlNode n in flagElements)
-                {
-                    string flag;
-                    if (XmlUtil.TryGetStringFromNode(n, out flag))
-                    {
-                        flags.Add(flag);
-                    }
-                }
-            }
-            return new AutoCatFlags(name, filter, prefix, flags);
         }
     }
 }

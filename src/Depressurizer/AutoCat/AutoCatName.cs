@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Xml;
-using Depressurizer.Helpers;
 using Rallion;
 
 namespace Depressurizer
 {
-    class AutoCatName : AutoCat
+    public class AutoCatName : AutoCat
     {
         public string Prefix { get; set; }
         public bool SkipThe { get; set; }
@@ -20,14 +19,6 @@ namespace Depressurizer
             get { return AutoCatType.Name; }
         }
 
-        public const string TypeIdString = "AutoCatName";
-        public const string XmlName_Prefix = "Prefix";
-        public const string XmlName_Name = "Name";
-        public const string XmlName_SkipThe = "SkipThe";
-        public const string XmlName_GroupNumbers = "GroupNumbers";
-        public const string XmlName_GroupNonEnglishCharacters = "GroupNonEnglishCharacters";
-        public const string XmlName_GroupNonEnglishCharactersText = "GroupNonEnglishCharactersText";
-
         public AutoCatName(string name, string prefix = "", bool skipThe = true, bool groupNumbers = false, bool groupNonEnglishCharacters = false, string groupNonEnglishCharactersText = "") : base(name)
         {
             Name = name;
@@ -38,21 +29,24 @@ namespace Depressurizer
             GroupNonEnglishCharactersText = groupNonEnglishCharactersText;
         }
 
+        //XmlSerializer requires a parameterless constructor
+        private AutoCatName() { }
+
         public override AutoCatResult CategorizeGame(GameInfo game, Filter filter)
         {
             if (games == null)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.Log_AutoCat_GamelistNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
             if (db == null)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.Log_AutoCat_DBNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
             if (game == null)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.Log_AutoCat_GameNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GameNull);
                 return AutoCatResult.Failure;
             }
 
@@ -89,32 +83,6 @@ namespace Depressurizer
         public override AutoCat Clone()
         {
             return new AutoCatName(Name, Prefix, SkipThe, GroupNumbers, GroupNonEnglishCharacters, GroupNonEnglishCharactersText);
-        }
-
-        public override void WriteToXml(XmlWriter writer)
-        {
-            writer.WriteStartElement(TypeIdString);
-
-            writer.WriteElementString(XmlName_Name, Name);
-            writer.WriteElementString(XmlName_Prefix, Prefix);
-            writer.WriteElementString(XmlName_SkipThe, SkipThe.ToString());
-            writer.WriteElementString(XmlName_GroupNumbers, GroupNumbers.ToString());
-            writer.WriteElementString(XmlName_GroupNonEnglishCharacters, GroupNonEnglishCharacters.ToString());
-            writer.WriteElementString(XmlName_GroupNonEnglishCharactersText, GroupNonEnglishCharactersText);
-
-            writer.WriteEndElement(); // type ID string
-        }
-
-        public static AutoCatName LoadFromXmlElement(XmlElement xElement)
-        {
-            string name = XmlUtil.GetStringFromNode(xElement[XmlName_Name], null);
-            string prefix = XmlUtil.GetStringFromNode(xElement[XmlName_Prefix], null);
-            bool skipThe = XmlUtil.GetBoolFromNode(xElement[XmlName_SkipThe], true);
-            bool groupNumbers = XmlUtil.GetBoolFromNode(xElement[XmlName_GroupNumbers], true);
-            bool groupNonEnglishCharacters = XmlUtil.GetBoolFromNode(xElement[XmlName_GroupNonEnglishCharacters], false);
-            string groupNonEnglishCharactersText = XmlUtil.GetStringFromNode(xElement[XmlName_GroupNonEnglishCharactersText], null);
-
-            return new AutoCatName(name, prefix, skipThe, groupNumbers, groupNonEnglishCharacters, groupNonEnglishCharactersText);
         }
     }
 }
