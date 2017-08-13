@@ -74,11 +74,6 @@ namespace Depressurizer.Helpers
                 Directory.CreateDirectory(LogPath);
             }
 
-            if (!File.Exists(CurrentLogFile))
-            {
-                File.Create(CurrentLogFile);
-            }
-
             foreach (FileInfo file in new DirectoryInfo(LogPath).GetFiles().OrderByDescending(x => x.LastWriteTime).Skip(7))
             {
                 file.Delete();
