@@ -19,6 +19,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Net.Cache;
 using System.Xml;
 using Depressurizer.Properties;
@@ -69,7 +70,7 @@ namespace Depressurizer.Helpers
                 if (xmlNode != null)
                 {
                     string steamAvatarLink = xmlNode.InnerText;
-                    steamAvatar = Utility.GetImage(steamAvatarLink, RequestCacheLevel.BypassCache);
+                    steamAvatar = Web.ImageFromStream(steamAvatarLink);
                 }
             }
 

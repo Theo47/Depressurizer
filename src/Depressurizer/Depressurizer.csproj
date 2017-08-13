@@ -314,6 +314,7 @@
     </Compile>
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\Steam.cs" />
+    <Compile Include="Helpers\Web.cs" />
     <Compile Include="Helpers\XmlParser.cs" />
     <Compile Include="Lib\ExtListView.cs">
       <SubType>Component</SubType>

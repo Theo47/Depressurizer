@@ -213,23 +213,6 @@ namespace Depressurizer
             return val;
         }
 
-        public static Image GetImage(string url, RequestCacheLevel cache, int id = 0)
-        {
-            try
-            {
-                return Image.FromStream(GetRemoteImageStream(url, id));
-            }
-            catch
-            {
-                if (!ignoreWarning.Contains(id))
-                {
-                    Program.Logger.Write(Rallion.LoggerLevel.Warning,
-                        string.Format(GlobalStrings.Utility_GetImage, url));
-                }
-            }
-            return null;
-        }
-
         public static Stream GetRemoteImageStream(string url, int id = 0)
         {
             try
