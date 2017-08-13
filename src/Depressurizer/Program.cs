@@ -35,14 +35,6 @@ namespace Depressurizer
         static void Main(string[] args)
         {
             FatalError.InitializeHandler();
-
-            Logger.Level = LoggerLevel.None;
-            Logger.DateFormat = "HH:mm:ss'.'ffffff";
-
-            Logger.MaxFileSize = 2000000;
-            Logger.MaxBackup = 1;
-            Logger.FileNameTemplate = "Depressurizer.log";
-
             Settings.Instance.Load();
 
             Logger.Write(LoggerLevel.Info, GlobalStrings.Program_ProgramInitialized, Logger.Level);

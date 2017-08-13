@@ -17,7 +17,10 @@
 */
 
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using Newtonsoft.Json;
 
 namespace Depressurizer.Helpers
@@ -35,26 +38,11 @@ namespace Depressurizer.Helpers
 
     public class Logger
     {
-        public string LogPath { get; set; }
-        public string LogFile { get; set; }
-        public string ActiveLogFile => Path.Combine(LogPath, LogFile);
+        public string LogPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Depressurizer", "Logs");
+        public string LogFile => $"Depressurizer-({DateTime.Now:dd-MM-yyyy}).log";
+        public string CurrentLogFile => Path.Combine(LogPath, LogFile);
 
-        // TODO: Make use of these properties
-        public int MaxBackup { get; set; }
-
-        public int MaxFileSize { get; set; }
-        public int MaxFileRecords { get; set; }
-        public int CurrentFileRecords { get; set; }
-
-        private int FileIndex { get; }
-
-        private Logger()
-        {
-            FileIndex = 1;
-
-            LogPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Depressurizer");
-            LogFile = $"Depressurizer-({DateTime.Now:dd-MM-yyyy})-{FileIndex}.log";
-        }
+        public int CurrentFileRecords => new DirectoryInfo(LogPath).GetFiles().Length;
 
         public static Logger Instance
         {
@@ -75,8 +63,22 @@ namespace Depressurizer.Helpers
             }
         }
 
+        private static readonly EventWaitHandle WaitHandle = new EventWaitHandle(true, EventResetMode.AutoReset, "Depressurizer");
         private static volatile Logger _instance;
         private static readonly object SyncRoot = new object();
+
+        private Logger()
+        {
+            if (!Directory.Exists(LogPath))
+            {
+                Directory.CreateDirectory(LogPath);
+            }
+
+            foreach (FileInfo file in new DirectoryInfo(LogPath).GetFiles().OrderByDescending(x => x.LastWriteTime).Skip(7))
+            {
+                file.Delete();
+            }
+        }
 
         /// <summary>
         /// </summary>
@@ -85,7 +87,7 @@ namespace Depressurizer.Helpers
         /// <param name="args"></param>
         public void Write(LogLevel logLevel, string logMessage, params object[] args)
         {
-            Write(logLevel, string.Format(logMessage, args));
+            Instance.Write(logLevel, string.Format(logMessage, args));
         }
 
         /// <summary>
@@ -94,17 +96,19 @@ namespace Depressurizer.Helpers
         /// <param name="logMessage"></param>
         public void Write(LogLevel logLevel, string logMessage)
         {
-            if (!Directory.Exists(LogPath))
-            {
-                Directory.CreateDirectory(LogPath);
-            }
-
             lock (SyncRoot)
             {
-                using (StreamWriter streamWriter = new StreamWriter(ActiveLogFile, true))
+                WaitHandle.WaitOne();
+              
+                Debug.WriteLine($"{logLevel,-7} | {logMessage}");
+
+                using (StreamWriter streamWriter = new StreamWriter(CurrentLogFile, true))
                 {
                     streamWriter.WriteLine($"{DateTime.Now} {logLevel,-7} | {logMessage}");
+                    streamWriter.Close();
                 }
+
+                WaitHandle.Set();
             }
         }
 
@@ -114,7 +118,7 @@ namespace Depressurizer.Helpers
         /// <param name="e"></param>
         public void WriteException(string logMessage, Exception e)
         {
-            Write(LogLevel.Error, $"{logMessage} ({e})");
+            Instance.Write(LogLevel.Error, $"{logMessage} ({e})");
         }
 
         /// <summary>
@@ -124,7 +128,7 @@ namespace Depressurizer.Helpers
         /// <param name="logPrefix"></param>
         public void WriteObject(LogLevel logLevel, object logObject, string logPrefix = "")
         {
-            Write(logLevel, $"{logPrefix}{0}", JsonConvert.SerializeObject(logObject));
+            Instance.Write(logLevel, $"{logPrefix}{0}", JsonConvert.SerializeObject(logObject));
         }
     }
 }
