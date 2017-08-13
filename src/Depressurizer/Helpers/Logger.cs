@@ -85,7 +85,7 @@ namespace Depressurizer.Helpers
         /// <param name="args"></param>
         public void Write(LogLevel logLevel, string logMessage, params object[] args)
         {
-            Write(logLevel, string.Format(logMessage, args));
+            Instance.Write(logLevel, string.Format(logMessage, args));
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace Depressurizer.Helpers
         /// <param name="e"></param>
         public void WriteException(string logMessage, Exception e)
         {
-            Write(LogLevel.Error, $"{logMessage} ({e})");
+            Instance.Write(LogLevel.Error, $"{logMessage} ({e})");
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace Depressurizer.Helpers
         /// <param name="logPrefix"></param>
         public void WriteObject(LogLevel logLevel, object logObject, string logPrefix = "")
         {
-            Write(logLevel, $"{logPrefix}{0}", JsonConvert.SerializeObject(logObject));
+            Instance.Write(logLevel, $"{logPrefix}{0}", JsonConvert.SerializeObject(logObject));
         }
     }
 }
