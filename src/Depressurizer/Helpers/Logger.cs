@@ -73,7 +73,18 @@ namespace Depressurizer.Helpers
         private static volatile Logger _instance;
         private static readonly object SyncRoot = new object();
 
-        private Logger() { }
+        private Logger()
+        {
+            if (!Directory.Exists(LogPath))
+            {
+                Directory.CreateDirectory(LogPath);
+            }
+
+            if (!File.Exists(CurrentLogFile))
+            {
+                File.Create(CurrentLogFile);
+            }
+        }
 
         /// <summary>
         /// </summary>
@@ -96,11 +107,6 @@ namespace Depressurizer.Helpers
                 WaitHandle.WaitOne();
 
                 Debug.WriteLine($"{logLevel,-7} | {logMessage}");
-
-                if (!Directory.Exists(LogPath))
-                {
-                    Directory.CreateDirectory(LogPath);
-                }
 
                 using (StreamWriter streamWriter = new StreamWriter(CurrentLogFile, true))
                 {
