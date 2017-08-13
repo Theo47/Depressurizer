@@ -36,9 +36,6 @@ namespace Depressurizer
         {
             FatalError.InitializeHandler();
 
-            Logger.Instance.MaxFileSize = 2000000;
-            Logger.Instance.MaxBackup = 1;
-
             Settings.Instance.Load();
 
             Logger.Instance.Write(LogLevel.Info, GlobalStrings.Program_ProgramInitialized, LogLevel.Info);

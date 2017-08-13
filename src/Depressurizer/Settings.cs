@@ -408,38 +408,6 @@ namespace Depressurizer
             }
         }
 
-        private int _logSize = 2000000;
-
-        public int LogSize
-        {
-            get { return _logSize; }
-            set
-            {
-                Logger.Instance.MaxFileSize = value;
-                if (_logSize != value)
-                {
-                    _logSize = value;
-                    outOfDate = true;
-                }
-            }
-        }
-
-        private int _logBackups = 1;
-
-        public int LogBackups
-        {
-            get { return _logBackups; }
-            set
-            {
-                Logger.Instance.MaxBackup = value;
-                if (_logBackups != value)
-                {
-                    _logBackups = value;
-                    outOfDate = true;
-                }
-            }
-        }
-
         //Language of steam store. Used in browser and when scraping tags, genres, etc
         private StoreLanguage _storeLanguage = StoreLanguage.windows;
 
