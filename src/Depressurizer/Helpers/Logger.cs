@@ -42,12 +42,7 @@ namespace Depressurizer.Helpers
         public string LogFile => $"Depressurizer-({DateTime.Now:dd-MM-yyyy})-{FileIndex}.log";
         public string CurrentLogFile => Path.Combine(LogPath, LogFile);
 
-        // TODO: Make use of these properties
-        public int MaxBackup { get; set; }
-
-        public int MaxFileSize { get; set; }
-        public int MaxFileRecords { get; set; }
-        public int CurrentFileRecords { get; set; }
+        public int CurrentFileRecords => new DirectoryInfo(LogPath).GetFiles().Length;
 
         private int FileIndex { get; } = 1;
 
