@@ -17,6 +17,7 @@
 */
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -94,15 +95,20 @@ namespace Depressurizer.Helpers
         /// <param name="logMessage"></param>
         public void Write(LogLevel logLevel, string logMessage)
         {
-            if (!Directory.Exists(LogPath))
+            lock (SyncRoot)
             {
-                Directory.CreateDirectory(LogPath);
-            }
+                Debug.WriteLine($"{logLevel,-7} | {logMessage}");
 
-            using (StreamWriter streamWriter = new StreamWriter(ActiveLogFile, true))
-            {
-                streamWriter.WriteLine($"{DateTime.Now} {logLevel, -7} | {logMessage}");
-                streamWriter.Close();
+                if (!Directory.Exists(LogPath))
+                {
+                    Directory.CreateDirectory(LogPath);
+                }
+
+                using (StreamWriter streamWriter = new StreamWriter(ActiveLogFile, true))
+                {
+                    streamWriter.WriteLine($"{DateTime.Now} {logLevel,-7} | {logMessage}");
+                    streamWriter.Close();
+                }
             }
         }
 
