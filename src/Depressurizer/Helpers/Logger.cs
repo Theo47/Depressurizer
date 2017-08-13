@@ -19,6 +19,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using Newtonsoft.Json;
 
 namespace Depressurizer.Helpers
@@ -68,11 +69,14 @@ namespace Depressurizer.Helpers
             }
         }
 
+        private static EventWaitHandle _waitHandle;
         private static volatile Logger _instance;
         private static readonly object SyncRoot = new object();
 
         private Logger()
         {
+            _waitHandle = new EventWaitHandle(true, EventResetMode.AutoReset, "Depressurizer");
+
             FileIndex = 1;
 
             LogPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Depressurizer");
@@ -97,6 +101,8 @@ namespace Depressurizer.Helpers
         {
             lock (SyncRoot)
             {
+                _waitHandle.WaitOne();
+
                 Debug.WriteLine($"{logLevel,-7} | {logMessage}");
 
                 if (!Directory.Exists(LogPath))
@@ -109,6 +115,8 @@ namespace Depressurizer.Helpers
                     streamWriter.WriteLine($"{DateTime.Now} {logLevel,-7} | {logMessage}");
                     streamWriter.Close();
                 }
+
+                _waitHandle.Set();
             }
         }
 
