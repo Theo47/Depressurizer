@@ -18,6 +18,8 @@ namespace Depressurizer.Helpers
         /// <returns></returns>
         public static Image ImageFromStream(string url)
         {
+            Logger.Instance.Write(LogLevel.Info, $"Loading: {url}");
+
             Image image = null;
 
             using (WebClient webClient = new WebClient())

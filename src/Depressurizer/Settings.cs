@@ -586,7 +586,7 @@ namespace Depressurizer
         public override void Load()
         {
             base.Load();
-            //   Program.Logger.Level = LogLevel;
+            //   Logger.Level = LogLevel;
         }
     }
 }

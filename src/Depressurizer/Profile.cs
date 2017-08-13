@@ -135,7 +135,7 @@ namespace Depressurizer
 
         public static Profile Load(string path)
         {
-            Program.Logger.Write(LoggerLevel.Info, GlobalStrings.Profile_LoadingProfile, path);
+            Logger.Instance.Write(LogLevel.Info, GlobalStrings.Profile_LoadingProfile, path);
             Profile profile = new Profile();
 
             profile.FilePath = path;
@@ -148,7 +148,7 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                Program.Logger.Write(LoggerLevel.Warning, GlobalStrings.Profile_FailedToLoadProfile, e.Message);
+                Logger.Instance.Write(LogLevel.Warn, GlobalStrings.Profile_FailedToLoadProfile, e.Message);
                 throw new ApplicationException(GlobalStrings.Profile_ErrorLoadingProfile + e.Message, e);
             }
 
@@ -269,7 +269,7 @@ namespace Depressurizer
                 }
                 //profile.AutoCats.Sort();
             }
-            Program.Logger.Write(LoggerLevel.Info, GlobalStrings.MainForm_ProfileLoaded);
+            Logger.Instance.Write(LogLevel.Info, GlobalStrings.MainForm_ProfileLoaded);
             return profile;
         }
 
@@ -381,7 +381,7 @@ namespace Depressurizer
 
         public bool Save(string path)
         {
-            Program.Logger.Write(LoggerLevel.Info, GlobalStrings.Profile_SavingProfile, path);
+            Logger.Instance.Write(LogLevel.Info, GlobalStrings.Profile_SavingProfile, path);
             XmlWriterSettings writeSettings = new XmlWriterSettings();
             writeSettings.CloseOutput = true;
             writeSettings.Indent = true;
@@ -392,7 +392,7 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_Profile_ConfigBackupFailed, e.Message);
+                Logger.Instance.Write(LogLevel.Error, GlobalStrings.Log_Profile_ConfigBackupFailed, e.Message);
             }
 
             XmlWriter writer;
@@ -402,7 +402,7 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                Program.Logger.Write(LoggerLevel.Warning, GlobalStrings.Profile_FailedToOpenProfileFile, e.Message);
+                Logger.Instance.Write(LogLevel.Warn, GlobalStrings.Profile_FailedToOpenProfileFile, e.Message);
                 throw new ApplicationException(GlobalStrings.Profile_ErrorSavingProfileFile + e.Message, e);
             }
             writer.WriteStartElement(XmlName_Profile);
@@ -501,7 +501,7 @@ namespace Depressurizer
 
             writer.Close();
             FilePath = path;
-            Program.Logger.Write(LoggerLevel.Info, GlobalStrings.Profile_ProfileSaveComplete);
+            Logger.Instance.Write(LogLevel.Info, GlobalStrings.Profile_ProfileSaveComplete);
             return true;
         }
 
