@@ -20,6 +20,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
 
@@ -99,13 +100,15 @@ namespace Depressurizer.Helpers
             lock (SyncRoot)
             {
                 WaitHandle.WaitOne();
-              
-                Debug.WriteLine($"{logLevel,-7} | {logMessage}");
 
-                using (StreamWriter streamWriter = new StreamWriter(CurrentLogFile, true))
+                using (FileStream fileStream = new FileStream(CurrentLogFile, FileMode.Append, FileAccess.Write, FileShare.Read))
                 {
-                    streamWriter.WriteLine($"{DateTime.Now} {logLevel,-7} | {logMessage}");
-                    streamWriter.Close();
+                    Debug.WriteLine($"{logLevel,-7} | {logMessage}");
+
+                    byte[] output = new UTF8Encoding().GetBytes($"{DateTime.Now} {logLevel,-7} | {logMessage} {Environment.NewLine}");
+                    fileStream.Write(output, 0, output.Length);
+
+                    fileStream.Flush();
                 }
 
                 WaitHandle.Set();
