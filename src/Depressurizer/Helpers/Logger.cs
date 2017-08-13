@@ -19,6 +19,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using Newtonsoft.Json;
 
@@ -83,6 +84,11 @@ namespace Depressurizer.Helpers
             if (!File.Exists(CurrentLogFile))
             {
                 File.Create(CurrentLogFile);
+            }
+
+            foreach (FileInfo file in new DirectoryInfo(LogPath).GetFiles().OrderByDescending(x => x.LastWriteTime).Skip(7))
+            {
+                file.Delete();
             }
         }
 
