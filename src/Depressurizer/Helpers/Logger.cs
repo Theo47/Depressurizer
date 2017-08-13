@@ -69,7 +69,6 @@ namespace Depressurizer.Helpers
 
         private Logger()
         {
-
             if (!Directory.Exists(LogPath))
             {
                 Directory.CreateDirectory(LogPath);
