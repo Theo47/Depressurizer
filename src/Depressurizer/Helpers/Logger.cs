@@ -37,9 +37,9 @@ namespace Depressurizer.Helpers
 
     public class Logger
     {
-        public string LogPath { get; }
-        public string LogFile { get; set; }
-        public string ActiveLogFile => Path.Combine(LogPath, LogFile);
+        public string LogPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Depressurizer", "Logs");
+        public string LogFile => $"Depressurizer-({DateTime.Now:dd-MM-yyyy})-{FileIndex}.log";
+        public string CurrentLogFile => Path.Combine(LogPath, LogFile);
 
         // TODO: Make use of these properties
         public int MaxBackup { get; set; }
@@ -48,7 +48,7 @@ namespace Depressurizer.Helpers
         public int MaxFileRecords { get; set; }
         public int CurrentFileRecords { get; set; }
 
-        private int FileIndex { get; }
+        private int FileIndex { get; } = 1;
 
         public static Logger Instance
         {
@@ -69,19 +69,11 @@ namespace Depressurizer.Helpers
             }
         }
 
-        private static EventWaitHandle _waitHandle;
+        private static readonly EventWaitHandle WaitHandle = new EventWaitHandle(true, EventResetMode.AutoReset, "Depressurizer");
         private static volatile Logger _instance;
         private static readonly object SyncRoot = new object();
 
-        private Logger()
-        {
-            _waitHandle = new EventWaitHandle(true, EventResetMode.AutoReset, "Depressurizer");
-
-            FileIndex = 1;
-
-            LogPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Depressurizer", "Logs");
-            LogFile = $"Depressurizer-({DateTime.Now:dd-MM-yyyy})-{FileIndex}.log";
-        }
+        private Logger() { }
 
         /// <summary>
         /// </summary>
@@ -101,7 +93,7 @@ namespace Depressurizer.Helpers
         {
             lock (SyncRoot)
             {
-                _waitHandle.WaitOne();
+                WaitHandle.WaitOne();
 
                 Debug.WriteLine($"{logLevel,-7} | {logMessage}");
 
@@ -110,13 +102,13 @@ namespace Depressurizer.Helpers
                     Directory.CreateDirectory(LogPath);
                 }
 
-                using (StreamWriter streamWriter = new StreamWriter(ActiveLogFile, true))
+                using (StreamWriter streamWriter = new StreamWriter(CurrentLogFile, true))
                 {
                     streamWriter.WriteLine($"{DateTime.Now} {logLevel,-7} | {logMessage}");
                     streamWriter.Close();
                 }
 
-                _waitHandle.Set();
+                WaitHandle.Set();
             }
         }
 
