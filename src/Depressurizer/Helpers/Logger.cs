@@ -49,14 +49,6 @@ namespace Depressurizer.Helpers
 
         private int FileIndex { get; }
 
-        private Logger()
-        {
-            FileIndex = 1;
-
-            LogPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Depressurizer");
-            LogFile = $"Depressurizer-({DateTime.Now:dd-MM-yyyy})-{FileIndex}.log";
-        }
-
         public static Logger Instance
         {
             get
@@ -78,6 +70,14 @@ namespace Depressurizer.Helpers
 
         private static volatile Logger _instance;
         private static readonly object SyncRoot = new object();
+
+        private Logger()
+        {
+            FileIndex = 1;
+
+            LogPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Depressurizer");
+            LogFile = $"Depressurizer-({DateTime.Now:dd-MM-yyyy})-{FileIndex}.log";
+        }
 
         /// <summary>
         /// </summary>
