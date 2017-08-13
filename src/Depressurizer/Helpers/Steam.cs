@@ -21,12 +21,13 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net.Cache;
+using System.Windows.Forms;
 using System.Xml;
 using Depressurizer.Properties;
 
 namespace Depressurizer.Helpers
 {
-    public class Steam
+    public sealed class Steam
     {
         /// <summary>
         /// </summary>
@@ -86,6 +87,36 @@ namespace Depressurizer.Helpers
         public static XmlDocument FetchAppList()
         {
             return XmlParser.Load(@"http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=xml");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <returns></returns>
+        public static bool FetchBanner(int appId)
+        {
+            bool success;
+
+            string bannerUrl = string.Format(Resources.UrlGameBanner, appId);
+            string bannerPath = string.Format(Resources.GameBannerPath, Path.GetDirectoryName(Application.ExecutablePath), appId);
+
+            try
+            {
+                if (!Directory.Exists(Path.GetDirectoryName(bannerPath)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(bannerPath));
+                }
+
+                success = Web.SaveImageFromStream(bannerUrl, bannerPath, appId);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.WriteException(e);
+                success = false;
+            }
+
+            return success;
         }
     }
 }

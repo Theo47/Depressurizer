@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using Depressurizer.Helpers;
 
 namespace Depressurizer
 {
@@ -28,11 +29,10 @@ namespace Depressurizer
                     continue; //external game
                 }
 
-                string bannerFile = string.Format(Properties.Resources.GameBannerPath,
-                    Path.GetDirectoryName(Application.ExecutablePath), g.Id);
+                string bannerFile = string.Format(Properties.Resources.GameBannerPath, Path.GetDirectoryName(Application.ExecutablePath), g.Id);
                 if (!File.Exists(bannerFile))
                 {
-                    Utility.GrabBanner(g.Id);
+                    Steam.FetchBanner(g.Id);
                 }
             }
         }

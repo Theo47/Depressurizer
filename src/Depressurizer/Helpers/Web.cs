@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -38,17 +39,95 @@ namespace Depressurizer.Helpers
         {
             Logger.Instance.Write(LogLevel.Info, $"Loading image: {url}");
 
-            Image image = null;
+            return Image.FromStream(GetRemoteImageStream(url));
+        }
 
-            using (WebClient webClient = new WebClient())
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="appId"></param>
+        /// <returns></returns>
+        public static Stream GetRemoteImageStream(string url, int appId = 0)
+        {
+            Stream imageStream = null;
+
+            try
             {
-                using (MemoryStream imageStream = new MemoryStream(webClient.DownloadData(url)))
+                using (WebClient webClient = new WebClient())
                 {
-                    image = Image.FromStream(imageStream);
+                    imageStream = new MemoryStream(webClient.DownloadData(url));
                 }
             }
+            catch (WebException webException)
+            {
+                if ((webException.Status == WebExceptionStatus.ProtocolError) && (webException.Response != null))
+                {
+                    HttpWebResponse resp = (HttpWebResponse)webException.Response;
+                    if (resp.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        if (appId != 0)
+                        {
+                            Logger.Instance.Write(LogLevel.Error, $"No Game Banner for: {appId}");
+                        }
+                        Logger.Instance.Write(LogLevel.Error, $"Page not found: {url}");
+                        imageStream = null;
+                    }
+                }
+                else
+                {
+                    Logger.Instance.WriteException(url, webException);
+                    imageStream = null;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.WriteException(url, e);
+                imageStream = null;
+            }
 
-            return image;
+            return imageStream;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="localPath"></param>
+        /// <param name="appId"></param>
+        /// <returns></returns>
+        public static bool SaveImageFromStream(string url, string localPath, int appId = 0)
+        {
+            bool success = false;
+
+            try
+            {
+                using (Stream imageStream = GetRemoteImageStream(url, appId))
+                {
+                    if (imageStream != null)
+                    {
+                        using (Stream outputStream = File.OpenWrite(localPath))
+                        {
+                            byte[] buffer = new byte[4096];
+                            int bytesRead;
+
+                            do
+                            {
+                                bytesRead = imageStream.Read(buffer, 0, buffer.Length);
+                                outputStream.Write(buffer, 0, bytesRead);
+                            } while (bytesRead != 0);
+                        }
+                    }
+                    success = true;
+                }
+            }
+            catch (Exception exception)
+            {
+                Logger.Instance.WriteException(url, exception);
+                success = false;
+            }
+
+            return success;
         }
     }
 }

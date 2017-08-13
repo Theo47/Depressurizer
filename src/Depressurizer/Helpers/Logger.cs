@@ -121,6 +121,11 @@ namespace Depressurizer.Helpers
             Instance.Write(LogLevel.Error, $"{logMessage} ({e})");
         }
 
+        public void WriteException(Exception e)
+        {
+            Instance.Write(LogLevel.Error, $"Unhandled Exception Thrown ({e})");
+        }
+
         /// <summary>
         /// </summary>
         /// <param name="logLevel"></param>
