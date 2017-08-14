@@ -20,15 +20,19 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Xml;
-using Rallion;
 
 namespace Depressurizer.Helpers
 {
     public class XmlParser
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="xmlPath"></param>
+        /// <returns></returns>
         public static XmlDocument Load(string xmlPath)
         {
-            Logger.Instance.Write(LogLevel.Info, $"Loading: {xmlPath}");
+            Logger.Instance.Write(LogLevel.Trace, $"XmlParser.Load({xmlPath}) Called");
 
             XmlDocument xmlDocument = new XmlDocument();
             bool parsingSucceeded = false;
@@ -38,13 +42,13 @@ namespace Depressurizer.Helpers
                 xmlDocument.Load(xmlPath);
                 parsingSucceeded = true;
             }
-            catch (WebException ex)
+            catch (WebException webException)
             {
-                Debug.WriteLine(ex);
+                Logger.Instance.WriteException(webException);
 
-                if ((ex.Status == WebExceptionStatus.ProtocolError) && (ex.Response != null))
+                if ((webException.Status == WebExceptionStatus.ProtocolError) && (webException.Response != null))
                 {
-                    HttpWebResponse resp = (HttpWebResponse)ex.Response;
+                    HttpWebResponse resp = (HttpWebResponse)webException.Response;
                     if (resp.StatusCode == HttpStatusCode.NotFound)
                     {
                         Logger.Instance.Write(LogLevel.Error, $"Invalid XmlPath supplied: {xmlPath}");
@@ -54,25 +58,30 @@ namespace Depressurizer.Helpers
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
-
                 if (!parsingSucceeded)
                 {
                     Logger.Instance.Write(LogLevel.Error, $"Error while parsing: {xmlPath}");
-                    xmlDocument = null;
                 }
                 else
                 {
-                    Logger.Instance.Write(LogLevel.Error, $"Unknown Exception: {ex}");
-                    throw new Exception(ex.Message);
+                    Logger.Instance.WriteException(ex);
                 }
+                xmlDocument = null;
             }
 
             return xmlDocument;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="xmlPath"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static XmlDocument Load(string xmlPath, params object[] args)
         {
+            Logger.Instance.Write(LogLevel.Trace, $"XmlParser.Load({xmlPath}, {args}) Called");
+
             return Load(string.Format(xmlPath, args));
         }
     }
