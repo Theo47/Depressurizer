@@ -111,9 +111,14 @@ namespace Depressurizer.Helpers
             {
                 WaitHandle.WaitOne();
 
+                StackTrace stackTrace = new StackTrace();
+
+                string senderMethod = stackTrace.GetFrame(2) != null ? (stackTrace.GetFrame(2).GetMethod().Name + ", " + stackTrace.GetFrame(1).GetMethod().Name) : stackTrace.GetFrame(1).GetMethod().Name;
+                
+
                 using (FileStream fileStream = new FileStream(CurrentLogFile, FileMode.Append, FileAccess.Write, FileShare.Read))
                 {
-                    Debug.WriteLine($"{logLevel,-7} | {logMessage}");
+                    Debug.WriteLine($"{DateTime.Now}  {logLevel,-7} | ({senderMethod}) {logMessage}");
 
                     byte[] output = new UTF8Encoding().GetBytes($"{DateTime.Now} {logLevel,-7} | {logMessage} {Environment.NewLine}");
                     fileStream.Write(output, 0, output.Length);

@@ -140,6 +140,8 @@ namespace Depressurizer
 
         public FormMain()
         {
+            Logger.Instance.Write(LogLevel.Info, "Initialized MainForm");
+
             InitializeComponent();
 
             menuStrip.Renderer = new MyRenderer();
@@ -753,9 +755,12 @@ namespace Depressurizer
         /// </summary>
         private void LoadGameDB()
         {
+            Logger.Instance.Write(LogLevel.Trace, "LoadGameDB Called");
+
             try
             {
                 Program.GameDatabase = new GameDB();
+
                 if (File.Exists("GameDB.xml.gz"))
                 {
                     Program.GameDatabase.Load("GameDB.xml.gz");
@@ -766,15 +771,17 @@ namespace Depressurizer
                 }
                 else
                 {
-                    MessageBox.Show(GlobalStrings.MainForm_ErrorLoadingGameDB +
-                                    GlobalStrings.MainForm_GameDBFileNotExist);
-                    Logger.Instance.Write(LogLevel.Warn, GlobalStrings.MainForm_GameDBFileNotExist);
+                    Logger.Instance.Write(LogLevel.Info, "GameDB not found");
+
+                    MessageBox.Show(GlobalStrings.MainForm_ErrorLoadingGameDB + GlobalStrings.MainForm_GameDBFileNotExist);
                 }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                MessageBox.Show(GlobalStrings.MainForm_ErrorLoadingGameDB + ex.Message);
-                Logger.Instance.WriteException(GlobalStrings.MainForm_Log_ExceptionOnDBLoad, ex);
+                Logger.Instance.WriteException(exception);
+
+                MessageBox.Show(GlobalStrings.MainForm_ErrorLoadingGameDB + exception.Message);
+                Logger.Instance.WriteException(GlobalStrings.MainForm_Log_ExceptionOnDBLoad, exception);
                 Program.GameDatabase = new GameDB();
             }
         }

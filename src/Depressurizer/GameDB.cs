@@ -751,6 +751,11 @@ namespace Depressurizer
 
     public class GameDB
     {
+        public GameDB()
+        {
+            Logger.Instance.Write(LogLevel.Info, "New GameDB Object Created");
+        }
+
         // Main Data
         public Dictionary<int, GameDBEntry> Games = new Dictionary<int, GameDBEntry>();
 
@@ -1847,11 +1852,15 @@ namespace Depressurizer
 
         public void Load(string path)
         {
+            Logger.Instance.Write(LogLevel.Trace, $"Load({path}) called");
+
             Load(path, path.EndsWith(".gz"));
         }
 
         public void Load(string path, bool compress)
         {
+            Logger.Instance.Write(LogLevel.Trace, $"Load({path}, {compress}) called");
+
             Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameDB_LoadingGameDBFrom, path);
             XmlDocument doc = new XmlDocument();
 
