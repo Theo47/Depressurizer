@@ -788,7 +788,7 @@ namespace Depressurizer
             }
         }
 
-        [Obsolete("use", true)]
+        /*
         /// <summary>
         /// Saves the current database to disk. Displays a message box on failure.
         /// </summary>
@@ -806,6 +806,7 @@ namespace Depressurizer
                     GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        */
 
         /// <summary>
         /// Updates the database using AppInfo cache. Displays an error message on failure. Saves the DB afterwards if AutosaveDB is set.
