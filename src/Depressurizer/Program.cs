@@ -35,7 +35,12 @@ namespace Depressurizer
         [STAThread]
         private static void Main(string[] args)
         {
-            Logger.Instance.Write(LogLevel.Info, "Initialized  Depressurizer");
+            Logger.Instance.Write(LogLevel.Info, "Initialized Depressurizer");
+
+            // Handle Program Shutdown
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+
+            /* */
 
             FatalError.InitializeHandler();
             Settings.Instance.Load();
@@ -61,6 +66,16 @@ namespace Depressurizer
             Settings.Instance.Save();
 
             Logger.Instance.Write(LogLevel.Info, GlobalStrings.Program_ProgramClosing);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void OnProcessExit(object sender, EventArgs e)
+        {
+            Logger.Instance.Write(LogLevel.Info, "Shutdown Depressurizer");
         }
 
         private static AutomaticModeOptions ParseAutoOptions(IEnumerable<string> args)
