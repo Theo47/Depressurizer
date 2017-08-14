@@ -17,14 +17,9 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Depressurizer.Helpers
 {
@@ -37,7 +32,7 @@ namespace Depressurizer.Helpers
         /// <returns></returns>
         public static Image ImageFromStream(string url)
         {
-            Logger.Instance.Write(LogLevel.Info, $"Loading image: {url}");
+            Logger.Instance.Write(LogLevel.Trace, $"Web.ImageFromStream({url}) Called");
 
             return Image.FromStream(GetRemoteImageStream(url));
         }
@@ -50,8 +45,9 @@ namespace Depressurizer.Helpers
         /// <returns></returns>
         public static Stream GetRemoteImageStream(string url, int appId = 0)
         {
-            Stream imageStream = null;
+            Logger.Instance.Write(LogLevel.Trace, $"Web.GetRemoteImageStream({url}, {appId}) Called");
 
+            Stream imageStream = null;
             try
             {
                 using (WebClient webClient = new WebClient())
@@ -82,7 +78,7 @@ namespace Depressurizer.Helpers
             }
             catch (Exception e)
             {
-                Logger.Instance.WriteException(url, e);
+                Logger.Instance.WriteException(e);
                 imageStream = null;
             }
 
@@ -98,6 +94,7 @@ namespace Depressurizer.Helpers
         /// <returns></returns>
         public static bool SaveImageFromStream(string url, string localPath, int appId = 0)
         {
+            Logger.Instance.Write(LogLevel.Trace, $"Web.SaveImageFromStream({url}, {localPath}, {appId}) Called");
             bool success = false;
 
             try
@@ -123,7 +120,7 @@ namespace Depressurizer.Helpers
             }
             catch (Exception exception)
             {
-                Logger.Instance.WriteException(url, exception);
+                Logger.Instance.WriteException(exception);
                 success = false;
             }
 
