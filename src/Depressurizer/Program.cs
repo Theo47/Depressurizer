@@ -27,7 +27,16 @@ namespace Depressurizer
 {
     internal static class Program
     {
-        public static GameDB GameDatabase;
+        private static GameDB _gameDatabase;
+        public static GameDB GameDatabase
+        {
+            get => _gameDatabase;
+            set
+            {
+                Logger.Instance.Write(LogLevel.Info, "New value for Program.GameDatabase");
+                _gameDatabase = value;
+            }
+        }
 
         /// <summary>
         /// The main entry point for the application.

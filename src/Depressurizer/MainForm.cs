@@ -685,7 +685,7 @@ namespace Depressurizer
 
             InitializeObjectListView();
 
-            LoadGameDB();
+            LoadGameDatabase();
 
             // Save original width and height
             originalHeight = Height;
@@ -751,11 +751,11 @@ namespace Depressurizer
         #region DB Operations
 
         /// <summary>
-        /// Loads the database from disk. If the load fails, displays a message box and creates an empty DB.
+        /// 
         /// </summary>
-        private void LoadGameDB()
+        private static void LoadGameDatabase()
         {
-            Logger.Instance.Write(LogLevel.Trace, "LoadGameDB Called");
+            Logger.Instance.Write(LogLevel.Trace, "MainFrom.LoadGameDatabase Called");
 
             try
             {
@@ -763,16 +763,19 @@ namespace Depressurizer
 
                 if (File.Exists("GameDB.xml.gz"))
                 {
+                    Logger.Instance.Write(LogLevel.Info, "Found GameDB.xml.gz");
+
                     Program.GameDatabase.Load("GameDB.xml.gz");
                 }
                 else if (File.Exists("GameDB.xml"))
                 {
+                    Logger.Instance.Write(LogLevel.Info, "Found GameDB.xml");
+
                     Program.GameDatabase.Load("GameDB.xml");
                 }
                 else
                 {
-                    Logger.Instance.Write(LogLevel.Info, "GameDB not found");
-
+                    Logger.Instance.Write(LogLevel.Warn, "Couldn't find GameDB.xml or GameDB.xml.gz");
                     MessageBox.Show(GlobalStrings.MainForm_ErrorLoadingGameDB + GlobalStrings.MainForm_GameDBFileNotExist);
                 }
             }
@@ -781,11 +784,11 @@ namespace Depressurizer
                 Logger.Instance.WriteException(exception);
 
                 MessageBox.Show(GlobalStrings.MainForm_ErrorLoadingGameDB + exception.Message);
-                Logger.Instance.WriteException(GlobalStrings.MainForm_Log_ExceptionOnDBLoad, exception);
                 Program.GameDatabase = new GameDB();
             }
         }
 
+        [Obsolete("use", true)]
         /// <summary>
         /// Saves the current database to disk. Displays a message box on failure.
         /// </summary>
@@ -816,7 +819,7 @@ namespace Depressurizer
                 AddStatus(string.Format(GlobalStrings.MainForm_Status_AppInfoAutoupdate, num));
                 if ((num > 0) && Settings.Instance.AutosaveDB)
                 {
-                    SaveGameDB();
+                    Program.GameDatabase.Save();
                 }
             }
             catch (Exception e)
@@ -855,7 +858,7 @@ namespace Depressurizer
                     AddStatus(string.Format(GlobalStrings.MainForm_Status_HltbAutoupdate, dlg.Updated));
                     if ((dlg.Updated > 0) && Settings.Instance.AutosaveDB)
                     {
-                        SaveGameDB();
+                        Program.GameDatabase.Save();
                     }
                 }
             }
@@ -1888,7 +1891,7 @@ namespace Depressurizer
                             scrapeDlg.JobsCompleted));
                         if ((scrapeDlg.JobsCompleted > 0) && Settings.Instance.AutosaveDB)
                         {
-                            SaveGameDB();
+                            Program.GameDatabase.Save();
                         }
                     }
                 }
@@ -2990,7 +2993,7 @@ namespace Depressurizer
         {
             DBEditDlg dlg = new DBEditDlg((CurrentProfile != null) ? CurrentProfile.GameData : null);
             dlg.ShowDialog();
-            LoadGameDB();
+            LoadGameDatabase();
         }
 
         private void menu_Tools_SingleCat_Click(object sender, EventArgs e)

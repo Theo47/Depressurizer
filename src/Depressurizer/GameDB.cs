@@ -1636,11 +1636,28 @@ namespace Depressurizer
 
         #region Serialization
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Save()
+        {
+            Save("GameDB.xml.gz", true);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
         public void Save(string path)
         {
             Save(path, path.EndsWith(".gz"));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="compress"></param>
         public void Save(string path, bool compress)
         {
             Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameDB_SavingGameDBTo, path);
