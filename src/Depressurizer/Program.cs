@@ -42,7 +42,6 @@ namespace Depressurizer
 
             /* */
 
-            FatalError.InitializeHandler();
             Settings.Instance.Load();
 
             Application.EnableVisualStyles();
