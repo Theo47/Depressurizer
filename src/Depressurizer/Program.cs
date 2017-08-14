@@ -45,8 +45,6 @@ namespace Depressurizer
             FatalError.InitializeHandler();
             Settings.Instance.Load();
 
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.Program_ProgramInitialized);
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

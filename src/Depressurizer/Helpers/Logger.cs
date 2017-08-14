@@ -37,10 +37,23 @@ namespace Depressurizer.Helpers
         Fatal = 6
     }
 
-    public class Logger
+    public sealed class Logger
     {
-        public string LogPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Depressurizer", "Logs");
+        public string LogPath
+        {
+            get
+            {
+                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Depressurizer", "Logs");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                return path;
+            }
+        }
+
         public string LogFile => $"Depressurizer-({DateTime.Now:dd-MM-yyyy}).log";
+
         public string CurrentLogFile => Path.Combine(LogPath, LogFile);
 
         public int CurrentFileRecords => new DirectoryInfo(LogPath).GetFiles().Length;
@@ -70,10 +83,7 @@ namespace Depressurizer.Helpers
 
         private Logger()
         {
-            if (!Directory.Exists(LogPath))
-            {
-                Directory.CreateDirectory(LogPath);
-            }
+            Write(LogLevel.Info, "Initialized Logger");
 
             foreach (FileInfo file in new DirectoryInfo(LogPath).GetFiles().OrderByDescending(x => x.LastWriteTime).Skip(7))
             {
