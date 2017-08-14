@@ -23,7 +23,7 @@ using System.Xml;
 
 namespace Depressurizer.Helpers
 {
-    public class XmlParser
+    public sealed class XmlParser
     {
         /// <summary>
         /// 
