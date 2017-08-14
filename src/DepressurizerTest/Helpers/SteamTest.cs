@@ -18,7 +18,6 @@
 
 using System.Drawing;
 using System.Xml;
-using Depressurizer;
 using Depressurizer.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -39,23 +38,6 @@ namespace DepressurizerTest.Helpers
         {
             Image steamAvatar = Steam.GetAvatar(76561198347847228);
             Assert.IsNotNull(steamAvatar);
-        }
-
-        [TestMethod]
-        public void FetchAppList()
-        {
-            XmlDocument expectedDocument = GameDB.FetchAppListFromWeb();
-            XmlDocument actualDocument = Steam.FetchAppList();
-
-            Assert.AreEqual(expectedDocument.OuterXml, actualDocument.OuterXml);
-            Assert.AreEqual(expectedDocument.InnerXml, actualDocument.InnerXml);            
-        }
-
-        [TestMethod]
-        public void FetchApplistNullGameDb()
-        {
-            XmlDocument expectedDocument = GameDB.FetchAppListFromWeb();
-            Assert.IsNotNull(expectedDocument);
         }
 
         [TestMethod]

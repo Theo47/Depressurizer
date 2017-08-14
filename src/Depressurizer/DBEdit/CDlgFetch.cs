@@ -17,6 +17,7 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System.Xml;
+using Depressurizer.Helpers;
 using Rallion;
 
 namespace Depressurizer
@@ -36,7 +37,7 @@ namespace Depressurizer
         protected override void RunProcess()
         {
             Added = 0;
-            doc = GameDB.FetchAppListFromWeb();
+            doc = Steam.FetchAppList();
             OnThreadCompletion();
         }
 

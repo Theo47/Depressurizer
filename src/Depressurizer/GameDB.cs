@@ -1449,19 +1449,6 @@ namespace Depressurizer
 
         #region Operations
 
-        public static XmlDocument FetchAppListFromWeb()
-        {
-            XmlDocument doc = new XmlDocument();
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameDB_DownloadingSteamAppList);
-            WebRequest req = WebRequest.Create(@"http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=xml");
-            using (WebResponse resp = req.GetResponse())
-            {
-                doc.Load(resp.GetResponseStream());
-            }
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameDB_XMLAppListDownloaded);
-            return doc;
-        }
-
         public int IntegrateAppList(XmlDocument doc)
         {
             int added = 0;
