@@ -39,9 +39,9 @@ namespace Depressurizer
             lstSubtitles.Items.Clear();
             lstFullAudio.Items.Clear();
 
-            if (Program.GameDB != null)
+            if (Program.GameDatabase != null)
             {
-                LanguageSupport language = Program.GameDB.GetAllLanguages();
+                LanguageSupport language = Program.GameDatabase.GetAllLanguages();
 
                 foreach (string s in language.Interface)
                 {

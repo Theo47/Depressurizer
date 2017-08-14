@@ -426,7 +426,7 @@ namespace Depressurizer
 
         public void ChangeStoreLanguage(StoreLanguage storeLanguage)
         {
-            if (Program.GameDB == null)
+            if (Program.GameDatabase == null)
             {
                 return;
             }
@@ -460,11 +460,11 @@ namespace Depressurizer
             {
                 dbLanguage = storeLanguage;
             }
-            if (Program.GameDB.dbLanguage != dbLanguage)
+            if (Program.GameDatabase.dbLanguage != dbLanguage)
             {
-                Program.GameDB.dbLanguage = dbLanguage;
+                Program.GameDatabase.dbLanguage = dbLanguage;
                 //clean DB from data in wrong language
-                foreach (GameDBEntry g in Program.GameDB.Games.Values)
+                foreach (GameDBEntry g in Program.GameDatabase.Games.Values)
                 {
                     if (g.Id > 0)
                     {
@@ -477,7 +477,7 @@ namespace Depressurizer
                         g.languageSupport = new LanguageSupport();
                     }
                 }
-                Program.GameDB.Save("GameDB.xml.gz");
+                Program.GameDatabase.Save("GameDB.xml.gz");
 
                 //Update DB with data in correct language
                 Queue<int> gamesToUpdate = new Queue<int>();
@@ -495,7 +495,7 @@ namespace Depressurizer
 
                     if ((scrapeRes != DialogResult.Cancel) && (scrapeDlg.JobsCompleted > 0))
                     {
-                        Program.GameDB.Save("GameDB.xml.gz");
+                        Program.GameDatabase.Save("GameDB.xml.gz");
                     }
                 }
             }

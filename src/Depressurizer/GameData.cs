@@ -161,7 +161,7 @@ namespace Depressurizer
             }
             if (f.VR != (int)AdvancedFilterState.None)
             {
-                isVR = Program.GameDB.SupportsVr(Id);
+                isVR = Program.GameDatabase.SupportsVr(Id);
             }
 
             if ((f.Uncategorized == (int) AdvancedFilterState.Require) && isCategorized)
@@ -1180,7 +1180,7 @@ namespace Depressurizer
             foreach (KeyValuePair<int, GameListingSource> kv in ownedApps)
             {
                 bool isNew;
-                string name = Program.GameDB.GetName(kv.Key);
+                string name = Program.GameDatabase.GetName(kv.Key);
                 GameInfo newGame = IntegrateGame(kv.Key, name, false, ignored, includedTypes, kv.Value, out isNew);
                 if (newGame != null)
                 {
@@ -1324,7 +1324,7 @@ namespace Depressurizer
                     if (int.TryParse(gameNodePair.Key, out gameId))
                     {
                         if (((ignore != null) && ignore.Contains(gameId)) ||
-                            !Program.GameDB.IncludeItemInGameList(gameId, includedTypes))
+                            !Program.GameDatabase.IncludeItemInGameList(gameId, includedTypes))
                         {
                             Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_SkippedProcessingGame,
                                 gameId);
@@ -1336,7 +1336,7 @@ namespace Depressurizer
                             // Add the game to the list if it doesn't exist already
                             if (!Games.ContainsKey(gameId))
                             {
-                                game = new GameInfo(gameId, Program.GameDB.GetName(gameId), this);
+                                game = new GameInfo(gameId, Program.GameDatabase.GetName(gameId), this);
                                 Games.Add(gameId, game);
                                 Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_AddedNewGame, gameId,
                                     game.Name);
@@ -1383,7 +1383,7 @@ namespace Depressurizer
                     if (int.TryParse(gameNodePair.Key, out gameId))
                     {
                         if (((ignore != null) && ignore.Contains(gameId)) ||
-                            !Program.GameDB.IncludeItemInGameList(gameId, includedTypes))
+                            !Program.GameDatabase.IncludeItemInGameList(gameId, includedTypes))
                         {
                             Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_SkippedProcessingGame,
                                 gameId);
@@ -1395,7 +1395,7 @@ namespace Depressurizer
                             // Add the game to the list if it doesn't exist already
                             if (!Games.ContainsKey(gameId))
                             {
-                                game = new GameInfo(gameId, Program.GameDB.GetName(gameId), this);
+                                game = new GameInfo(gameId, Program.GameDatabase.GetName(gameId), this);
                                 Games.Add(gameId, game);
                                 Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_AddedNewGame, gameId,
                                     game.Name);
@@ -1464,7 +1464,7 @@ namespace Depressurizer
         {
             isNew = false;
             if (((ignore != null) && ignore.Contains(appId)) ||
-                !Program.GameDB.IncludeItemInGameList(appId, includedTypes))
+                !Program.GameDatabase.IncludeItemInGameList(appId, includedTypes))
             {
                 Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_SkippedIntegratingGame, appId,
                     appName);

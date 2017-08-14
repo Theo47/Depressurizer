@@ -37,9 +37,9 @@ namespace Depressurizer
         {
             lstIncluded.Items.Clear();
 
-            if (Program.GameDB != null)
+            if (Program.GameDatabase != null)
             {
-                SortedSet<string> flagsList = Program.GameDB.GetAllStoreFlags();
+                SortedSet<string> flagsList = Program.GameDatabase.GetAllStoreFlags();
 
                 foreach (string s in flagsList)
                 {

@@ -197,15 +197,15 @@ namespace Depressurizer
             bool success = false;
             try
             {
-                Program.GameDB = new GameDB();
+                Program.GameDatabase = new GameDB();
                 if (File.Exists("GameDB.xml.gz"))
                 {
-                    Program.GameDB.Load("GameDB.xml.gz");
+                    Program.GameDatabase.Load("GameDB.xml.gz");
                     success = true;
                 }
                 else if (File.Exists("GameDB.xml"))
                 {
-                    Program.GameDB.Load("GameDB.xml");
+                    Program.GameDatabase.Load("GameDB.xml");
                     success = true;
                 }
                 else
@@ -463,7 +463,7 @@ namespace Depressurizer
             try
             {
                 string path = string.Format(Properties.Resources.AppInfoPath, Settings.Instance.SteamPath);
-                if (Program.GameDB.UpdateFromAppInfo(path) > 0)
+                if (Program.GameDatabase.UpdateFromAppInfo(path) > 0)
                 {
                     dbModified = true;
                 }
@@ -489,7 +489,7 @@ namespace Depressurizer
                 return true;
             }
             int HalfAWeekInSecs = 84 * 24 * 60 * 60;
-            if (Utility.GetCurrentUTime() > (Program.GameDB.LastHltbUpdate + HalfAWeekInSecs))
+            if (Utility.GetCurrentUTime() > (Program.GameDatabase.LastHltbUpdate + HalfAWeekInSecs))
             {
                 WriteLine("Skipping HLTB update.");
                 return true;
@@ -498,7 +498,7 @@ namespace Depressurizer
             bool success = false;
             try
             {
-                if (Program.GameDB.UpdateFromHltb(Settings.Instance.IncludeImputedTimes) > 0)
+                if (Program.GameDatabase.UpdateFromHltb(Settings.Instance.IncludeImputedTimes) > 0)
                 {
                     dbModified = true;
                 }
@@ -530,7 +530,7 @@ namespace Depressurizer
                 Queue<int> jobs = new Queue<int>();
                 foreach (int id in p.GameData.Games.Keys)
                 {
-                    if (((id > 0) && !Program.GameDB.Contains(id)) || (Program.GameDB.Games[id].LastStoreScrape == 0))
+                    if (((id > 0) && !Program.GameDatabase.Contains(id)) || (Program.GameDatabase.Games[id].LastStoreScrape == 0))
                     {
                         jobs.Enqueue(id);
                     }
@@ -584,7 +584,7 @@ namespace Depressurizer
             Write("Saving database...");
             try
             {
-                Program.GameDB.Save("GameDB.xml.gz");
+                Program.GameDatabase.Save("GameDB.xml.gz");
                 success = true;
             }
             catch (Exception e)
@@ -647,7 +647,7 @@ namespace Depressurizer
             foreach (AutoCat ac in autocats)
             {
                 Write("Running autocat '" + ac.Name + "'...");
-                ac.PreProcess(p.GameData, Program.GameDB);
+                ac.PreProcess(p.GameData, Program.GameDatabase);
 
                 if (ac.AutoCatType == AutoCatType.Group)
                 {

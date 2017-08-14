@@ -33,7 +33,7 @@ namespace Depressurizer
 
         protected override void RunProcess()
         {
-            Updated = Program.GameDB.UpdateFromHltb(Settings.Instance.IncludeImputedTimes);
+            Updated = Program.GameDatabase.UpdateFromHltb(Settings.Instance.IncludeImputedTimes);
             OnThreadCompletion();
         }
 

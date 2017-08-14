@@ -111,13 +111,13 @@ namespace Depressurizer
                 {
                     foreach (GameDBEntry g in results)
                     {
-                        if (Program.GameDB.Contains(g.Id))
+                        if (Program.GameDatabase.Contains(g.Id))
                         {
-                            Program.GameDB.Games[g.Id].MergeIn(g);
+                            Program.GameDatabase.Games[g.Id].MergeIn(g);
                         }
                         else
                         {
-                            Program.GameDB.Games.Add(g.Id, g);
+                            Program.GameDatabase.Games.Add(g.Id, g);
                         }
                     }
                 }

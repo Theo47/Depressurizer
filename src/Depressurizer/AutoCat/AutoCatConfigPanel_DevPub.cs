@@ -126,11 +126,11 @@ namespace Depressurizer
 
         public void FillDevList(ICollection<string> preChecked = null)
         {
-            if (Program.GameDB != null)
+            if (Program.GameDatabase != null)
             {
                 Cursor = Cursors.WaitCursor;
                 IEnumerable<Tuple<string, int>> devList =
-                    Program.GameDB.CalculateSortedDevList(chkOwnedOnly.Checked ? ownedGames : null,
+                    Program.GameDatabase.CalculateSortedDevList(chkOwnedOnly.Checked ? ownedGames : null,
                         (int) list_numScore.Value);
                 clbDevelopersSelected.Items.Clear();
                 lstDevelopers.BeginUpdate();
@@ -156,11 +156,11 @@ namespace Depressurizer
 
         public void FillPubList(ICollection<string> preChecked = null)
         {
-            if (Program.GameDB != null)
+            if (Program.GameDatabase != null)
             {
                 Cursor = Cursors.WaitCursor;
                 IEnumerable<Tuple<string, int>> pubList =
-                    Program.GameDB.CalculateSortedPubList(chkOwnedOnly.Checked ? ownedGames : null,
+                    Program.GameDatabase.CalculateSortedPubList(chkOwnedOnly.Checked ? ownedGames : null,
                         (int) list_numScore.Value);
                 clbPublishersSelected.Items.Clear();
                 lstPublishers.BeginUpdate();

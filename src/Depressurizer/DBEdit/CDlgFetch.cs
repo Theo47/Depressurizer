@@ -45,7 +45,7 @@ namespace Depressurizer
             if (!Canceled && (doc != null) && (Error == null))
             {
                 SetText(GlobalStrings.CDlgFetch_FinishingDownload);
-                Added = Program.GameDB.IntegrateAppList(doc);
+                Added = Program.GameDatabase.IntegrateAppList(doc);
                 OnJobCompletion();
             }
         }

@@ -26,7 +26,7 @@ namespace Depressurizer
 {
     static class Program
     {
-        public static GameDB GameDB;
+        public static GameDB GameDatabase;
 
         /// <summary>
         /// The main entry point for the application.

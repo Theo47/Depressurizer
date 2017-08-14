@@ -223,24 +223,24 @@ namespace Depressurizer
             try
             {
                 string storeLanguage = "en";
-                if (Program.GameDB != null)
+                if (Program.GameDatabase != null)
                 {
-                    if (Program.GameDB.dbLanguage == StoreLanguage.zh_Hans)
+                    if (Program.GameDatabase.dbLanguage == StoreLanguage.zh_Hans)
                     {
                         storeLanguage = "schinese";
                     }
-                    else if (Program.GameDB.dbLanguage == StoreLanguage.zh_Hant)
+                    else if (Program.GameDatabase.dbLanguage == StoreLanguage.zh_Hant)
                     {
                         storeLanguage = "tchinese";
                     }
-                    else if (Program.GameDB.dbLanguage == StoreLanguage.pt_BR)
+                    else if (Program.GameDatabase.dbLanguage == StoreLanguage.pt_BR)
                     {
                         storeLanguage = "brazilian";
                     }
                     else
                     {
                         storeLanguage = CultureInfo
-                            .GetCultureInfo(Enum.GetName(typeof(StoreLanguage), Program.GameDB.dbLanguage)).EnglishName
+                            .GetCultureInfo(Enum.GetName(typeof(StoreLanguage), Program.GameDatabase.dbLanguage)).EnglishName
                             .ToLowerInvariant();
                     }
                 }

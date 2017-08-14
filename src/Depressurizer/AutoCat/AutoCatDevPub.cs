@@ -100,8 +100,8 @@ namespace Depressurizer
         {
             base.PreProcess(games, db);
             gamelist = games;
-            devList = Program.GameDB.CalculateSortedDevList(OwnedOnly ? gamelist : null, MinCount);
-            pubList = Program.GameDB.CalculateSortedPubList(OwnedOnly ? gamelist : null, MinCount);
+            devList = Program.GameDatabase.CalculateSortedDevList(OwnedOnly ? gamelist : null, MinCount);
+            pubList = Program.GameDatabase.CalculateSortedPubList(OwnedOnly ? gamelist : null, MinCount);
         }
 
         public override void DeProcess()
