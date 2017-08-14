@@ -20,7 +20,6 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Net.Cache;
 using System.Windows.Forms;
 using System.Xml;
 using Depressurizer.Properties;
@@ -36,18 +35,18 @@ namespace Depressurizer.Helpers
         /// TODO Add unit test
         public static void LaunchStorePage(int appId)
         {
-            Process steamProcess = new Process();
+            Logger.Instance.Write(LogLevel.Trace, $"Steam.LaunchStorePage({appId}) Called");
 
+            Process steamProcess = new Process();
             try
             {
                 steamProcess.StartInfo.UseShellExecute = true;
                 steamProcess.StartInfo.FileName = string.Format(Resources.UrlSteamStoreApp, appId);
                 steamProcess.Start();
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Debug.Write(e);
-                Console.WriteLine(e);
+                Logger.Instance.WriteException(exception);
             }
         }
 
@@ -62,6 +61,8 @@ namespace Depressurizer.Helpers
         /// TODO Add unit test
         public static Image GetAvatar(long steamId64)
         {
+            Logger.Instance.Write(LogLevel.Trace, $"Steam.GetAvatar({steamId64}) Called");
+
             Image steamAvatar = null;
 
             XmlDocument xmlDocument = XmlParser.Load(Resources.UrlSteamProfile, steamId64);
@@ -86,6 +87,8 @@ namespace Depressurizer.Helpers
         /// TODO: Improve / extend existing Unit Tests
         public static XmlDocument FetchAppList()
         {
+            Logger.Instance.Write(LogLevel.Trace, "Steam.FetchAppList() Called");
+
             return XmlParser.Load(@"http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=xml");
         }
 
@@ -96,7 +99,9 @@ namespace Depressurizer.Helpers
         /// <returns></returns>
         public static bool FetchBanner(int appId)
         {
-            bool success;
+            Logger.Instance.Write(LogLevel.Trace, $"Steam.FetchBanner({appId}) Called");
+
+            bool success = false;
 
             string bannerUrl = string.Format(Resources.UrlGameBanner, appId);
             string bannerPath = string.Format(Resources.GameBannerPath, Path.GetDirectoryName(Application.ExecutablePath), appId);
