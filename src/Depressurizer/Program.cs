@@ -35,17 +35,19 @@ namespace Depressurizer
         [STAThread]
         private static void Main(string[] args)
         {
+            Logger.Instance.Write(LogLevel.Trace, $"Main({args})");
             Logger.Instance.Write(LogLevel.Info, "Initialized Depressurizer");
 
             // Handle Program Shutdown
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            //Application.Run(new Form1());
+
             /* */
 
             Settings.Instance.Load();
-
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
 
             AutomaticModeOptions autoOpts = ParseAutoOptions(args);
 
@@ -72,11 +74,19 @@ namespace Depressurizer
         /// <param name="e"></param>
         private static void OnProcessExit(object sender, EventArgs e)
         {
+            Logger.Instance.Write(LogLevel.Trace, $"OnProcessExit({sender}, {e})");
             Logger.Instance.Write(LogLevel.Info, "Shutdown Depressurizer");
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         private static AutomaticModeOptions ParseAutoOptions(IEnumerable<string> args)
         {
+            Logger.Instance.Write(LogLevel.Trace, $"ParseAutoOptions({args})");
+
             AutomaticModeOptions config = new AutomaticModeOptions();
             bool auto = false;
 

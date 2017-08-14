@@ -22,6 +22,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using Depressurizer.Helpers;
 using Rallion;
 
 namespace Depressurizer
@@ -579,14 +580,15 @@ namespace Depressurizer
 
         private Settings()
         {
-            FilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                       @"\Depressurizer\Settings.xml";
+            Logger.Instance.Write(LogLevel.Trace, "Settings()");
+            FilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Depressurizer\Settings.xml";
         }
 
         public override void Load()
         {
+            Logger.Instance.Write(LogLevel.Trace, "Load()");
+            Logger.Instance.Write(LogLevel.Info, "Loading Settings");
             base.Load();
-            //   Logger.Level = LogLevel;
         }
     }
 }
