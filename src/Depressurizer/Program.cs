@@ -17,6 +17,7 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using Depressurizer.Helpers;
 using NDesk.Options;
@@ -24,7 +25,7 @@ using Rallion;
 
 namespace Depressurizer
 {
-    static class Program
+    internal static class Program
     {
         public static GameDB GameDatabase;
 
@@ -32,8 +33,10 @@ namespace Depressurizer
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
+            Logger.Instance.Write(LogLevel.Info, "Initialized  Depressurizer");
+
             FatalError.InitializeHandler();
             Settings.Instance.Load();
 
@@ -60,12 +63,12 @@ namespace Depressurizer
             Logger.Instance.Write(LogLevel.Info, GlobalStrings.Program_ProgramClosing);
         }
 
-        static AutomaticModeOptions ParseAutoOptions(string[] args)
+        private static AutomaticModeOptions ParseAutoOptions(IEnumerable<string> args)
         {
             AutomaticModeOptions config = new AutomaticModeOptions();
             bool auto = false;
 
-            var opts = new OptionSet
+            OptionSet opts = new OptionSet
             {
                 {"auto", v => auto = true},
                 {"p|profile=", v => config.CustomProfile = v},
