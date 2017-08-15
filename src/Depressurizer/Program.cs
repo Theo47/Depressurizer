@@ -44,18 +44,22 @@ namespace Depressurizer
         [STAThread]
         private static void Main(string[] args)
         {
-            Logger.Write(LoggerLevel.Trace, $"Main({args})");
+            FatalError.InitializeHandler();
 
+            Logger.Level = LoggerLevel.None;
+            Logger.DateFormat = "HH:mm:ss'.'ffffff";
+
+            Logger.MaxFileSize = 2000000;
+            Logger.MaxBackup = 1;
+            Logger.FileNameTemplate = "Depressurizer.log";
+
+            Settings.Instance.Load();
+
+            Logger.Write(LoggerLevel.Trace, $"Main({args})");
             Logger.Write(LoggerLevel.Info, GlobalStrings.Program_ProgramInitialized, Logger.Level);
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            //Application.Run(new Form1());
-
-            /* */
-
-            FatalError.InitializeHandler();
-            Settings.Instance.Load();
 
             AutomaticModeOptions autoOpts = ParseAutoOptions(args);
 

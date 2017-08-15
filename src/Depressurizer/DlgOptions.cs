@@ -36,6 +36,9 @@ namespace Depressurizer
 
         private void OptionsForm_Load(object sender, EventArgs e)
         {
+            string[] levels = Enum.GetNames(typeof(LoggerLevel));
+            cmbLogLevel.Items.AddRange(levels);
+
             //UI languages
             List<string> UILanguages = new List<string>();
             foreach (string l in Enum.GetNames(typeof(UILanguage)))
@@ -124,6 +127,10 @@ namespace Depressurizer
 
             chkRemoveExtraEntries.Checked = settings.RemoveExtraEntries;
 
+            cmbLogLevel.SelectedIndex = (int) settings.LogLevel;
+            numLogSize.Value = settings.LogSize;
+            numLogBackup.Value = settings.LogBackups;
+
             //supported languages have an enum value of 1-5 (en, es, ru, uk, nl). 0 is windows language.
             cmbUILanguage.SelectedIndex = (int) settings.UserLang;
             cmbStoreLanguage.SelectedIndex = (int) settings.StoreLang;
@@ -171,6 +178,10 @@ namespace Depressurizer
             settings.CheckForDepressurizerUpdates = chkCheckForDepressurizerUpdates.Checked;
 
             settings.RemoveExtraEntries = chkRemoveExtraEntries.Checked;
+
+            settings.LogLevel = (LoggerLevel) cmbLogLevel.SelectedIndex;
+            settings.LogSize = (int) numLogSize.Value;
+            settings.LogBackups = (int) numLogBackup.Value;
 
             settings.UserLang = (UILanguage) cmbUILanguage.SelectedIndex;
             settings.StoreLang = (StoreLanguage) cmbStoreLanguage.SelectedIndex;
