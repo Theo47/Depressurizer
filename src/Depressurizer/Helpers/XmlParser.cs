@@ -20,6 +20,7 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Xml;
+using Rallion;
 
 namespace Depressurizer.Helpers
 {
@@ -32,7 +33,7 @@ namespace Depressurizer.Helpers
         /// <returns></returns>
         public static XmlDocument Load(string xmlPath)
         {
-            Logger.Instance.Write(LogLevel.Trace, $"XmlParser.Load({xmlPath}) Called");
+            Program.Logger.Write(LoggerLevel.Info, $"Loading: {xmlPath}");
 
             XmlDocument xmlDocument = new XmlDocument();
             bool parsingSucceeded = false;
@@ -44,14 +45,14 @@ namespace Depressurizer.Helpers
             }
             catch (WebException webException)
             {
-                Logger.Instance.WriteException(webException);
+                Program.Logger.WriteException("XmlParser.Load: ", webException);
 
                 if ((webException.Status == WebExceptionStatus.ProtocolError) && (webException.Response != null))
                 {
                     HttpWebResponse resp = (HttpWebResponse)webException.Response;
                     if (resp.StatusCode == HttpStatusCode.NotFound)
                     {
-                        Logger.Instance.Write(LogLevel.Error, $"Invalid XmlPath supplied: {xmlPath}");
+                        Program.Logger.Write(LoggerLevel.Error, $"Invalid XmlPath supplied: {xmlPath}");
                         xmlDocument = null;
                     }
                 }
@@ -60,13 +61,14 @@ namespace Depressurizer.Helpers
             {
                 if (!parsingSucceeded)
                 {
-                    Logger.Instance.Write(LogLevel.Error, $"Error while parsing: {xmlPath}");
+                    Program.Logger.Write(LoggerLevel.Error, $"Error while parsing: {xmlPath}");
                 }
                 else
                 {
-                    Logger.Instance.WriteException(ex);
+                    Program.Logger.Write(LoggerLevel.Error, $"Unknown Exception: {ex}");
+                    throw new Exception(ex.Message);
                 }
-                xmlDocument = null;
+                    xmlDocument = null;
             }
 
             return xmlDocument;
@@ -80,7 +82,7 @@ namespace Depressurizer.Helpers
         /// <returns></returns>
         public static XmlDocument Load(string xmlPath, params object[] args)
         {
-            Logger.Instance.Write(LogLevel.Trace, $"XmlParser.Load({xmlPath}, {args}) Called");
+            Program.Logger.Write(LoggerLevel.Trace, $"XmlParser.Load({xmlPath}, {args}) Called");
 
             return Load(string.Format(xmlPath, args));
         }

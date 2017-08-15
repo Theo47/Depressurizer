@@ -20,6 +20,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Net;
+using Rallion;
 
 namespace Depressurizer.Helpers
 {
@@ -32,7 +33,7 @@ namespace Depressurizer.Helpers
         /// <returns></returns>
         public static Image ImageFromStream(string url)
         {
-            Logger.Instance.Write(LogLevel.Trace, $"Web.ImageFromStream({url}) Called");
+            Program.Logger.Write(LoggerLevel.Trace, $"Web.ImageFromStream({url}) Called");
 
             return Image.FromStream(GetRemoteImageStream(url));
         }
@@ -45,7 +46,7 @@ namespace Depressurizer.Helpers
         /// <returns></returns>
         public static Stream GetRemoteImageStream(string url, int appId = 0)
         {
-            Logger.Instance.Write(LogLevel.Trace, $"Web.GetRemoteImageStream({url}, {appId}) Called");
+            Program.Logger.Write(LoggerLevel.Trace, $"Web.GetRemoteImageStream({url}, {appId}) Called");
 
             Stream imageStream = null;
             try
@@ -64,21 +65,21 @@ namespace Depressurizer.Helpers
                     {
                         if (appId != 0)
                         {
-                            Logger.Instance.Write(LogLevel.Error, $"No Game Banner for: {appId}");
+                            Program.Logger.Write(LoggerLevel.Warning, $"No Game Banner for: {appId}");
                         }
-                        Logger.Instance.Write(LogLevel.Error, $"Page not found: {url}");
+                        Program.Logger.Write(LoggerLevel.Warning, $"Page not found: {url}");
                         imageStream = null;
                     }
                 }
                 else
                 {
-                    Logger.Instance.WriteException(url, webException);
+                    Program.Logger.WriteException(url, webException);
                     imageStream = null;
                 }
             }
             catch (Exception e)
             {
-                Logger.Instance.WriteException(e);
+                Program.Logger.WriteException("Web.GetRemoteImageStream: ", e);
                 imageStream = null;
             }
 
@@ -94,7 +95,7 @@ namespace Depressurizer.Helpers
         /// <returns></returns>
         public static bool SaveImageFromStream(string url, string localPath, int appId = 0)
         {
-            Logger.Instance.Write(LogLevel.Trace, $"Web.SaveImageFromStream({url}, {localPath}, {appId}) Called");
+            Program.Logger.Write(LoggerLevel.Trace, $"Web.SaveImageFromStream({url}, {localPath}, {appId}) Called");
             bool success = false;
 
             try
@@ -120,7 +121,7 @@ namespace Depressurizer.Helpers
             }
             catch (Exception exception)
             {
-                Logger.Instance.WriteException(exception);
+                Program.Logger.WriteException("Web.SaveImageFromStream: ", exception);
                 success = false;
             }
 

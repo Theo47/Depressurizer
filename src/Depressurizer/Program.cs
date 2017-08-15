@@ -19,7 +19,6 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Depressurizer.Helpers;
 using NDesk.Options;
 using Rallion;
 
@@ -27,13 +26,14 @@ namespace Depressurizer
 {
     internal static class Program
     {
+        public static AppLogger Logger = new AppLogger();
         private static GameDB _gameDatabase;
         public static GameDB GameDatabase
         {
             get => _gameDatabase;
             set
             {
-                Logger.Instance.Write(LogLevel.Info, "New value for Program.GameDatabase");
+                Logger.Write(LoggerLevel.Info, "New value for Program.GameDatabase");
                 _gameDatabase = value;
             }
         }
@@ -44,11 +44,9 @@ namespace Depressurizer
         [STAThread]
         private static void Main(string[] args)
         {
-            Logger.Instance.Write(LogLevel.Trace, $"Main({args})");
-            Logger.Instance.Write(LogLevel.Info, "Initialized Depressurizer");
+            Logger.Write(LoggerLevel.Trace, $"Main({args})");
 
-            // Handle Program Shutdown
-            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+            Logger.Write(LoggerLevel.Info, GlobalStrings.Program_ProgramInitialized, Logger.Level);
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -63,29 +61,19 @@ namespace Depressurizer
 
             if (autoOpts != null)
             {
-                Logger.Instance.Write(LogLevel.Info, "Automatic mode set, loading automatic mode form.");
-                Logger.Instance.WriteObject(LogLevel.Debug, autoOpts, "Automatic Mode Options:");
+                Logger.Write(LoggerLevel.Info, "Automatic mode set, loading automatic mode form.");
+                Logger.WriteObject(LoggerLevel.Verbose, autoOpts, "Automatic Mode Options:");
                 Application.Run(new AutomaticModeForm(autoOpts));
             }
             else
             {
-                Logger.Instance.Write(LogLevel.Info, "Automatic mode not set, loading main form.");
+                Logger.Write(LoggerLevel.Info, "Automatic mode not set, loading main form.");
                 Application.Run(new FormMain());
             }
             Settings.Instance.Save();
 
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.Program_ProgramClosing);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private static void OnProcessExit(object sender, EventArgs e)
-        {
-            Logger.Instance.Write(LogLevel.Trace, $"OnProcessExit({sender}, {e})");
-            Logger.Instance.Write(LogLevel.Info, "Shutdown Depressurizer");
+            Logger.Write(LoggerLevel.Info, GlobalStrings.Program_ProgramClosing);
+            Logger.EndSession();
         }
 
         /// <summary>
@@ -95,7 +83,7 @@ namespace Depressurizer
         /// <returns></returns>
         private static AutomaticModeOptions ParseAutoOptions(IEnumerable<string> args)
         {
-            Logger.Instance.Write(LogLevel.Trace, $"ParseAutoOptions({args})");
+            Logger.Write(LoggerLevel.Trace, $"ParseAutoOptions({args})");
 
             AutomaticModeOptions config = new AutomaticModeOptions();
             bool auto = false;

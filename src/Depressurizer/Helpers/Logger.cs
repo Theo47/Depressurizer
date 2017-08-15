@@ -23,6 +23,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
+using Rallion;
 
 namespace Depressurizer.Helpers
 {
@@ -83,8 +84,6 @@ namespace Depressurizer.Helpers
 
         private Logger()
         {
-            Write(LogLevel.Info, "Initialized Logger");
-
             foreach (FileInfo file in new DirectoryInfo(LogPath).GetFiles().OrderByDescending(x => x.LastWriteTime).Skip(7))
             {
                 file.Delete();

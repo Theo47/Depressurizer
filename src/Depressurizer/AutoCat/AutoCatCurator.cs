@@ -25,7 +25,6 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
 using Depressurizer;
-using Depressurizer.Helpers;
 using Rallion;
 
 namespace Depressurizer
@@ -96,7 +95,7 @@ namespace Depressurizer
             Match m = curatorIdRegex.Match(CuratorUrl);
             if (!m.Success || !long.TryParse(m.Groups[1].Value, out long curatorId))
             {
-                Logger.Instance.Write(LogLevel.Error, $"Failed to parse curator id from url {CuratorUrl}.");
+                Program.Logger.Write(LoggerLevel.Error, $"Failed to parse curator id from url {CuratorUrl}.");
                 MessageBox.Show(string.Format(GlobalStrings.AutocatCurator_CuratorIdParsing_Error, CuratorUrl),
                     GlobalStrings.Gen_Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -107,7 +106,7 @@ namespace Depressurizer
 
             if (dlg.Error != null)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.AutocatCurator_GetRecommendations_Error, dlg.Error.Message);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.AutocatCurator_GetRecommendations_Error, dlg.Error.Message);
                 MessageBox.Show(string.Format(GlobalStrings.AutocatCurator_GetRecommendations_Error, dlg.Error.Message),
                     GlobalStrings.Gen_Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -122,12 +121,12 @@ namespace Depressurizer
         {
             if (games == null)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.Log_AutoCat_GamelistNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
             if (game == null)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.Log_AutoCat_GameNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GameNull);
                 return AutoCatResult.Failure;
             }
 
