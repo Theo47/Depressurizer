@@ -56,6 +56,7 @@ namespace Depressurizer
 
             /* */
 
+            FatalError.InitializeHandler();
             Settings.Instance.Load();
 
             AutomaticModeOptions autoOpts = ParseAutoOptions(args);
