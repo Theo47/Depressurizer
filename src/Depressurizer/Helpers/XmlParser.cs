@@ -41,6 +41,12 @@ namespace Depressurizer.Helpers
             {
                 xmlDocument.Load(xmlPath);
                 parsingSucceeded = true;
+
+                if (xmlDocument.InnerText.Contains("This profile is private."))
+                {
+                    Logger.Instance.Warn("User profile is private");
+                    xmlDocument = null;
+                }
             }
             catch (WebException webException)
             {
