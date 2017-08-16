@@ -20,16 +20,18 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
+using Depressurizer.Model;
 
 namespace Depressurizer
 {
     public partial class AutoCatConfigPanel_Tags : AutoCatConfigPanel
     {
+        private bool loaded;
+
+        private readonly GameList ownedGames;
+
         // used to remove unchecked items from the Tags checkedlistbox.
         private Thread workerThread;
-
-        private GameList ownedGames;
-        private bool loaded;
 
         public AutoCatConfigPanel_Tags(GameList ownedGames)
         {
@@ -50,18 +52,15 @@ namespace Depressurizer
             lstIncluded.Columns[1].Width = 0;
         }
 
+        private delegate void TagItemCallback(ListViewItem obj);
+
         public void FillTagsList(ICollection<string> preChecked = null)
         {
             clbTags.Items.Clear();
             loaded = false;
 
             lstIncluded.Columns[0].Width = -1;
-            IEnumerable<Tuple<string, float>> tagList =
-                Program.GameDatabase.CalculateSortedTagList(
-                    list_chkOwnedOnly.Checked ? ownedGames : null,
-                    (float) list_numWeightFactor.Value,
-                    (int) list_numMinScore.Value, (int) list_numTagsPerGame.Value, list_chkExcludeGenres.Checked,
-                    false);
+            IEnumerable<Tuple<string, float>> tagList = Program.GameDatabase.CalculateSortedTagList(list_chkOwnedOnly.Checked ? ownedGames : null, (float)list_numWeightFactor.Value, (int)list_numMinScore.Value, (int)list_numTagsPerGame.Value, list_chkExcludeGenres.Checked, false);
             lstIncluded.BeginUpdate();
             lstIncluded.Items.Clear();
             foreach (Tuple<string, float> tag in tagList)
@@ -75,6 +74,7 @@ namespace Depressurizer
                 newItem.SubItems.Add(tag.Item2.ToString());
                 lstIncluded.Items.Add(newItem);
             }
+
             lstIncluded.Columns[0].Width = -1;
             SortTags(1, SortOrder.Descending);
             lstIncluded.EndUpdate();
@@ -91,13 +91,13 @@ namespace Depressurizer
                 return;
             }
 
-            txtPrefix.Text = (ac.Prefix == null) ? string.Empty : ac.Prefix;
+            txtPrefix.Text = ac.Prefix == null ? string.Empty : ac.Prefix;
             numMaxTags.Value = ac.MaxTags;
 
             list_numMinScore.Value = ac.ListMinScore;
             list_numTagsPerGame.Value = ac.ListTagsPerGame;
             list_chkOwnedOnly.Checked = ac.ListOwnedOnly;
-            list_numWeightFactor.Value = (Decimal) ac.ListWeightFactor;
+            list_numWeightFactor.Value = (decimal)ac.ListWeightFactor;
             list_chkExcludeGenres.Checked = ac.ListExcludeGenres;
 
             FillTagsList(ac.IncludedTags);
@@ -115,7 +115,7 @@ namespace Depressurizer
 
             ac.Prefix = txtPrefix.Text;
 
-            ac.MaxTags = (int) numMaxTags.Value;
+            ac.MaxTags = (int)numMaxTags.Value;
 
             ac.IncludedTags = new HashSet<string>();
             foreach (ListViewItem i in lstIncluded.CheckedItems)
@@ -123,10 +123,10 @@ namespace Depressurizer
                 ac.IncludedTags.Add(i.Tag as string);
             }
 
-            ac.ListMinScore = (int) list_numMinScore.Value;
+            ac.ListMinScore = (int)list_numMinScore.Value;
             ac.ListOwnedOnly = list_chkOwnedOnly.Checked;
-            ac.ListTagsPerGame = (int) list_numTagsPerGame.Value;
-            ac.ListWeightFactor = (float) list_numWeightFactor.Value;
+            ac.ListTagsPerGame = (int)list_numTagsPerGame.Value;
+            ac.ListWeightFactor = (float)list_numWeightFactor.Value;
             ac.ListExcludeGenres = list_chkExcludeGenres.Checked;
         }
 
@@ -145,6 +145,7 @@ namespace Depressurizer
             {
                 checkedTags.Add(item.Tag as string);
             }
+
             FillTagsList(checkedTags);
         }
 
@@ -162,7 +163,7 @@ namespace Depressurizer
         {
             if (e.NewValue == CheckState.Unchecked)
             {
-                ((ListViewItem) clbTags.Items[e.Index]).Checked = false;
+                ((ListViewItem)clbTags.Items[e.Index]).Checked = false;
             }
         }
 
@@ -172,7 +173,7 @@ namespace Depressurizer
             {
                 clbTags.Items.Add(e.Item, true);
             }
-            else if ((!e.Item.Checked) && loaded)
+            else if (!e.Item.Checked && loaded)
             {
                 workerThread = new Thread(TagItemWorker);
                 workerThread.Start(e.Item);
@@ -214,10 +215,6 @@ namespace Depressurizer
             SortTags(1, SortOrder.Descending);
         }
 
-        #region Helper Thread 
-
-        delegate void TagItemCallback(ListViewItem obj);
-
         private void TagItem(ListViewItem obj)
         {
             if (clbTags.InvokeRequired)
@@ -234,23 +231,16 @@ namespace Depressurizer
 
         private void TagItemWorker(object obj)
         {
-            TagItem((ListViewItem) obj);
+            TagItem((ListViewItem)obj);
         }
-
-        #endregion
-
-        #region Utility
 
         private void SortTags(int c, SortOrder so)
         {
             // Create a comparer.
-            lstIncluded.ListViewItemSorter =
-                new ListViewComparer(c, so);
+            lstIncluded.ListViewItemSorter = new ListViewComparer(c, so);
 
             // Sort.
             lstIncluded.Sort();
         }
-
-        #endregion
     }
 }

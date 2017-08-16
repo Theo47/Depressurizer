@@ -20,16 +20,18 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
+using Depressurizer.Model;
 
 namespace Depressurizer
 {
     public partial class AutoCatConfigPanel_DevPub : AutoCatConfigPanel
     {
+        private bool loaded;
+
+        private readonly GameList ownedGames;
+
         // used to remove unchecked items from the Add and Remove checkedlistbox.
         private Thread workerThread;
-
-        private bool loaded;
-        private GameList ownedGames;
 
         public AutoCatConfigPanel_DevPub(GameList g)
         {
@@ -51,7 +53,9 @@ namespace Depressurizer
             lstPublishers.Columns[1].Width = 0;
         }
 
-        #region Data Modifiers
+        private delegate void DevItemCallback(ListViewItem obj);
+
+        private delegate void PubItemCallback(ListViewItem obj);
 
         public override void LoadFromAutoCat(AutoCat autocat)
         {
@@ -75,6 +79,7 @@ namespace Depressurizer
             {
                 item.Checked = ac.Developers.Contains(item.Tag.ToString());
             }
+
             lstDevelopers.EndUpdate();
 
             lstPublishers.BeginUpdate();
@@ -82,6 +87,7 @@ namespace Depressurizer
             {
                 item.Checked = ac.Publishers.Contains(item.Tag.ToString());
             }
+
             lstPublishers.EndUpdate();
 
             loaded = true;
@@ -97,7 +103,7 @@ namespace Depressurizer
 
             ac.Prefix = txtPrefix.Text;
             ac.OwnedOnly = chkOwnedOnly.Checked;
-            ac.MinCount = (int) list_numScore.Value;
+            ac.MinCount = (int)list_numScore.Value;
             ac.AllDevelopers = chkAllDevelopers.Checked;
             ac.AllPublishers = chkAllPublishers.Checked;
 
@@ -120,18 +126,12 @@ namespace Depressurizer
             }
         }
 
-        #endregion
-
-        #region UI Updaters
-
         public void FillDevList(ICollection<string> preChecked = null)
         {
             if (Program.GameDatabase != null)
             {
                 Cursor = Cursors.WaitCursor;
-                IEnumerable<Tuple<string, int>> devList =
-                    Program.GameDatabase.CalculateSortedDevList(chkOwnedOnly.Checked ? ownedGames : null,
-                        (int) list_numScore.Value);
+                IEnumerable<Tuple<string, int>> devList = Program.GameDatabase.CalculateSortedDevList(chkOwnedOnly.Checked ? ownedGames : null, (int)list_numScore.Value);
                 clbDevelopersSelected.Items.Clear();
                 lstDevelopers.BeginUpdate();
                 lstDevelopers.Items.Clear();
@@ -146,6 +146,7 @@ namespace Depressurizer
                     newItem.SubItems.Add(dev.Item2.ToString());
                     lstDevelopers.Items.Add(newItem);
                 }
+
                 lstDevelopers.Columns[0].Width = -1;
                 SortDevelopers(1, SortOrder.Descending);
                 lstDevelopers.EndUpdate();
@@ -159,9 +160,7 @@ namespace Depressurizer
             if (Program.GameDatabase != null)
             {
                 Cursor = Cursors.WaitCursor;
-                IEnumerable<Tuple<string, int>> pubList =
-                    Program.GameDatabase.CalculateSortedPubList(chkOwnedOnly.Checked ? ownedGames : null,
-                        (int) list_numScore.Value);
+                IEnumerable<Tuple<string, int>> pubList = Program.GameDatabase.CalculateSortedPubList(chkOwnedOnly.Checked ? ownedGames : null, (int)list_numScore.Value);
                 clbPublishersSelected.Items.Clear();
                 lstPublishers.BeginUpdate();
                 lstPublishers.Items.Clear();
@@ -176,6 +175,7 @@ namespace Depressurizer
                     newItem.SubItems.Add(pub.Item2.ToString());
                     lstPublishers.Items.Add(newItem);
                 }
+
                 lstPublishers.Columns[0].Width = -1;
                 SortPublishers(1, SortOrder.Descending);
                 lstPublishers.EndUpdate();
@@ -232,10 +232,6 @@ namespace Depressurizer
             SortPublishers(1, SortOrder.Descending);
         }
 
-        #endregion
-
-        #region Event Handlers
-
         private void cmdListRebuild_Click(object sender, EventArgs e)
         {
             HashSet<string> checkedTags = new HashSet<string>();
@@ -243,6 +239,7 @@ namespace Depressurizer
             {
                 checkedTags.Add(item.Tag as string);
             }
+
             FillDevList(checkedTags);
 
             checkedTags = new HashSet<string>();
@@ -250,18 +247,14 @@ namespace Depressurizer
             {
                 checkedTags.Add(item.Tag as string);
             }
+
             FillPubList(checkedTags);
         }
-
-        #endregion
-
-        #region Utility
 
         private void SortDevelopers(int c, SortOrder so)
         {
             // Create a comparer.
-            lstDevelopers.ListViewItemSorter =
-                new ListViewComparer(c, so);
+            lstDevelopers.ListViewItemSorter = new ListViewComparer(c, so);
 
             // Sort.
             lstDevelopers.Sort();
@@ -270,18 +263,11 @@ namespace Depressurizer
         private void SortPublishers(int c, SortOrder so)
         {
             // Create a comparer.
-            lstPublishers.ListViewItemSorter =
-                new ListViewComparer(c, so);
+            lstPublishers.ListViewItemSorter = new ListViewComparer(c, so);
 
             // Sort.
             lstDevelopers.Sort();
         }
-
-        #endregion
-
-        #region Developers
-
-        #region Event Handlers
 
         private void btnDevCheckAll_Click(object sender, EventArgs e)
         {
@@ -319,7 +305,7 @@ namespace Depressurizer
             {
                 clbDevelopersSelected.Items.Add(e.Item, true);
             }
-            else if ((!e.Item.Checked) && loaded && clbDevelopersSelected.Items.Contains(e.Item))
+            else if (!e.Item.Checked && loaded && clbDevelopersSelected.Items.Contains(e.Item))
             {
                 workerThread = new Thread(DevelopersItemWorker);
                 workerThread.Start(e.Item);
@@ -330,7 +316,7 @@ namespace Depressurizer
         {
             if (e.NewValue == CheckState.Unchecked)
             {
-                ((ListViewItem) clbDevelopersSelected.Items[e.Index]).Checked = false;
+                ((ListViewItem)clbDevelopersSelected.Items[e.Index]).Checked = false;
             }
         }
 
@@ -348,12 +334,6 @@ namespace Depressurizer
             }
         }
 
-        #endregion
-
-        #region Helper Thread
-
-        delegate void DevItemCallback(ListViewItem obj);
-
         private void DevelopersRemoveItem(ListViewItem obj)
         {
             if (clbDevelopersSelected.InvokeRequired)
@@ -369,16 +349,8 @@ namespace Depressurizer
 
         private void DevelopersItemWorker(object obj)
         {
-            DevelopersRemoveItem((ListViewItem) obj);
+            DevelopersRemoveItem((ListViewItem)obj);
         }
-
-        #endregion
-
-        #endregion
-
-        #region Publishers
-
-        #region Event Handlers
 
         private void btnPubCheckAll_Click(object sender, EventArgs e)
         {
@@ -416,7 +388,7 @@ namespace Depressurizer
             {
                 clbPublishersSelected.Items.Add(e.Item, true);
             }
-            else if ((!e.Item.Checked) && loaded && clbPublishersSelected.Items.Contains(e.Item))
+            else if (!e.Item.Checked && loaded && clbPublishersSelected.Items.Contains(e.Item))
             {
                 workerThread = new Thread(PublishersItemWorker);
                 workerThread.Start(e.Item);
@@ -427,7 +399,7 @@ namespace Depressurizer
         {
             if (e.NewValue == CheckState.Unchecked)
             {
-                ((ListViewItem) clbPublishersSelected.Items[e.Index]).Checked = false;
+                ((ListViewItem)clbPublishersSelected.Items[e.Index]).Checked = false;
             }
         }
 
@@ -445,12 +417,6 @@ namespace Depressurizer
             }
         }
 
-        #endregion
-
-        #region Helper Thread
-
-        delegate void PubItemCallback(ListViewItem obj);
-
         private void PublishersRemoveItem(ListViewItem obj)
         {
             if (clbPublishersSelected.InvokeRequired)
@@ -466,11 +432,7 @@ namespace Depressurizer
 
         private void PublishersItemWorker(object obj)
         {
-            PublishersRemoveItem((ListViewItem) obj);
+            PublishersRemoveItem((ListViewItem)obj);
         }
-
-        #endregion
-
-        #endregion
     }
 }

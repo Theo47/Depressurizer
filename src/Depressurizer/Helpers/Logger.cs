@@ -1,32 +1,34 @@
-﻿/*
-    This file is part of Depressurizer.
-    Original work Copyright 2017 Martijn Vegter.
+﻿#region GNU GENERAL PUBLIC LICENSE
 
-    Depressurizer is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+// 
+// This file is part of Depressurizer.
+// Copyright (C) 2017 Martijn Vegter
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
-    Depressurizer is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.If not, see<http://www.gnu.org/licenses/>.
+// 
 
-    You should have received a copy of the GNU General Public License
-    along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
-*/
+#endregion
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using Newtonsoft.Json;
-using Rallion;
 
 namespace Depressurizer.Helpers
 {
+    /// <summary>
+    /// </summary>
     public enum LogLevel
     {
         Invalid = 0,
@@ -38,27 +40,12 @@ namespace Depressurizer.Helpers
         Fatal = 6
     }
 
-    public sealed class Logger
+    /// <summary>
+    /// </summary>
+    internal sealed class Logger
     {
-        public string LogPath
-        {
-            get
-            {
-                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Depressurizer", "Logs");
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-                return path;
-            }
-        }
-
-        public string LogFile => $"Depressurizer-({DateTime.Now:dd-MM-yyyy}).log";
-
-        public string CurrentLogFile => Path.Combine(LogPath, LogFile);
-
-        public int CurrentFileRecords => new DirectoryInfo(LogPath).GetFiles().Length;
-
+        /// <summary>
+        /// </summary>
         public static Logger Instance
         {
             get
@@ -78,79 +65,243 @@ namespace Depressurizer.Helpers
             }
         }
 
-        private static readonly EventWaitHandle WaitHandle = new EventWaitHandle(true, EventResetMode.AutoReset, "Depressurizer");
-        private static volatile Logger _instance;
-        private static readonly object SyncRoot = new object();
+        /// <summary>
+        /// </summary>
+        public string ActiveLogFile => Path.Combine(LogPath, LogFile);
 
-        private Logger()
+        /// <summary>
+        /// </summary>
+        public string LogFile => $"Depressurizer-({DateTime.Now:dd-MM-yyyy}).log";
+
+        /// <summary>
+        /// </summary>
+        public string LogPath
         {
-            foreach (FileInfo file in new DirectoryInfo(LogPath).GetFiles().OrderByDescending(x => x.LastWriteTime).Skip(7))
+            get
             {
-                file.Delete();
+                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Depressurizer", "Logs");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                return path;
             }
         }
 
         /// <summary>
         /// </summary>
-        /// <param name="logLevel"></param>
+        private FileStream _outputStream;
+
+        /// <summary>
+        /// </summary>
+        private Logger()
+        {
+            Info("Logger Instance Initialized");
+            _outputStream = new FileStream(ActiveLogFile, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+        }
+
+        /// <summary>
+        /// </summary>
+        private static readonly Queue<string> LogQueue = new Queue<string>();
+
+        /// <summary>
+        /// </summary>
+        private static volatile Logger _instance;
+
+        /// <summary>
+        /// </summary>
+        private static readonly object SyncRoot = new object();
+
+        /// <summary>
+        /// </summary>
+        private static DateTime _lastFlushed = DateTime.Now;
+
+        /// <summary>
+        /// </summary>
+        /// <param name="logMessage"></param>
+        public void Debug(string logMessage)
+        {
+            Write(LogLevel.Debug, logMessage);
+        }
+
+        /// <summary>
+        /// </summary>
         /// <param name="logMessage"></param>
         /// <param name="args"></param>
-        public void Write(LogLevel logLevel, string logMessage, params object[] args)
+        public void Debug(string logMessage, params object[] args)
         {
-            Instance.Write(logLevel, string.Format(logMessage, args));
+            Write(LogLevel.Debug, string.Format(logMessage, args));
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="logMessage"></param>
+        public void Error(string logMessage)
+        {
+            Write(LogLevel.Error, logMessage);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="logMessage"></param>
+        /// <param name="args"></param>
+        public void Error(string logMessage, params object[] args)
+        {
+            Write(LogLevel.Error, string.Format(logMessage, args));
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="logMessage"></param>
+        /// TODO: Properly implement
+        public void Exception(string logMessage)
+        {
+            Write(LogLevel.Error, logMessage);
+        }
+
+        public void Exception(Exception exception)
+        {
+            Write(LogLevel.Error, exception.ToString());
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="logMessage"></param>
+        /// <param name="args"></param>
+        /// TODO: Properly implement
+        public void Exception(string logMessage, params object[] args)
+        {
+            Write(LogLevel.Error, string.Format(logMessage, args));
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="logMessage"></param>
+        public void Info(string logMessage)
+        {
+            Write(LogLevel.Info, logMessage);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="logMessage"></param>
+        /// <param name="args"></param>
+        public void Info(string logMessage, params object[] args)
+        {
+            Write(LogLevel.Info, string.Format(logMessage, args));
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="logMessage"></param>
+        public void Trace(string logMessage)
+        {
+            Write(LogLevel.Trace, logMessage);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="logMessage"></param>
+        /// <param name="args"></param>
+        public void Trace(string logMessage, params object[] args)
+        {
+            Write(LogLevel.Trace, string.Format(logMessage, args));
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="logMessage"></param>
+        public void Warn(string logMessage)
+        {
+            Write(LogLevel.Warn, logMessage);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="logMessage"></param>
+        /// <param name="args"></param>
+        public void Warn(string logMessage, params object[] args)
+        {
+            Write(LogLevel.Warn, string.Format(logMessage, args));
         }
 
         /// <summary>
         /// </summary>
         /// <param name="logLevel"></param>
         /// <param name="logMessage"></param>
-        public void Write(LogLevel logLevel, string logMessage)
+        private void Write(LogLevel logLevel, string logMessage)
         {
             lock (SyncRoot)
             {
-                WaitHandle.WaitOne();
+                string logEntry = $"{DateTime.Now}  {logLevel,-7} | {logMessage}";
+                System.Diagnostics.Debug.WriteLine(logEntry);
+                LogQueue.Enqueue(logEntry);
 
-                StackTrace stackTrace = new StackTrace();
-
-                string senderMethod = stackTrace.GetFrame(2) != null ? (stackTrace.GetFrame(2).GetMethod().Name + ", " + stackTrace.GetFrame(1).GetMethod().Name) : stackTrace.GetFrame(1).GetMethod().Name;
-                
-
-                using (FileStream fileStream = new FileStream(CurrentLogFile, FileMode.Append, FileAccess.Write, FileShare.Read))
+                if ((LogQueue.Count >= 100) || DoPeriodicFlush())
                 {
-                    Debug.WriteLine($"{DateTime.Now}  {logLevel,-7} | ({senderMethod}) {logMessage}");
-
-                    byte[] output = new UTF8Encoding().GetBytes($"{DateTime.Now} {logLevel,-7} | {logMessage} {Environment.NewLine}");
-                    fileStream.Write(output, 0, output.Length);
-
-                    fileStream.Flush();
+                    FlushLog();
                 }
-
-                WaitHandle.Set();
             }
         }
 
         /// <summary>
         /// </summary>
-        /// <param name="logMessage"></param>
-        /// <param name="e"></param>
-        public void WriteException(string logMessage, Exception e)
+        /// <returns></returns>
+        private static bool DoPeriodicFlush()
         {
-            Instance.Write(LogLevel.Error, $"{logMessage} ({e})");
-        }
+            bool doPeriodicFlush = false;
 
-        public void WriteException(Exception e)
-        {
-            Instance.Write(LogLevel.Error, $"Unhandled Exception Thrown ({e})");
+            TimeSpan logAge = DateTime.Now - _lastFlushed;
+            if (logAge.TotalSeconds >= 60)
+            {
+                _lastFlushed = DateTime.Now;
+                doPeriodicFlush = true;
+            }
+
+            return doPeriodicFlush;
         }
 
         /// <summary>
         /// </summary>
-        /// <param name="logLevel"></param>
-        /// <param name="logObject"></param>
-        /// <param name="logPrefix"></param>
-        public void WriteObject(LogLevel logLevel, object logObject, string logPrefix = "")
+        /// TODO: Handle Exception
+        public void FlushLog()
         {
-            Instance.Write(logLevel, $"{logPrefix}{0}", JsonConvert.SerializeObject(logObject));
+            lock (SyncRoot)
+            {
+                try
+                {
+                    while (LogQueue.Count > 0)
+                    {
+                        string logEntry = LogQueue.Dequeue();
+                        byte[] output = new UTF8Encoding().GetBytes(logEntry + Environment.NewLine);
+                        _outputStream.Write(output, 0, output.Length);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    System.Diagnostics.Debug.WriteLine(exception);
+                    throw;
+                }
+            }
+        }
+
+        /// <summary>
+        /// </summary>
+        public void Dispose()
+        {
+            lock (SyncRoot)
+            {
+                FlushLog();
+
+                byte[] output = new UTF8Encoding().GetBytes(Environment.NewLine);
+                _outputStream.Write(output, 0, output.Length);
+
+                _outputStream.Flush();
+                _outputStream.Flush(true);
+                _outputStream.Dispose();
+                _outputStream.Close();
+                _outputStream = null;
+            }
         }
     }
 }

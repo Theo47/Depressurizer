@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+using Depressurizer.Model;
 
 namespace Depressurizer
 {
@@ -77,11 +78,11 @@ namespace Depressurizer
             {
                 return typeof(TInstantiable);
             }
+
             return base.GetReflectionType(objectType, instance);
         }
 
-        public override object CreateInstance(IServiceProvider provider, Type objectType, Type[] argTypes,
-            object[] args)
+        public override object CreateInstance(IServiceProvider provider, Type objectType, Type[] argTypes, object[] args)
         {
             if (objectType == typeof(TAbstract))
             {
