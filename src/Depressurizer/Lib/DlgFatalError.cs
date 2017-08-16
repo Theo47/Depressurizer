@@ -25,14 +25,41 @@ using Depressurizer;
 
 namespace Rallion
 {
-    delegate DialogResult DLG_MessageBox(string text);
+    internal delegate DialogResult DLG_MessageBox(string text);
 
     public partial class FatalError : Form
     {
-        #region Constants
+        /// <summary>
+        ///     The minimum height of the form, without info showing.
+        /// </summary>
+        private int ShortHeight => (Height - ClientSize.Height) + cmdClose.Bottom + 10;
 
         /// <summary>
-        /// The default height of the Info section
+        ///     The current height of the info section.
+        /// </summary>
+        private int currentInfoHeight = DEFAULT_INFO_HEIGHT;
+
+        /// <summary>
+        ///     The exception being displayed
+        /// </summary>
+        private readonly Exception ex;
+
+        /// <summary>
+        ///     Stores whether or not the extra info is being shown
+        /// </summary>
+        private bool ShowingInfo;
+
+        private FatalError(Exception e)
+        {
+            InitializeComponent();
+            ex = e;
+            ShowingInfo = true;
+            TopMost = true;
+            TopLevel = true;
+        }
+
+        /// <summary>
+        ///     The default height of the Info section
         /// </summary>
         private const int DEFAULT_INFO_HEIGHT = 250;
 
@@ -41,43 +68,8 @@ namespace Rallion
         private const int MIN_HEIGHT = 300;
         private const int MAX_HEIGHT = 2000;
 
-        #endregion
-
-        #region Fields
-
         /// <summary>
-        /// The exception being displayed
-        /// </summary>
-        private Exception ex;
-
-        /// <summary>
-        /// Stores whether or not the extra info is being shown
-        /// </summary>
-        private bool ShowingInfo;
-
-        /// <summary>
-        /// The current height of the info section.
-        /// </summary>
-        private int currentInfoHeight = DEFAULT_INFO_HEIGHT;
-
-        #endregion
-
-        #region Properties
-
-        /// <summary>
-        /// The minimum height of the form, without info showing.
-        /// </summary>
-        private int ShortHeight
-        {
-            get { return (Height - ClientSize.Height) + cmdClose.Bottom + 10; }
-        }
-
-        #endregion
-
-        #region Static Methods
-
-        /// <summary>
-        /// Starts catching all unhandled exceptions for processing.
+        ///     Starts catching all unhandled exceptions for processing.
         /// </summary>
         public static void InitializeHandler()
         {
@@ -92,11 +84,11 @@ namespace Rallion
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            HandleUnhandledException((Exception) e.ExceptionObject);
+            HandleUnhandledException((Exception)e.ExceptionObject);
         }
 
         /// <summary>
-        /// Shows the form and ends the program after an exception makes it to the top level.
+        ///     Shows the form and ends the program after an exception makes it to the top level.
         /// </summary>
         /// <param name="e">The unhandled exception.</param>
         private static void HandleUnhandledException(Exception e)
@@ -104,19 +96,6 @@ namespace Rallion
             FatalError errForm = new FatalError(e);
             errForm.ShowDialog();
             Application.Exit();
-        }
-
-        #endregion
-
-        #region Construction
-
-        private FatalError(Exception e)
-        {
-            InitializeComponent();
-            ex = e;
-            ShowingInfo = true;
-            TopMost = true;
-            TopLevel = true;
         }
 
         private void FatalError_Load(object sender, EventArgs e)
@@ -140,12 +119,8 @@ namespace Rallion
             txtTrace.Text = ex.StackTrace;
         }
 
-        #endregion
-
-        #region Info control
-
         /// <summary>
-        /// Displays the extra info
+        ///     Displays the extra info
         /// </summary>
         private void ShowInfo()
         {
@@ -163,7 +138,7 @@ namespace Rallion
         }
 
         /// <summary>
-        /// Hides the extra info
+        ///     Hides the extra info
         /// </summary>
         private void HideInfo()
         {
@@ -183,7 +158,7 @@ namespace Rallion
         }
 
         /// <summary>
-        /// Toggles the extra info
+        ///     Toggles the extra info
         /// </summary>
         private void ToggleInfo()
         {
@@ -196,10 +171,6 @@ namespace Rallion
                 ShowInfo();
             }
         }
-
-        #endregion
-
-        #region Event Handlers
 
         private void cmdShow_Click(object sender, EventArgs e)
         {
@@ -216,12 +187,8 @@ namespace Rallion
             SetClipboardText();
         }
 
-        #endregion
-
-        #region Saving methods
-
         /// <summary>
-        /// Saves the exception data to a file in the application directory
+        ///     Saves the exception data to a file in the application directory
         /// </summary>
         private void SaveToFile()
         {
@@ -237,8 +204,7 @@ namespace Rallion
                 if (res == DialogResult.OK)
                 {
                     StreamWriter fstr = new StreamWriter(dlg.FileName);
-                    string data = string.Format("{0}: {1}{2}{3}", ex.GetType().Name, ex.Message, Environment.NewLine,
-                        ex.StackTrace);
+                    string data = string.Format("{0}: {1}{2}{3}", ex.GetType().Name, ex.Message, Environment.NewLine, ex.StackTrace);
                     fstr.Write(data);
                     fstr.Close();
                     MessageBox.Show(GlobalStrings.DlgFatalError_ErrorInformationSaved);
@@ -251,7 +217,7 @@ namespace Rallion
         }
 
         /// <summary>
-        /// Copies the exception data to the clipboard
+        ///     Copies the exception data to the clipboard
         /// </summary>
         private void SetClipboardText()
         {
@@ -266,8 +232,7 @@ namespace Rallion
                 string dMsg = GlobalStrings.DlgFatalError_CouldNotCopyClipboard;
                 try
                 {
-                    string data = string.Format("{0}: {1}{2}{3}", ex.GetType().Name, ex.Message, Environment.NewLine,
-                        ex.StackTrace);
+                    string data = string.Format("{0}: {1}{2}{3}", ex.GetType().Name, ex.Message, Environment.NewLine, ex.StackTrace);
                     Clipboard.SetText(data);
                     dMsg = GlobalStrings.DlgFatalError_ClipboardUpdated;
                 }
@@ -284,7 +249,5 @@ namespace Rallion
                 }
             }
         }
-
-        #endregion
     }
 }

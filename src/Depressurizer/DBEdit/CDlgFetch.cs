@@ -22,13 +22,12 @@ using Rallion;
 
 namespace Depressurizer
 {
-    class FetchPrcDlg : CancelableDlg
+    internal class FetchPrcDlg : CancelableDlg
     {
         public int Added { get; private set; }
-        XmlDocument doc;
+        private XmlDocument doc;
 
-        public FetchPrcDlg()
-            : base(GlobalStrings.CDlgFetch_UpdatingGameList, false)
+        public FetchPrcDlg() : base(GlobalStrings.CDlgFetch_UpdatingGameList, false)
         {
             SetText(GlobalStrings.CDlgFetch_DownloadingGameList);
             Added = 0;
