@@ -17,10 +17,8 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
-using System.Xml;
 using Depressurizer.Helpers;
 using Depressurizer.Model;
-using Rallion;
 
 namespace Depressurizer
 {
@@ -33,29 +31,19 @@ namespace Depressurizer
 
     public class AutoCatYear : AutoCat
     {
-        #region Properties
+        // Meta properies
+        public override AutoCatType AutoCatType => AutoCatType.Year;
+
+        public AutoCatYear_Grouping GroupingMode { get; set; }
+
+        public bool IncludeUnknown { get; set; }
 
         // Autocat configuration properties
         public string Prefix { get; set; }
 
-        public bool IncludeUnknown { get; set; }
         public string UnknownText { get; set; }
-        public AutoCatYear_Grouping GroupingMode { get; set; }
 
-        // Meta properies
-        public override AutoCatType AutoCatType
-        {
-            get { return AutoCatType.Year; }
-        }
-
-        #endregion
-
-        #region Construction
-
-        public AutoCatYear(string name, string filter = null, string prefix = null, bool includeUnknown = true,
-            string unknownText = null, AutoCatYear_Grouping groupMode = AutoCatYear_Grouping.None,
-            bool selected = false)
-            : base(name)
+        public AutoCatYear(string name, string filter = null, string prefix = null, bool includeUnknown = true, string unknownText = null, AutoCatYear_Grouping groupMode = AutoCatYear_Grouping.None, bool selected = false) : base(name)
         {
             Filter = filter;
             Prefix = prefix;
@@ -68,8 +56,7 @@ namespace Depressurizer
         //XmlSerializer requires a parameterless constructor
         private AutoCatYear() { }
 
-        protected AutoCatYear(AutoCatYear other)
-            : base(other)
+        protected AutoCatYear(AutoCatYear other) : base(other)
         {
             Filter = other.Filter;
             Prefix = other.Prefix;
@@ -79,14 +66,7 @@ namespace Depressurizer
             Selected = other.Selected;
         }
 
-        public override AutoCat Clone()
-        {
-            return new AutoCatYear(this);
-        }
-
-        #endregion
-
-        #region Autocategorization Methods
+        public override AutoCat Clone() => new AutoCatYear(this);
 
         public override AutoCatResult CategorizeGame(GameInfo game, Filter filter)
         {
@@ -95,11 +75,13 @@ namespace Depressurizer
                 Logger.Instance.Error(GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
+
             if (db == null)
             {
                 Logger.Instance.Error(GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
+
             if (game == null)
             {
                 Logger.Instance.Error(GlobalStrings.Log_AutoCat_GameNull);
@@ -152,6 +134,7 @@ namespace Depressurizer
             {
                 return result;
             }
+
             return Prefix + result;
         }
 
@@ -160,7 +143,5 @@ namespace Depressurizer
             int first = year - (year % rangeSize);
             return string.Format("{0}-{1}", first, (first + rangeSize) - 1);
         }
-
-        #endregion
     }
 }

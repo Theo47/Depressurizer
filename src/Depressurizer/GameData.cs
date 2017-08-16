@@ -1,14 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Globalization;
-using System.IO;
-using System.Net;
-using System.Text.RegularExpressions;
-using System.Xml;
-using Depressurizer.Helpers;
-using Depressurizer.Model;
-using Rallion;
+
 /*
 This file is part of Depressurizer.
 Copyright 2011, 2012, 2013 Steve Labbe.
@@ -30,8 +21,9 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 namespace Depressurizer
 {
     /// <summary>
-    /// Listing of the different ways to find out about a game.
-    /// The higher values take precedence over the lower values. If a game already exists with a PackageFree type, it cannot change to SteamConfig.
+    ///     Listing of the different ways to find out about a game.
+    ///     The higher values take precedence over the lower values. If a game already exists with a PackageFree type, it
+    ///     cannot change to SteamConfig.
     /// </summary>
     public enum GameListingSource
     {
@@ -43,7 +35,7 @@ namespace Depressurizer
         Manual
     }
 
-    class ProfileAccessException : ApplicationException
+    internal class ProfileAccessException : ApplicationException
     {
         public ProfileAccessException(string m) : base(m) { }
     }

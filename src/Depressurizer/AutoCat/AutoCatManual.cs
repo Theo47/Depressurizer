@@ -18,8 +18,6 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using System.Xml;
-using Rallion;
 using System.Xml.Serialization;
 using Depressurizer.Helpers;
 using Depressurizer.Model;
@@ -27,48 +25,44 @@ using Depressurizer.Model;
 namespace Depressurizer
 {
     /// <summary>
-    /// Autocategorization scheme that adds and removes manual categories.
+    ///     Autocategorization scheme that adds and removes manual categories.
     /// </summary>
     public class AutoCatManual : AutoCat
     {
-        public override AutoCatType AutoCatType
-        {
-            get { return AutoCatType.Manual; }
-        }
+        [XmlArray("Add"), XmlArrayItem("Category")]
+        public List<string> AddCategories { get; set; }
+
+        public override AutoCatType AutoCatType => AutoCatType.Manual;
+
+        public string Prefix { get; set; }
 
         // Autocat configuration
         [XmlElement("RemoveAll")]
         public bool RemoveAllCategories { get; set; }
 
-        public string Prefix { get; set; }
-
         [XmlArray("Remove"), XmlArrayItem("Category")]
         public List<string> RemoveCategories { get; set; }
-        [XmlArray("Add"), XmlArrayItem("Category")]
-        public List<string> AddCategories { get; set; }
 
         private GameList gamelist;
 
         /// <summary>
-        /// Creates a new AutoCatManual object, which removes selected (or all) categories from one list and then, optionally, assigns categories from another list.
+        ///     Creates a new AutoCatManual object, which removes selected (or all) categories from one list and then, optionally,
+        ///     assigns categories from another list.
         /// </summary>
-        public AutoCatManual(string name, string filter = null, string prefix = null, bool removeAll = false,
-            List<string> remove = null, List<string> add = null, bool selected = false)
-            : base(name)
+        public AutoCatManual(string name, string filter = null, string prefix = null, bool removeAll = false, List<string> remove = null, List<string> add = null, bool selected = false) : base(name)
         {
             Filter = filter;
             Prefix = prefix;
             RemoveAllCategories = removeAll;
-            RemoveCategories = (remove == null) ? new List<string>() : remove;
-            AddCategories = (add == null) ? new List<string>() : add;
+            RemoveCategories = remove == null ? new List<string>() : remove;
+            AddCategories = add == null ? new List<string>() : add;
             Selected = selected;
         }
 
         //XmlSerializer requires a parameterless constructor
         private AutoCatManual() { }
 
-        protected AutoCatManual(AutoCatManual other)
-            : base(other)
+        protected AutoCatManual(AutoCatManual other) : base(other)
         {
             Filter = other.Filter;
             Prefix = other.Prefix;
@@ -78,13 +72,11 @@ namespace Depressurizer
             Selected = other.Selected;
         }
 
-        public override AutoCat Clone()
-        {
-            return new AutoCatManual(this);
-        }
+        public override AutoCat Clone() => new AutoCatManual(this);
 
         /// <summary>
-        /// Prepares to categorize games. Prepares a list of genre categories to remove. Does nothing if removeothergenres is false.
+        ///     Prepares to categorize games. Prepares a list of genre categories to remove. Does nothing if removeothergenres is
+        ///     false.
         /// </summary>
         public override void PreProcess(GameList games, GameDB db)
         {
@@ -105,11 +97,13 @@ namespace Depressurizer
                 Logger.Instance.Error(GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
+
             if (db == null)
             {
                 Logger.Instance.Error(GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
+
             if (game == null)
             {
                 Logger.Instance.Error(GlobalStrings.Log_AutoCat_GameNull);
@@ -171,6 +165,7 @@ namespace Depressurizer
             {
                 return baseString;
             }
+
             return Prefix + baseString;
         }
     }

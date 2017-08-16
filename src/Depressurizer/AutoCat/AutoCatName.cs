@@ -1,25 +1,19 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using System.Xml;
 using Depressurizer.Helpers;
 using Depressurizer.Model;
-using Rallion;
 
 namespace Depressurizer
 {
     public class AutoCatName : AutoCat
     {
-        public string Prefix { get; set; }
-        public bool SkipThe { get; set; }
-        public bool GroupNumbers { get; set; }
+        public override AutoCatType AutoCatType => AutoCatType.Name;
+
         public bool GroupNonEnglishCharacters { get; set; }
         public string GroupNonEnglishCharactersText { get; set; }
-
-
-        public override AutoCatType AutoCatType
-        {
-            get { return AutoCatType.Name; }
-        }
+        public bool GroupNumbers { get; set; }
+        public string Prefix { get; set; }
+        public bool SkipThe { get; set; }
 
         public AutoCatName(string name, string prefix = "", bool skipThe = true, bool groupNumbers = false, bool groupNonEnglishCharacters = false, string groupNonEnglishCharactersText = "") : base(name)
         {
@@ -41,11 +35,13 @@ namespace Depressurizer
                 Logger.Instance.Error(GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
+
             if (db == null)
             {
                 Logger.Instance.Error(GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
+
             if (game == null)
             {
                 Logger.Instance.Error(GlobalStrings.Log_AutoCat_GameNull);
@@ -63,12 +59,11 @@ namespace Depressurizer
             {
                 cat = game.Name.Substring(4, 1).ToUpper();
             }
-            if (GroupNumbers && Char.IsDigit(cat[0]))
+            if (GroupNumbers && char.IsDigit(cat[0]))
             {
                 cat = "#";
             }
-            else if (GroupNonEnglishCharacters && !string.IsNullOrEmpty(GroupNonEnglishCharactersText) &&
-                Regex.IsMatch(cat, "[^a-z0-9]", RegexOptions.IgnoreCase))
+            else if (GroupNonEnglishCharacters && !string.IsNullOrEmpty(GroupNonEnglishCharactersText) && Regex.IsMatch(cat, "[^a-z0-9]", RegexOptions.IgnoreCase))
             {
                 cat = GroupNonEnglishCharactersText;
             }
@@ -82,9 +77,6 @@ namespace Depressurizer
             return AutoCatResult.Success;
         }
 
-        public override AutoCat Clone()
-        {
-            return new AutoCatName(Name, Prefix, SkipThe, GroupNumbers, GroupNonEnglishCharacters, GroupNonEnglishCharactersText);
-        }
+        public override AutoCat Clone() => new AutoCatName(Name, Prefix, SkipThe, GroupNumbers, GroupNonEnglishCharacters, GroupNonEnglishCharactersText);
     }
 }

@@ -80,7 +80,6 @@ namespace Depressurizer.Helpers
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <returns></returns>
         /// TODO: Add proper error handling
@@ -93,7 +92,6 @@ namespace Depressurizer.Helpers
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="appId"></param>
         /// <returns></returns>

@@ -25,15 +25,15 @@ using System.Windows.Forms;
 using System.Xml;
 using Depressurizer.Helpers;
 using Depressurizer.Model;
-using Rallion;
+using Depressurizer.Properties;
 
 namespace Depressurizer
 {
     public partial class AutomaticModeForm : Form
     {
-        bool encounteredError;
-        bool dbModified;
-        AutomaticModeOptions options;
+        private bool dbModified;
+        private bool encounteredError;
+        private readonly AutomaticModeOptions options;
 
         public AutomaticModeForm(AutomaticModeOptions opts)
         {
@@ -50,8 +50,7 @@ namespace Depressurizer
         {
             Run();
 
-            if ((options.AutoClose == AutoCloseType.Always) ||
-                ((options.AutoClose == AutoCloseType.UnlessError) && !encounteredError))
+            if ((options.AutoClose == AutoCloseType.Always) || ((options.AutoClose == AutoCloseType.UnlessError) && !encounteredError))
             {
                 Close();
             }
@@ -239,14 +238,17 @@ namespace Depressurizer
                         WriteLine("Not found. Continuing.");
                         return true;
                     }
+
                     WriteLine("Found running Steam process.");
                     if (tryClose)
                     {
                         return TryCloseSteam(processes);
                     }
+
                     WriteLine("Skipping trying to close Steam.");
                     return false;
                 }
+
                 WriteLine("Skipping running Steam check.");
                 return true;
             }
@@ -311,6 +313,7 @@ namespace Depressurizer
                     WriteLine("No profile specified in settings.");
                     return null;
                 }
+
                 WriteLine("Default profile found: " + Settings.Instance.ProfileToLoad);
                 profileToLoad = Settings.Instance.ProfileToLoad;
             }
@@ -343,6 +346,7 @@ namespace Depressurizer
                 WriteLine("Skipping updating game list.");
                 return false;
             }
+
             Write("Updating game list...");
             bool success = false;
             if (profile.LocalUpdate)
@@ -351,8 +355,7 @@ namespace Depressurizer
                 try
                 {
                     Write("Trying local update...");
-                    profile.GameData.UpdateGameListFromOwnedPackageInfo(profile.SteamID64, profile.IgnoreList,
-                        profile.IncludeUnknown ? AppTypes.InclusionUnknown : AppTypes.InclusionNormal, out newApps);
+                    profile.GameData.UpdateGameListFromOwnedPackageInfo(profile.SteamID64, profile.IgnoreList, profile.IncludeUnknown ? AppTypes.InclusionUnknown : AppTypes.InclusionNormal, out newApps);
                     success = true;
                 }
                 catch (Exception e)
@@ -381,6 +384,7 @@ namespace Depressurizer
                         break;
                 }
             }
+
             if (success)
             {
                 WriteLine("Game list updated.");
@@ -398,8 +402,7 @@ namespace Depressurizer
             {
                 XmlDocument doc = GameList.FetchXmlGameList(profile.SteamID64);
                 int newApps;
-                profile.GameData.IntegrateXmlGameList(doc, false, profile.IgnoreList,
-                    profile.IncludeUnknown ? AppTypes.InclusionUnknown : AppTypes.InclusionNormal, out newApps);
+                profile.GameData.IntegrateXmlGameList(doc, false, profile.IgnoreList, profile.IncludeUnknown ? AppTypes.InclusionUnknown : AppTypes.InclusionNormal, out newApps);
                 return true;
             }
             catch (Exception e)
@@ -415,8 +418,7 @@ namespace Depressurizer
             {
                 string doc = GameList.FetchHtmlGameList(profile.SteamID64);
                 int newApps;
-                profile.GameData.IntegrateHtmlGameList(doc, false, profile.IgnoreList,
-                    profile.IncludeUnknown ? AppTypes.InclusionUnknown : AppTypes.InclusionNormal, out newApps);
+                profile.GameData.IntegrateHtmlGameList(doc, false, profile.IgnoreList, profile.IncludeUnknown ? AppTypes.InclusionUnknown : AppTypes.InclusionNormal, out newApps);
                 return true;
             }
             catch (Exception e)
@@ -433,6 +435,7 @@ namespace Depressurizer
                 WriteLine("Skipping Steam category import.");
                 return true;
             }
+
             Write("Importing Steam category data...");
             bool success = false;
             try
@@ -459,11 +462,12 @@ namespace Depressurizer
                 WriteLine("Skipping AppInfo update.");
                 return true;
             }
+
             Write("Updating database from AppInfo...");
             bool success = false;
             try
             {
-                string path = string.Format(Properties.Resources.AppInfoPath, Settings.Instance.SteamPath);
+                string path = string.Format(Resources.AppInfoPath, Settings.Instance.SteamPath);
                 if (Program.GameDatabase.UpdateFromAppInfo(path) > 0)
                 {
                     dbModified = true;
@@ -489,12 +493,14 @@ namespace Depressurizer
                 WriteLine("Skipping HLTB update.");
                 return true;
             }
+
             int HalfAWeekInSecs = 84 * 24 * 60 * 60;
             if (Utility.GetCurrentUTime() > (Program.GameDatabase.LastHltbUpdate + HalfAWeekInSecs))
             {
                 WriteLine("Skipping HLTB update.");
                 return true;
             }
+
             Write("Updating database from HLTB...");
             bool success = false;
             try
@@ -524,6 +530,7 @@ namespace Depressurizer
                 WriteLine("Skipping game scraping.");
                 return true;
             }
+
             bool success = false;
             Write("Scraping unscraped games...");
             try
@@ -566,6 +573,7 @@ namespace Depressurizer
                 WriteLine("Error updating database from web: " + e.Message);
                 Logger.Instance.Exception("Automatic mode: Error updating db from web.", e);
             }
+
             return success;
         }
 
@@ -576,11 +584,13 @@ namespace Depressurizer
                 WriteLine("Skipping database saving.");
                 return true;
             }
+
             if (!dbModified)
             {
                 WriteLine("No database changes to save.");
                 return true;
             }
+
             bool success = false;
             Write("Saving database...");
             try
@@ -628,6 +638,7 @@ namespace Depressurizer
                         }
                     }
                 }
+
                 RunAutoCats(p, acList);
                 success = true;
             }
@@ -636,6 +647,7 @@ namespace Depressurizer
                 WriteLine("Error autocategorizing games: " + e.Message);
                 Logger.Instance.Exception("Automatic mode: Error autocategorizing games.", e);
             }
+
             if (success)
             {
                 WriteLine("Autocategorization complete.");
@@ -652,7 +664,7 @@ namespace Depressurizer
 
                 if (ac.AutoCatType == AutoCatType.Group)
                 {
-                    AutoCatGroup acg = (AutoCatGroup) ac;
+                    AutoCatGroup acg = (AutoCatGroup)ac;
                     RunAutoCats(p, p.CloneAutoCatList(acg.Autocats, p.GameData.GetFilter(acg.Filter)));
                 }
                 else
@@ -665,6 +677,7 @@ namespace Depressurizer
                         }
                     }
                 }
+
                 ac.DeProcess();
                 WriteLine(ac.Name + " complete.");
             }
@@ -677,6 +690,7 @@ namespace Depressurizer
                 WriteLine("Skipping profile save.");
                 return true;
             }
+
             Write("Saving profile...");
             bool success = false;
             try
@@ -703,6 +717,7 @@ namespace Depressurizer
                 WriteLine("Skipping Steam export.");
                 return true;
             }
+
             Write("Exporting to Steam...");
             bool success = false;
             try
@@ -762,21 +777,21 @@ namespace Depressurizer
 
     public class AutomaticModeOptions
     {
+        public bool ApplyAllAutoCats = false;
+        public List<string> AutoCats = new List<string>();
+        public AutoCloseType AutoClose = AutoCloseType.None;
         public bool CheckSteam = true;
         public bool CloseSteam = true;
         public string CustomProfile = null;
-        public List<string> AutoCats = new List<string>();
-        public bool ApplyAllAutoCats = false;
-        public bool UpdateGameList = true;
+        public bool ExportToSteam = true;
         public bool ImportSteamCategories = false;
-        public bool UpdateAppInfo = true;
-        public bool UpdateHltb = true;
-        public bool ScrapeUnscrapedGames = true;
         public bool SaveDBChanges = true;
         public bool SaveProfile = true;
-        public bool ExportToSteam = true;
+        public bool ScrapeUnscrapedGames = true;
         public SteamLaunchType SteamLaunch = SteamLaunchType.None;
-        public AutoCloseType AutoClose = AutoCloseType.None;
         public bool TolerateMinorErrors = false;
+        public bool UpdateAppInfo = true;
+        public bool UpdateGameList = true;
+        public bool UpdateHltb = true;
     }
 }

@@ -25,18 +25,17 @@ namespace Depressurizer
 {
     public partial class DlgGame : Form
     {
-        GameList Data;
-        public GameInfo Game;
+        private readonly GameList Data;
 
-        bool editMode;
+        private readonly bool editMode;
+        public GameInfo Game;
 
         private DlgGame()
         {
             InitializeComponent();
         }
 
-        public DlgGame(GameList data, GameInfo game = null)
-            : this()
+        public DlgGame(GameList data, GameInfo game = null) : this()
         {
             Data = data;
             Game = game;
@@ -80,16 +79,16 @@ namespace Depressurizer
                 int id;
                 if (!int.TryParse(txtId.Text, out id))
                 {
-                    MessageBox.Show(GlobalStrings.DlgGameDBEntry_IDMustBeInteger, GlobalStrings.Gen_Warning,
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(GlobalStrings.DlgGameDBEntry_IDMustBeInteger, GlobalStrings.Gen_Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
+
                 if (Data.Games.ContainsKey(id))
                 {
-                    MessageBox.Show(GlobalStrings.DBEditDlg_GameIdAlreadyExists, GlobalStrings.DBEditDlg_Error,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(GlobalStrings.DBEditDlg_GameIdAlreadyExists, GlobalStrings.DBEditDlg_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
+
                 Game = new GameInfo(id, txtName.Text, Data, txtExecutable.Text);
                 Game.ApplySource(GameListingSource.Manual);
                 Data.Games.Add(id, Game);

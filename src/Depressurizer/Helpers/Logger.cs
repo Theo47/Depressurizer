@@ -67,6 +67,14 @@ namespace Depressurizer.Helpers
 
         /// <summary>
         /// </summary>
+        public string ActiveLogFile => Path.Combine(LogPath, LogFile);
+
+        /// <summary>
+        /// </summary>
+        public string LogFile => $"Depressurizer-({DateTime.Now:dd-MM-yyyy}).log";
+
+        /// <summary>
+        /// </summary>
         public string LogPath
         {
             get
@@ -79,14 +87,6 @@ namespace Depressurizer.Helpers
                 return path;
             }
         }
-
-        /// <summary>
-        /// </summary>
-        public string LogFile => $"Depressurizer-({DateTime.Now:dd-MM-yyyy}).log";
-
-        /// <summary>
-        /// </summary>
-        public string ActiveLogFile => Path.Combine(LogPath, LogFile);
 
         /// <summary>
         /// </summary>

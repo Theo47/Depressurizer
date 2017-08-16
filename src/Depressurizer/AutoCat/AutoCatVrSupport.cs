@@ -20,10 +20,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using Depressurizer.Helpers;
 using Depressurizer.Model;
-using Rallion;
 
 namespace Depressurizer
 {
@@ -36,8 +34,7 @@ namespace Depressurizer
 
         public VrSupport IncludedVrSupportFlags;
 
-        public AutoCatVrSupport(string name, string filter = null, string prefix = null, List<string> headsets = null,
-            List<string> input = null, List<string> playArea = null, bool selected = false) : base(name)
+        public AutoCatVrSupport(string name, string filter = null, string prefix = null, List<string> headsets = null, List<string> input = null, List<string> playArea = null, bool selected = false) : base(name)
         {
             Filter = filter;
             Prefix = prefix;

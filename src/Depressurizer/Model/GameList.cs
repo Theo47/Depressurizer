@@ -12,7 +12,6 @@ using Depressurizer.Properties;
 namespace Depressurizer.Model
 {
     /// <summary>
-    /// 
     /// </summary>
     public sealed class GameList
     {

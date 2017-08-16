@@ -26,7 +26,6 @@ namespace Depressurizer.Helpers
     public sealed class Web
     {
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
@@ -38,7 +37,6 @@ namespace Depressurizer.Helpers
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="url"></param>
         /// <param name="appId"></param>
@@ -86,7 +84,6 @@ namespace Depressurizer.Helpers
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="url"></param>
         /// <param name="localPath"></param>
@@ -115,6 +112,7 @@ namespace Depressurizer.Helpers
                             } while (bytesRead != 0);
                         }
                     }
+
                     success = true;
                 }
             }

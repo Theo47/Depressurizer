@@ -78,11 +78,11 @@ namespace Depressurizer
             {
                 return typeof(TInstantiable);
             }
+
             return base.GetReflectionType(objectType, instance);
         }
 
-        public override object CreateInstance(IServiceProvider provider, Type objectType, Type[] argTypes,
-            object[] args)
+        public override object CreateInstance(IServiceProvider provider, Type objectType, Type[] argTypes, object[] args)
         {
             if (objectType == typeof(TAbstract))
             {

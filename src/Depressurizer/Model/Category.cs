@@ -24,11 +24,11 @@ namespace Depressurizer.Model
     {
         /// <summary>
         /// </summary>
-        public string Name { get; set; }
+        public int Count { set; get; }
 
         /// <summary>
         /// </summary>
-        public int Count { set; get; }
+        public string Name { get; set; }
 
         /// <summary>
         /// </summary>

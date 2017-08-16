@@ -18,8 +18,6 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using System.Xml;
-using Rallion;
 using System.Xml.Serialization;
 using Depressurizer.Helpers;
 using Depressurizer.Model;
@@ -28,12 +26,13 @@ namespace Depressurizer
 {
     public class UserScore_Rule
     {
-        [XmlElement("Text")]
-        public string Name { get; set; }
-        public int MinScore { get; set; }
+        public int MaxReviews { get; set; }
         public int MaxScore { get; set; }
         public int MinReviews { get; set; }
-        public int MaxReviews { get; set; }
+        public int MinScore { get; set; }
+
+        [XmlElement("Text")]
+        public string Name { get; set; }
 
         public UserScore_Rule(string name, int minScore, int maxScore, int minReviews, int maxReviews)
         {
@@ -59,38 +58,26 @@ namespace Depressurizer
 
     public class AutoCatUserScore : AutoCat
     {
-        #region Properties
+        public override AutoCatType AutoCatType => AutoCatType.UserScore;
 
         public string Prefix { get; set; }
         public bool UseWilsonScore { get; set; }
-        [XmlElement("Rule")]
-        public List<UserScore_Rule> Rules;
 
-        public override AutoCatType AutoCatType
-        {
-            get { return AutoCatType.UserScore; }
-        }
+        [XmlElement("Rule")] public List<UserScore_Rule> Rules;
 
-        #endregion
-
-        #region Construction
-
-        public AutoCatUserScore(string name, string filter = null, string prefix = null,
-            bool useWilsonScore = false, List<UserScore_Rule> rules = null, bool selected = false)
-            : base(name)
+        public AutoCatUserScore(string name, string filter = null, string prefix = null, bool useWilsonScore = false, List<UserScore_Rule> rules = null, bool selected = false) : base(name)
         {
             Filter = filter;
             Prefix = prefix;
             UseWilsonScore = useWilsonScore;
-            Rules = (rules == null) ? new List<UserScore_Rule>() : rules;
+            Rules = rules == null ? new List<UserScore_Rule>() : rules;
             Selected = selected;
         }
 
         //XmlSerializer requires a parameterless constructor
         private AutoCatUserScore() { }
 
-        public AutoCatUserScore(AutoCatUserScore other)
-            : base(other)
+        public AutoCatUserScore(AutoCatUserScore other) : base(other)
         {
             Filter = other.Filter;
             Prefix = other.Prefix;
@@ -99,14 +86,7 @@ namespace Depressurizer
             Selected = other.Selected;
         }
 
-        public override AutoCat Clone()
-        {
-            return new AutoCatUserScore(this);
-        }
-
-        #endregion
-
-        #region Autocategorization
+        public override AutoCat Clone() => new AutoCatUserScore(this);
 
         public override AutoCatResult CategorizeGame(GameInfo game, Filter filter)
         {
@@ -115,11 +95,13 @@ namespace Depressurizer
                 Logger.Instance.Error(GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
+
             if (db == null)
             {
                 Logger.Instance.Error(GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
+
             if (game == null)
             {
                 Logger.Instance.Error(GlobalStrings.Log_AutoCat_GameNull);
@@ -149,12 +131,10 @@ namespace Depressurizer
                 // $n$ is the total number of ratings (the sample size), and
                 // $z$ is the $1-{\frac {\alpha}{2}}$ quantile of a standard normal distribution
                 // for 95% confidence, the $z = 1.96$
-                double
-                    z = 1.96; // normal distribution of (1-(1-confidence)/2), i.e. normal distribution of 0.975 for 95% confidence
+                double z = 1.96; // normal distribution of (1-(1-confidence)/2), i.e. normal distribution of 0.975 for 95% confidence
                 double p = score / 100.0;
                 double n = reviews;
-                p = Math.Round(100 * (((p + ((z * z) / (2 * n))) - (z * Math.Sqrt(((p * (1 - p)) + ((z * z) / (4 * n))) / n))) /
-                                      (1 + ((z * z) / n))));
+                p = Math.Round(100 * (((p + ((z * z) / (2 * n))) - (z * Math.Sqrt(((p * (1 - p)) + ((z * z) / (4 * n))) / n))) / (1 + ((z * z) / n))));
                 // debug: System.Windows.Forms.MessageBox.Show("score " + score + " of " + reviews + " is\tp = " + p + "\n");
                 score = Convert.ToInt32(p);
             }
@@ -176,11 +156,7 @@ namespace Depressurizer
             return AutoCatResult.Success;
         }
 
-        private bool CheckRule(UserScore_Rule rule, int score, int reviews)
-        {
-            return ((score >= rule.MinScore) && (score <= rule.MaxScore)) && (rule.MinReviews <= reviews) &&
-                   ((rule.MaxReviews == 0) || (rule.MaxReviews >= reviews));
-        }
+        private bool CheckRule(UserScore_Rule rule, int score, int reviews) => (score >= rule.MinScore) && (score <= rule.MaxScore) && (rule.MinReviews <= reviews) && ((rule.MaxReviews == 0) || (rule.MaxReviews >= reviews));
 
         private string GetProcessedString(string s)
         {
@@ -192,12 +168,8 @@ namespace Depressurizer
             return s;
         }
 
-        #endregion
-
-        #region Preset generators
-
         /// <summary>
-        /// Generates rules that match the Steam Store rating labels
+        ///     Generates rules that match the Steam Store rating labels
         /// </summary>
         /// <param name="rules">List of UserScore_Rule objects to populate with the new ones. Should generally be empty.</param>
         public void GenerateSteamRules(ICollection<UserScore_Rule> rules)
@@ -212,7 +184,5 @@ namespace Depressurizer
             rules.Add(new UserScore_Rule(GlobalStrings.AutoCatUserScore_Preset_Steam_Negative3, 0, 19, 50, 0));
             rules.Add(new UserScore_Rule(GlobalStrings.AutoCatUserScore_Preset_Steam_Negative2, 0, 19, 1, 0));
         }
-
-        #endregion
     }
 }

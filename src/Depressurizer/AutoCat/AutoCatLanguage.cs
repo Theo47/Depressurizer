@@ -20,11 +20,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
-using System.Xml.Serialization;
 using Depressurizer.Helpers;
 using Depressurizer.Model;
-using Rallion;
 
 namespace Depressurizer
 {
@@ -32,17 +29,16 @@ namespace Depressurizer
     {
         public override AutoCatType AutoCatType => AutoCatType.Language;
 
+        public bool IncludeTypePrefix { get; set; }
+
         // AutoCat configuration
         public string Prefix { get; set; }
-
-        public bool IncludeTypePrefix { get; set; }
 
         public bool TypeFallback { get; set; }
 
         public LanguageSupport IncludedLanguages;
 
-        public AutoCatLanguage(string name, string filter = null, string prefix = null, bool includeTypePrefix = false, bool typeFallback = false, List<string> interfaceLanguage = null,
-            List<string> subtitles = null, List<string> fullAudio = null, bool selected = false) : base(name)
+        public AutoCatLanguage(string name, string filter = null, string prefix = null, bool includeTypePrefix = false, bool typeFallback = false, List<string> interfaceLanguage = null, List<string> subtitles = null, List<string> fullAudio = null, bool selected = false) : base(name)
         {
             Filter = filter;
             Prefix = prefix;
@@ -132,7 +128,7 @@ namespace Depressurizer
             return AutoCatResult.Success;
         }
 
-        private string GetProcessedString(string baseString, string type="")
+        private string GetProcessedString(string baseString, string type = "")
         {
             string result = baseString;
 

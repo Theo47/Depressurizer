@@ -17,7 +17,6 @@
 */
 
 using System;
-using System.Diagnostics;
 using System.Net;
 using System.Xml;
 
@@ -26,7 +25,6 @@ namespace Depressurizer.Helpers
     public sealed class XmlParser
     {
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="xmlPath"></param>
         /// <returns></returns>
@@ -79,7 +77,6 @@ namespace Depressurizer.Helpers
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="xmlPath"></param>
         /// <param name="args"></param>
