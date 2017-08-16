@@ -137,7 +137,7 @@ namespace Depressurizer
                 foreach (string category in RemoveCategories)
                 {
                     Category c = gamelist.GetCategory(category);
-                    if (game.ContainsCategory(c))
+                    if (game.Contains(c))
                     {
                         game.RemoveCategory(c);
                         removed.Add(c);

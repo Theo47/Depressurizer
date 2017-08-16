@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 using Depressurizer.Helpers;
+using Depressurizer.Model;
 
 namespace Depressurizer
 {

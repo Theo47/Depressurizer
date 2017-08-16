@@ -1248,7 +1248,7 @@ namespace Depressurizer
             {
                 foreach (int gameId in filter.Games.Keys)
                 {
-                    if (Games.ContainsKey(gameId) && !filter.Games[gameId].Hidden)
+                    if (Games.ContainsKey(gameId) && !filter.Games[gameId].IsHidden)
                     {
                         CalculateSortedDevListHelper(devCounts, Games[gameId]);
                     }
@@ -1306,7 +1306,7 @@ namespace Depressurizer
             {
                 foreach (int gameId in filter.Games.Keys)
                 {
-                    if (Games.ContainsKey(gameId) && !filter.Games[gameId].Hidden)
+                    if (Games.ContainsKey(gameId) && !filter.Games[gameId].IsHidden)
                     {
                         CalculateSortedPubListHelper(PubCounts, Games[gameId]);
                     }
@@ -1368,7 +1368,7 @@ namespace Depressurizer
             {
                 foreach (int gameId in filter.Games.Keys)
                 {
-                    if (Games.ContainsKey(gameId) && !filter.Games[gameId].Hidden)
+                    if (Games.ContainsKey(gameId) && !filter.Games[gameId].IsHidden)
                     {
                         CalculateSortedTagListHelper(tagCounts, Games[gameId], weightFactor, tagsPerGame);
                     }

@@ -20,6 +20,7 @@
 using System;
 using System.Xml;
 using System.Xml.Serialization;
+using Depressurizer.Model;
 
 /* ADDING NEW AUTOCAT METHODS
  * 

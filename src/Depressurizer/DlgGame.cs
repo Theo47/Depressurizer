@@ -19,6 +19,7 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.IO;
 using System.Windows.Forms;
+using Depressurizer.Model;
 
 namespace Depressurizer
 {
@@ -51,8 +52,8 @@ namespace Depressurizer
                 txtName.Text = Game.Name;
                 txtCategory.Text = Game.GetCatString();
                 txtExecutable.Text = Game.Executable;
-                chkFavorite.Checked = Game.IsFavorite();
-                chkHidden.Checked = Game.Hidden;
+                chkFavorite.Checked = Game.IsFavorite;
+                chkHidden.Checked = Game.IsHidden;
                 txtId.ReadOnly = true;
             }
             else
@@ -96,7 +97,7 @@ namespace Depressurizer
 
             Game.SetFavorite(chkFavorite.Checked);
 
-            Game.Hidden = chkHidden.Checked;
+            Game.IsHidden = chkHidden.Checked;
 
             DialogResult = DialogResult.OK;
             Close();

@@ -340,7 +340,7 @@ namespace Depressurizer
                 game.Source = source;
                 profile.GameData.Games.Add(id, game);
 
-                game.Hidden = XmlUtil.GetBoolFromNode(node[XmlName_Game_Hidden], false);
+                game.IsHidden = XmlUtil.GetBoolFromNode(node[XmlName_Game_Hidden], false);
                 game.Executable = XmlUtil.GetStringFromNode(node[XmlName_Game_Executable], null);
                 game.LastPlayed = XmlUtil.GetIntFromNode(node[XmlName_Game_LastPlayed], 0);
 
@@ -441,7 +441,7 @@ namespace Depressurizer
                         writer.WriteElementString(XmlName_Game_Name, g.Name);
                     }
 
-                    writer.WriteElementString(XmlName_Game_Hidden, g.Hidden.ToString());
+                    writer.WriteElementString(XmlName_Game_Hidden, g.IsHidden.ToString());
 
                     if (g.LastPlayed != 0)
                     {
