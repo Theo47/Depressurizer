@@ -1515,6 +1515,7 @@ namespace Depressurizer
         /// </summary>
         /// <param name="includeImputedTimes">Whether to include imputed hltb times</param>
         /// <returns>The number of entries integrated into the database.</returns>
+        /// TODO: Fix memory leak
         public int UpdateFromHltb(bool includeImputedTimes)
         {
             int updated = 0;
