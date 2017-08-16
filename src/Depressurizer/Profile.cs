@@ -330,9 +330,11 @@ namespace Depressurizer
         public bool Save(string path)
         {
             Logger.Instance.Info(GlobalStrings.Profile_SavingProfile, path);
-            XmlWriterSettings writeSettings = new XmlWriterSettings();
-            writeSettings.CloseOutput = true;
-            writeSettings.Indent = true;
+            XmlWriterSettings writeSettings = new XmlWriterSettings
+            {
+                CloseOutput = true,
+                Indent = true
+            };
 
             try
             {
@@ -343,10 +345,105 @@ namespace Depressurizer
                 Logger.Instance.Error(GlobalStrings.Log_Profile_ConfigBackupFailed, e.Message);
             }
 
-            XmlWriter writer;
             try
             {
-                writer = XmlWriter.Create(path, writeSettings);
+                using (XmlWriter writer = XmlWriter.Create(path, writeSettings))
+                {
+                    writer.WriteStartElement(XmlName_Profile);
+
+                    writer.WriteAttributeString(XmlName_Version, VERSION.ToString());
+
+                    writer.WriteElementString(XmlName_SteamID, SteamID64.ToString());
+
+                    writer.WriteElementString(XmlName_AutoUpdate, AutoUpdate.ToString());
+                    writer.WriteElementString(XmlName_AutoImport, AutoImport.ToString());
+                    writer.WriteElementString(XmlName_AutoExport, AutoExport.ToString());
+                    writer.WriteElementString(XmlName_LocalUpdate, LocalUpdate.ToString());
+                    writer.WriteElementString(XmlName_WebUpdate, WebUpdate.ToString());
+                    writer.WriteElementString(XmlName_ExportDiscard, ExportDiscard.ToString());
+                    writer.WriteElementString(XmlName_AutoIgnore, AutoIgnore.ToString());
+                    writer.WriteElementString(XmlName_IncludeUnknown, IncludeUnknown.ToString());
+                    writer.WriteElementString(XmlName_BypassIgnoreOnImport, BypassIgnoreOnImport.ToString());
+                    writer.WriteElementString(XmlName_OverwriteNames, OverwriteOnDownload.ToString());
+                    writer.WriteElementString(XmlName_IncludeShortcuts, IncludeShortcuts.ToString());
+
+                    writer.WriteStartElement(XmlName_GameList);
+
+                    foreach (GameInfo g in GameData.Games.Values)
+                    {
+                        if (IncludeShortcuts || (g.Id > 0))
+                        {
+                            // Don't save shortcuts if we aren't including them
+                            writer.WriteStartElement(XmlName_Game);
+
+                            writer.WriteElementString(XmlName_Game_Id, g.Id.ToString());
+                            writer.WriteElementString(XmlName_Game_Source, g.Source.ToString());
+
+                            if (g.Name != null)
+                            {
+                                writer.WriteElementString(XmlName_Game_Name, g.Name);
+                            }
+
+                            writer.WriteElementString(XmlName_Game_Hidden, g.IsHidden.ToString());
+
+                            if (g.LastPlayed != 0)
+                            {
+                                writer.WriteElementString(XmlName_Game_LastPlayed, g.LastPlayed.ToString());
+                            }
+
+                            if (!g.Executable.Contains("steam://"))
+                            {
+                                writer.WriteElementString(XmlName_Game_Executable, g.Executable);
+                            }
+
+                            writer.WriteStartElement(XmlName_Game_CategoryList);
+                            foreach (Category c in g.Categories)
+                            {
+                                string catName = c.Name;
+                                if (c.Name == GameList.FAVORITE_NEW_CONFIG_VALUE)
+                                {
+                                    catName = GameList.FAVORITE_CONFIG_VALUE;
+                                }
+                                writer.WriteElementString(XmlName_Game_Category, catName);
+                            }
+
+                            writer.WriteEndElement(); // categories
+
+                            writer.WriteEndElement(); // game
+                        }
+                    }
+
+                    writer.WriteEndElement(); // games
+
+                    writer.WriteStartElement(XmlName_FilterList);
+
+                    foreach (Filter f in GameData.Filters)
+                    {
+                        f.WriteToXml(writer);
+                    }
+
+                    writer.WriteEndElement(); //game filters
+
+                    writer.WriteStartElement(XmlName_AutoCatList);
+
+                    foreach (AutoCat autocat in AutoCats)
+                    {
+                        autocat.WriteToXml(writer);
+                    }
+
+                    writer.WriteEndElement(); //autocats
+
+                    writer.WriteStartElement(XmlName_ExclusionList);
+
+                    foreach (int i in IgnoreList)
+                    {
+                        writer.WriteElementString(XmlName_Exclusion, i.ToString());
+                    }
+
+                    writer.WriteEndElement(); // exclusions
+
+                    writer.WriteEndElement(); // profile
+                }
             }
             catch (Exception e)
             {
@@ -354,102 +451,6 @@ namespace Depressurizer
                 throw new ApplicationException(GlobalStrings.Profile_ErrorSavingProfileFile + e.Message, e);
             }
 
-            writer.WriteStartElement(XmlName_Profile);
-
-            writer.WriteAttributeString(XmlName_Version, VERSION.ToString());
-
-            writer.WriteElementString(XmlName_SteamID, SteamID64.ToString());
-
-            writer.WriteElementString(XmlName_AutoUpdate, AutoUpdate.ToString());
-            writer.WriteElementString(XmlName_AutoImport, AutoImport.ToString());
-            writer.WriteElementString(XmlName_AutoExport, AutoExport.ToString());
-            writer.WriteElementString(XmlName_LocalUpdate, LocalUpdate.ToString());
-            writer.WriteElementString(XmlName_WebUpdate, WebUpdate.ToString());
-            writer.WriteElementString(XmlName_ExportDiscard, ExportDiscard.ToString());
-            writer.WriteElementString(XmlName_AutoIgnore, AutoIgnore.ToString());
-            writer.WriteElementString(XmlName_IncludeUnknown, IncludeUnknown.ToString());
-            writer.WriteElementString(XmlName_BypassIgnoreOnImport, BypassIgnoreOnImport.ToString());
-            writer.WriteElementString(XmlName_OverwriteNames, OverwriteOnDownload.ToString());
-            writer.WriteElementString(XmlName_IncludeShortcuts, IncludeShortcuts.ToString());
-
-            writer.WriteStartElement(XmlName_GameList);
-
-            foreach (GameInfo g in GameData.Games.Values)
-            {
-                if (IncludeShortcuts || (g.Id > 0))
-                {
-                    // Don't save shortcuts if we aren't including them
-                    writer.WriteStartElement(XmlName_Game);
-
-                    writer.WriteElementString(XmlName_Game_Id, g.Id.ToString());
-                    writer.WriteElementString(XmlName_Game_Source, g.Source.ToString());
-
-                    if (g.Name != null)
-                    {
-                        writer.WriteElementString(XmlName_Game_Name, g.Name);
-                    }
-
-                    writer.WriteElementString(XmlName_Game_Hidden, g.IsHidden.ToString());
-
-                    if (g.LastPlayed != 0)
-                    {
-                        writer.WriteElementString(XmlName_Game_LastPlayed, g.LastPlayed.ToString());
-                    }
-
-                    if (!g.Executable.Contains("steam://"))
-                    {
-                        writer.WriteElementString(XmlName_Game_Executable, g.Executable);
-                    }
-
-                    writer.WriteStartElement(XmlName_Game_CategoryList);
-                    foreach (Category c in g.Categories)
-                    {
-                        string catName = c.Name;
-                        if (c.Name == GameList.FAVORITE_NEW_CONFIG_VALUE)
-                        {
-                            catName = GameList.FAVORITE_CONFIG_VALUE;
-                        }
-                        writer.WriteElementString(XmlName_Game_Category, catName);
-                    }
-
-                    writer.WriteEndElement(); // categories
-
-                    writer.WriteEndElement(); // game
-                }
-            }
-
-            writer.WriteEndElement(); // games
-
-            writer.WriteStartElement(XmlName_FilterList);
-
-            foreach (Filter f in GameData.Filters)
-            {
-                f.WriteToXml(writer);
-            }
-
-            writer.WriteEndElement(); //game filters
-
-            writer.WriteStartElement(XmlName_AutoCatList);
-
-            foreach (AutoCat autocat in AutoCats)
-            {
-                autocat.WriteToXml(writer);
-            }
-
-            writer.WriteEndElement(); //autocats
-
-            writer.WriteStartElement(XmlName_ExclusionList);
-
-            foreach (int i in IgnoreList)
-            {
-                writer.WriteElementString(XmlName_Exclusion, i.ToString());
-            }
-
-            writer.WriteEndElement(); // exclusions
-
-            writer.WriteEndElement(); // profile
-
-            writer.Close();
             FilePath = path;
             Logger.Instance.Info(GlobalStrings.Profile_ProfileSaveComplete);
             return true;

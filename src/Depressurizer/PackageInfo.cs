@@ -128,43 +128,55 @@ namespace Depressurizer
             * 08 00 depotids 00 02 *entrynumber* 00 *depotid*(4 bytes, little endian) 02 *entrynumber* 00 *depotid* 02 *entrynumber* 00 *depotid* 
             * 08 00 appitems 00 08 08 08 
             */
-
-            BinaryReader bReader = new BinaryReader(new FileStream(path, FileMode.Open), Encoding.ASCII);
-            long fileLength = bReader.BaseStream.Length;
-
-            // seek to packageid: start of a new entry
-            byte[] packageidBytes =
+            try
             {
-                0x00, 0x02, 0x70, 0x61, 0x63, 0x6B, 0x61, 0x67, 0x65, 0x69, 0x64, 0x00
-            }; // 0x00 0x02 p a c k a g e i d 0x00
-            byte[] billingtypeBytes =
-            {
-                0x02, 0x62, 0x69, 0x6C, 0x6C, 0x69, 0x6E, 0x67, 0x74, 0x79, 0x70, 0x65, 0x00
-            }; // 0x02 b i l l i n g t y p e 0x00
-            byte[] appidsBytes =
-            {
-                0x08, 0x00, 0x61, 0x70, 0x70, 0x69, 0x64, 0x73, 0x00
-            }; // 0x08 0x00 appids 0x00
-
-            VdfFileNode.ReadBin_SeekTo(bReader, packageidBytes, fileLength);
-            while (bReader.BaseStream.Position < fileLength)
-            {
-                int id = bReader.ReadInt32();
-                PackageInfo package = new PackageInfo(id);
-
-                VdfFileNode.ReadBin_SeekTo(bReader, billingtypeBytes, fileLength);
-                package.BillingType = (PackageBillingType)bReader.ReadInt32();
-
-                VdfFileNode.ReadBin_SeekTo(bReader, appidsBytes, fileLength);
-                while (bReader.ReadByte() == 0x02)
+                using (FileStream fileStream = new FileStream(path, FileMode.Open))
                 {
-                    while (bReader.ReadByte() != 0x00) { }
+                    using (BinaryReader bReader = new BinaryReader(fileStream, Encoding.ASCII))
+                    {
+                        long fileLength = bReader.BaseStream.Length;
 
-                    package.AppIds.Add(bReader.ReadInt32());
+                        // seek to packageid: start of a new entry
+                        byte[] packageidBytes =
+                        {
+                            0x00, 0x02, 0x70, 0x61, 0x63, 0x6B, 0x61, 0x67, 0x65, 0x69, 0x64, 0x00
+                        }; // 0x00 0x02 p a c k a g e i d 0x00
+                        byte[] billingtypeBytes =
+                        {
+                            0x02, 0x62, 0x69, 0x6C, 0x6C, 0x69, 0x6E, 0x67, 0x74, 0x79, 0x70, 0x65, 0x00
+                        }; // 0x02 b i l l i n g t y p e 0x00
+                        byte[] appidsBytes =
+                        {
+                            0x08, 0x00, 0x61, 0x70, 0x70, 0x69, 0x64, 0x73, 0x00
+                        }; // 0x08 0x00 appids 0x00
+
+                        VdfFileNode.ReadBin_SeekTo(bReader, packageidBytes, fileLength);
+                        while (bReader.BaseStream.Position < fileLength)
+                        {
+                            int id = bReader.ReadInt32();
+                            PackageInfo package = new PackageInfo(id);
+
+                            VdfFileNode.ReadBin_SeekTo(bReader, billingtypeBytes, fileLength);
+                            package.BillingType = (PackageBillingType)bReader.ReadInt32();
+
+                            VdfFileNode.ReadBin_SeekTo(bReader, appidsBytes, fileLength);
+                            while (bReader.ReadByte() == 0x02)
+                            {
+                                while (bReader.ReadByte() != 0x00) { }
+
+                                package.AppIds.Add(bReader.ReadInt32());
+                            }
+
+                            result.Add(package.Id, package);
+                            VdfFileNode.ReadBin_SeekTo(bReader, packageidBytes, fileLength);
+                        }
+                    }
                 }
-
-                result.Add(package.Id, package);
-                VdfFileNode.ReadBin_SeekTo(bReader, packageidBytes, fileLength);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
 
             return result;

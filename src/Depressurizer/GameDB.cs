@@ -1470,30 +1470,43 @@ namespace Depressurizer
         public Dictionary<int, AppInfo> LoadApps(string path)
         {
             Dictionary<int, AppInfo> result = new Dictionary<int, AppInfo>();
-            BinaryReader bReader = new BinaryReader(new FileStream(path, FileMode.Open, FileAccess.Read));
-            long fileLength = bReader.BaseStream.Length;
 
-            // seek to common: start of a new entry
-            byte[] start =
+            try
             {
-                0x00, 0x00, 0x63, 0x6F, 0x6D, 0x6D, 0x6F, 0x6E, 0x00
-            }; // 0x00 0x00 c o m m o n 0x00
-
-            VdfFileNode.ReadBin_SeekTo(bReader, start, fileLength);
-
-            VdfFileNode node = VdfFileNode.LoadFromBinary(bReader, fileLength);
-            while (node != null)
-            {
-                AppInfo app = AppInfo.Create(node);
-                if (app != null)
+                using (FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
-                    result.Add(app.Id, app);
+                    using (BinaryReader bReader = new BinaryReader(fileStream))
+                    {
+                        long fileLength = bReader.BaseStream.Length;
+
+                        // seek to common: start of a new entry
+                        byte[] start =
+                        {
+                            0x00, 0x00, 0x63, 0x6F, 0x6D, 0x6D, 0x6F, 0x6E, 0x00
+                        }; // 0x00 0x00 c o m m o n 0x00
+
+                        VdfFileNode.ReadBin_SeekTo(bReader, start, fileLength);
+
+                        VdfFileNode node = VdfFileNode.LoadFromBinary(bReader, fileLength);
+                        while (node != null)
+                        {
+                            AppInfo app = AppInfo.Create(node);
+                            if (app != null)
+                            {
+                                result.Add(app.Id, app);
+                            }
+                            VdfFileNode.ReadBin_SeekTo(bReader, start, fileLength);
+                            node = VdfFileNode.LoadFromBinary(bReader, fileLength);
+                        }
+                    }
                 }
-                VdfFileNode.ReadBin_SeekTo(bReader, start, fileLength);
-                node = VdfFileNode.LoadFromBinary(bReader, fileLength);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
 
-            bReader.Close();
             return result;
         }
 
@@ -1578,212 +1591,237 @@ namespace Depressurizer
         public void Save(string path, bool compress)
         {
             Logger.Instance.Info(GlobalStrings.GameDB_SavingGameDBTo, path);
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.CloseOutput = true;
 
-            Stream stream = null;
             try
             {
-                stream = new FileStream(path, FileMode.Create);
-
                 if (compress)
                 {
-                    stream = new GZipStream(stream, CompressionMode.Compress);
+                    using (Stream fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        using (Stream zipStream = new GZipStream(fileStream, CompressionMode.Compress))
+                        {
+                            Save(zipStream);
+                        }
+                    }
                 }
-
-                XmlWriter writer = XmlWriter.Create(stream, settings);
-                writer.WriteStartDocument();
-                writer.WriteStartElement(XmlName_GameList);
-
-                writer.WriteElementString(XmlName_Version, VERSION.ToString());
-
-                writer.WriteElementString(XmlName_LastHltbUpdate, LastHltbUpdate.ToString());
-
-                writer.WriteElementString(XmlName_dbLanguage, Enum.GetName(typeof(StoreLanguage), dbLanguage));
-
-                foreach (GameDBEntry g in Games.Values)
+                else
                 {
-                    writer.WriteStartElement(XmlName_Game);
-
-                    writer.WriteElementString(XmlName_Game_Id, g.Id.ToString());
-
-                    if (!string.IsNullOrEmpty(g.Name))
+                    using (Stream fileStream = new FileStream(path, FileMode.Create))
                     {
-                        writer.WriteElementString(XmlName_Game_Name, g.Name);
+                        Save(fileStream);
                     }
-
-                    if (g.LastStoreScrape > 0)
-                    {
-                        writer.WriteElementString(XmlName_Game_LastStoreUpdate, g.LastStoreScrape.ToString());
-                    }
-                    if (g.LastAppInfoUpdate > 0)
-                    {
-                        writer.WriteElementString(XmlName_Game_LastAppInfoUpdate, g.LastAppInfoUpdate.ToString());
-                    }
-
-                    writer.WriteElementString(XmlName_Game_Type, g.AppType.ToString());
-
-                    writer.WriteElementString(XmlName_Game_Platforms, g.Platforms.ToString());
-
-                    if (g.ParentId >= 0)
-                    {
-                        writer.WriteElementString(XmlName_Game_Parent, g.ParentId.ToString());
-                    }
-
-                    if (g.Genres != null)
-                    {
-                        foreach (string str in g.Genres)
-                        {
-                            writer.WriteElementString(XmlName_Game_Genre, str);
-                        }
-                    }
-
-                    if (g.Tags != null)
-                    {
-                        foreach (string str in g.Tags)
-                        {
-                            writer.WriteElementString(XmlName_Game_Tag, str);
-                        }
-                    }
-
-                    if (g.Developers != null)
-                    {
-                        foreach (string str in g.Developers)
-                        {
-                            writer.WriteElementString(XmlName_Game_Developer, str);
-                        }
-                    }
-
-                    if (g.Publishers != null)
-                    {
-                        foreach (string str in g.Publishers)
-                        {
-                            writer.WriteElementString(XmlName_Game_Publisher, str);
-                        }
-                    }
-
-                    if (g.Flags != null)
-                    {
-                        foreach (string s in g.Flags)
-                        {
-                            writer.WriteElementString(XmlName_Game_Flag, s);
-                        }
-                    }
-
-                    //vr support
-                    writer.WriteStartElement(XmlName_Game_vrSupport);
-                    if (g.vrSupport.Headsets != null)
-                    {
-                        foreach (string str in g.vrSupport.Headsets)
-                        {
-                            writer.WriteElementString(XmlName_Game_vrSupport_Headsets, str);
-                        }
-                    }
-
-                    if (g.vrSupport.Input != null)
-                    {
-                        foreach (string str in g.vrSupport.Input)
-                        {
-                            writer.WriteElementString(XmlName_Game_vrSupport_Input, str);
-                        }
-                    }
-
-                    if (g.vrSupport.PlayArea != null)
-                    {
-                        foreach (string str in g.vrSupport.PlayArea)
-                        {
-                            writer.WriteElementString(XmlName_Game_vrSupport_PlayArea, str);
-                        }
-                    }
-
-                    writer.WriteEndElement();
-
-                    //language support
-                    writer.WriteStartElement(XmlName_Game_languageSupport);
-                    if (g.languageSupport.Interface != null)
-                    {
-                        foreach (string str in g.languageSupport.Interface)
-                        {
-                            writer.WriteElementString(XmlName_Game_languageSupport_Interface, str);
-                        }
-                    }
-
-                    if (g.languageSupport.FullAudio != null)
-                    {
-                        foreach (string str in g.languageSupport.FullAudio)
-                        {
-                            writer.WriteElementString(XmlName_Game_languageSupport_FullAudio, str);
-                        }
-                    }
-
-                    if (g.languageSupport.Subtitles != null)
-                    {
-                        foreach (string str in g.languageSupport.Subtitles)
-                        {
-                            writer.WriteElementString(XmlName_Game_languageSupport_Subtitles, str);
-                        }
-                    }
-
-                    writer.WriteEndElement();
-
-                    if (g.Achievements > 0)
-                    {
-                        writer.WriteElementString(XmlName_Game_Achievements, g.Achievements.ToString());
-                    }
-
-                    if (g.ReviewTotal > 0)
-                    {
-                        writer.WriteElementString(XmlName_Game_ReviewTotal, g.ReviewTotal.ToString());
-                        writer.WriteElementString(XmlName_Game_ReviewPositivePercent, g.ReviewPositivePercentage.ToString());
-                    }
-
-                    if (!string.IsNullOrEmpty(g.MC_Url))
-                    {
-                        writer.WriteElementString(XmlName_Game_MCUrl, g.MC_Url);
-                    }
-
-                    if (!string.IsNullOrEmpty(g.SteamReleaseDate))
-                    {
-                        writer.WriteElementString(XmlName_Game_Date, g.SteamReleaseDate);
-                    }
-
-                    if (g.HltbMain > 0)
-                    {
-                        writer.WriteElementString(XmlName_Game_HltbMain, g.HltbMain.ToString());
-                    }
-
-                    if (g.HltbExtras > 0)
-                    {
-                        writer.WriteElementString(XmlName_Game_HltbExtras, g.HltbExtras.ToString());
-                    }
-
-                    if (g.HltbCompletionist > 0)
-                    {
-                        writer.WriteElementString(XmlName_Game_HltbCompletionist, g.HltbCompletionist.ToString());
-                    }
-
-                    writer.WriteEndElement();
                 }
-
-                writer.WriteEndElement();
-                writer.WriteEndDocument();
-                writer.Close();
             }
             catch (Exception e)
             {
-                throw e;
-            }
-            finally
-            {
-                if (stream != null)
-                {
-                    stream.Close();
-                }
+                Console.WriteLine(e);
+                throw;
             }
 
             Logger.Instance.Info(GlobalStrings.GameDB_GameDBSaved);
         }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="stream"></param>
+        private void Save(Stream stream)
+        {
+            XmlWriterSettings settings = new XmlWriterSettings
+            {
+                Indent = true,
+                CloseOutput = true
+            };
+
+            try
+            {
+                using (XmlWriter writer = XmlWriter.Create(stream, settings))
+                {
+                    writer.WriteStartDocument();
+                    writer.WriteStartElement(XmlName_GameList);
+
+                    writer.WriteElementString(XmlName_Version, VERSION.ToString());
+
+                    writer.WriteElementString(XmlName_LastHltbUpdate, LastHltbUpdate.ToString());
+
+                    writer.WriteElementString(XmlName_dbLanguage, Enum.GetName(typeof(StoreLanguage), dbLanguage));
+
+                    foreach (GameDBEntry g in Games.Values)
+                    {
+                        writer.WriteStartElement(XmlName_Game);
+
+                        writer.WriteElementString(XmlName_Game_Id, g.Id.ToString());
+
+                        if (!string.IsNullOrEmpty(g.Name))
+                        {
+                            writer.WriteElementString(XmlName_Game_Name, g.Name);
+                        }
+
+                        if (g.LastStoreScrape > 0)
+                        {
+                            writer.WriteElementString(XmlName_Game_LastStoreUpdate, g.LastStoreScrape.ToString());
+                        }
+                        if (g.LastAppInfoUpdate > 0)
+                        {
+                            writer.WriteElementString(XmlName_Game_LastAppInfoUpdate, g.LastAppInfoUpdate.ToString());
+                        }
+
+                        writer.WriteElementString(XmlName_Game_Type, g.AppType.ToString());
+
+                        writer.WriteElementString(XmlName_Game_Platforms, g.Platforms.ToString());
+
+                        if (g.ParentId >= 0)
+                        {
+                            writer.WriteElementString(XmlName_Game_Parent, g.ParentId.ToString());
+                        }
+
+                        if (g.Genres != null)
+                        {
+                            foreach (string str in g.Genres)
+                            {
+                                writer.WriteElementString(XmlName_Game_Genre, str);
+                            }
+                        }
+
+                        if (g.Tags != null)
+                        {
+                            foreach (string str in g.Tags)
+                            {
+                                writer.WriteElementString(XmlName_Game_Tag, str);
+                            }
+                        }
+
+                        if (g.Developers != null)
+                        {
+                            foreach (string str in g.Developers)
+                            {
+                                writer.WriteElementString(XmlName_Game_Developer, str);
+                            }
+                        }
+
+                        if (g.Publishers != null)
+                        {
+                            foreach (string str in g.Publishers)
+                            {
+                                writer.WriteElementString(XmlName_Game_Publisher, str);
+                            }
+                        }
+
+                        if (g.Flags != null)
+                        {
+                            foreach (string s in g.Flags)
+                            {
+                                writer.WriteElementString(XmlName_Game_Flag, s);
+                            }
+                        }
+
+                        //vr support
+                        writer.WriteStartElement(XmlName_Game_vrSupport);
+                        if (g.vrSupport.Headsets != null)
+                        {
+                            foreach (string str in g.vrSupport.Headsets)
+                            {
+                                writer.WriteElementString(XmlName_Game_vrSupport_Headsets, str);
+                            }
+                        }
+
+                        if (g.vrSupport.Input != null)
+                        {
+                            foreach (string str in g.vrSupport.Input)
+                            {
+                                writer.WriteElementString(XmlName_Game_vrSupport_Input, str);
+                            }
+                        }
+
+                        if (g.vrSupport.PlayArea != null)
+                        {
+                            foreach (string str in g.vrSupport.PlayArea)
+                            {
+                                writer.WriteElementString(XmlName_Game_vrSupport_PlayArea, str);
+                            }
+                        }
+
+                        writer.WriteEndElement();
+
+                        //language support
+                        writer.WriteStartElement(XmlName_Game_languageSupport);
+                        if (g.languageSupport.Interface != null)
+                        {
+                            foreach (string str in g.languageSupport.Interface)
+                            {
+                                writer.WriteElementString(XmlName_Game_languageSupport_Interface, str);
+                            }
+                        }
+
+                        if (g.languageSupport.FullAudio != null)
+                        {
+                            foreach (string str in g.languageSupport.FullAudio)
+                            {
+                                writer.WriteElementString(XmlName_Game_languageSupport_FullAudio, str);
+                            }
+                        }
+
+                        if (g.languageSupport.Subtitles != null)
+                        {
+                            foreach (string str in g.languageSupport.Subtitles)
+                            {
+                                writer.WriteElementString(XmlName_Game_languageSupport_Subtitles, str);
+                            }
+                        }
+
+                        writer.WriteEndElement();
+
+                        if (g.Achievements > 0)
+                        {
+                            writer.WriteElementString(XmlName_Game_Achievements, g.Achievements.ToString());
+                        }
+
+                        if (g.ReviewTotal > 0)
+                        {
+                            writer.WriteElementString(XmlName_Game_ReviewTotal, g.ReviewTotal.ToString());
+                            writer.WriteElementString(XmlName_Game_ReviewPositivePercent, g.ReviewPositivePercentage.ToString());
+                        }
+
+                        if (!string.IsNullOrEmpty(g.MC_Url))
+                        {
+                            writer.WriteElementString(XmlName_Game_MCUrl, g.MC_Url);
+                        }
+
+                        if (!string.IsNullOrEmpty(g.SteamReleaseDate))
+                        {
+                            writer.WriteElementString(XmlName_Game_Date, g.SteamReleaseDate);
+                        }
+
+                        if (g.HltbMain > 0)
+                        {
+                            writer.WriteElementString(XmlName_Game_HltbMain, g.HltbMain.ToString());
+                        }
+
+                        if (g.HltbExtras > 0)
+                        {
+                            writer.WriteElementString(XmlName_Game_HltbExtras, g.HltbExtras.ToString());
+                        }
+
+                        if (g.HltbCompletionist > 0)
+                        {
+                            writer.WriteElementString(XmlName_Game_HltbCompletionist, g.HltbCompletionist.ToString());
+                        }
+
+                        writer.WriteEndElement();
+                    }
+
+                    writer.WriteEndElement();
+                    writer.WriteEndDocument();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+            Logger.Instance.Info(GlobalStrings.GameDB_GameDBSaved);
+        }
+
 
         public void Load(string path)
         {
@@ -1797,18 +1835,28 @@ namespace Depressurizer
             Logger.Instance.Trace($"Load({path}, {compress}) called");
 
             Logger.Instance.Info(GlobalStrings.GameDB_LoadingGameDBFrom, path);
-            XmlDocument doc = new XmlDocument();
 
-            Stream stream = null;
             try
             {
-                stream = new FileStream(path, FileMode.Open);
+                XmlDocument doc = new XmlDocument();
+
                 if (compress)
                 {
-                    stream = new GZipStream(stream, CompressionMode.Decompress);
+                    using (Stream fileStream = new FileStream(path, FileMode.Open))
+                    {
+                        using (Stream zipStream = new GZipStream(fileStream, CompressionMode.Decompress))
+                        {
+                            doc.Load(zipStream);
+                        }
+                    }
                 }
-
-                doc.Load(stream);
+                else
+                {
+                    using (Stream fileStream = new FileStream(path, FileMode.Open))
+                    {
+                        doc.Load(fileStream);
+                    }
+                }
 
                 Logger.Instance.Info(GlobalStrings.GameDB_GameDBXMLParsed);
                 Games.Clear();
@@ -1955,14 +2003,8 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                throw e;
-            }
-            finally
-            {
-                if (stream != null)
-                {
-                    stream.Close();
-                }
+                Console.WriteLine(e);
+                throw;
             }
         }
     }

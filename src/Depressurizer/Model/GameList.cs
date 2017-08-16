@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -1083,12 +1084,14 @@ namespace Depressurizer.Model
                 string filePathTmp = filePath + ".tmp";
                 FileInfo f = new FileInfo(filePathTmp);
                 f.Directory.Create();
-                FileStream fStream = f.Open(FileMode.Create, FileAccess.Write, FileShare.None);
-                using (StreamWriter writer = new StreamWriter(fStream))
+
+                using (FileStream fStream = f.Open(FileMode.Create, FileAccess.Write, FileShare.None))
                 {
-                    fullFile.SaveAsText(writer);
+                    using (StreamWriter writer = new StreamWriter(fStream))
+                    {
+                        fullFile.SaveAsText(writer);
+                    }
                 }
-                fStream.Close();
                 File.Delete(filePath);
                 File.Move(filePathTmp, filePath);
             }
@@ -1120,15 +1123,17 @@ namespace Depressurizer.Model
         {
             string filePath = string.Format(Resources.ShortCutsFilePath, Settings.Instance.SteamPath, Profile.ID64toDirName(SteamId));
             Logger.Instance.Info(GlobalStrings.GameData_SavingSteamConfigFile, filePath);
-            FileStream fStream = null;
-            BinaryReader binReader = null;
             VdfFileNode dataRoot = null;
+
             try
             {
-                fStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                binReader = new BinaryReader(fStream);
-
-                dataRoot = VdfFileNode.LoadFromBinary(binReader);
+                using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    using (BinaryReader binaryReader = new BinaryReader(fileStream))
+                    {
+                        dataRoot = VdfFileNode.LoadFromBinary(binaryReader);
+                    }
+                }
             }
             catch (FileNotFoundException e)
             {
@@ -1138,32 +1143,17 @@ namespace Depressurizer.Model
             {
                 Logger.Instance.Error(GlobalStrings.GameData_LoadingErrorSteamConfig, e.ToString());
             }
-            if (binReader != null)
-            {
-                binReader.Close();
-            }
-            if (fStream != null)
-            {
-                fStream.Close();
-            }
+
             if (dataRoot != null)
             {
-                List<GameInfo> gamesToSave = new List<GameInfo>();
-                foreach (int id in Games.Keys)
-                {
-                    if (id < 0)
-                    {
-                        gamesToSave.Add(Games[id]);
-                    }
-                }
-
-                StringDictionary launchIds = new StringDictionary();
-                LoadShortcutLaunchIds(SteamId, out launchIds);
+                List<GameInfo> gamesToSave = (from id in Games.Keys where id < 0 select Games[id]).ToList();
+                LoadShortcutLaunchIds(SteamId, out StringDictionary launchIds);
 
                 VdfFileNode appsNode = dataRoot.GetNodeAt(new[]
                 {
                     "shortcuts"
                 }, false);
+
                 foreach (KeyValuePair<string, VdfFileNode> shortcutPair in appsNode.NodeArray)
                 {
                     VdfFileNode nodeGame = shortcutPair.Value;
@@ -1208,6 +1198,7 @@ namespace Depressurizer.Model
                 if (dataRoot.NodeType == ValueType.Array)
                 {
                     Logger.Instance.Info(GlobalStrings.GameData_SavingShortcutConfigFile, filePath);
+
                     try
                     {
                         Utility.BackupFile(filePath, Settings.Instance.ConfigBackupCount);
@@ -1216,15 +1207,19 @@ namespace Depressurizer.Model
                     {
                         Logger.Instance.Error(GlobalStrings.Log_GameData_ShortcutBackupFailed, e.Message);
                     }
+
                     try
                     {
                         string filePathTmp = filePath + ".tmp";
-                        BinaryWriter binWriter;
-                        fStream = new FileStream(filePathTmp, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-                        binWriter = new BinaryWriter(fStream);
-                        dataRoot.SaveAsBinary(binWriter);
-                        binWriter.Close();
-                        fStream.Close();
+
+                        using (FileStream fileStream = new FileStream(filePathTmp, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
+                        {
+                            using (BinaryWriter binaryWriter = new BinaryWriter(fileStream))
+                            {
+                                dataRoot.SaveAsBinary(binaryWriter);
+                            }
+                        }
+
                         File.Delete(filePath);
                         File.Move(filePathTmp, filePath);
                     }
@@ -1320,15 +1315,17 @@ namespace Depressurizer.Model
             int loadedGames = 0;
 
             string filePath = string.Format(Resources.ShortCutsFilePath, Settings.Instance.SteamPath, Profile.ID64toDirName(SteamId));
-            FileStream fStream = null;
-            BinaryReader binReader = null;
 
             try
             {
-                fStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                binReader = new BinaryReader(fStream);
-
-                VdfFileNode dataRoot = VdfFileNode.LoadFromBinary(binReader);
+                VdfFileNode dataRoot;
+                using (FileStream fStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    using (BinaryReader binReader = new BinaryReader(fStream))
+                    {
+                        dataRoot = VdfFileNode.LoadFromBinary(binReader);
+                    }
+                }
 
                 VdfFileNode shortcutsNode = dataRoot.GetNodeAt(new[]
                 {
@@ -1338,22 +1335,14 @@ namespace Depressurizer.Model
                 if (shortcutsNode != null)
                 {
                     // Remove existing shortcuts
-                    List<int> oldShortcutIds = new List<int>();
-                    foreach (int id in Games.Keys)
-                    {
-                        if (id < 0)
-                        {
-                            oldShortcutIds.Add(id);
-                        }
-                    }
+                    List<int> oldShortcutIds = Games.Keys.Where(id => id < 0).ToList();
                     foreach (int g in oldShortcutIds)
                     {
                         Games.Remove(g);
                     }
 
                     // Load launch IDs
-                    StringDictionary launchIds = null;
-                    bool launchIdsLoaded = LoadShortcutLaunchIds(SteamId, out launchIds);
+                    LoadShortcutLaunchIds(SteamId, out StringDictionary launchIds);
 
                     // Load shortcuts
                     foreach (KeyValuePair<string, VdfFileNode> shortcutPair in shortcutsNode.NodeArray)
@@ -1382,17 +1371,6 @@ namespace Depressurizer.Model
             catch (ParseException e)
             {
                 Logger.Instance.Error(e.ToString());
-            }
-            finally
-            {
-                if (binReader != null)
-                {
-                    binReader.Close();
-                }
-                if (fStream != null)
-                {
-                    fStream.Close();
-                }
             }
 
             Logger.Instance.Info(GlobalStrings.GameData_IntegratedShortCuts, loadedGames);
