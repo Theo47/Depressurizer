@@ -41,7 +41,6 @@ namespace Depressurizer
                     return true;
                 }
             }
-
             value = string.Empty;
             return false;
         }
@@ -62,7 +61,6 @@ namespace Depressurizer
                     return true;
                 }
             }
-
             value = 0;
             return false;
         }
@@ -83,28 +81,26 @@ namespace Depressurizer
                     return true;
                 }
             }
-
             value = 0;
             return false;
         }
 
-        public static long GetInt64FromNode(XmlNode node, long defaultValue)
+        public static Int64 GetInt64FromNode(XmlNode node, Int64 defaultValue)
         {
-            long result;
+            Int64 result;
             return TryGetInt64FromNode(node, out result) ? result : defaultValue;
         }
 
-        public static bool TryGetInt64FromNode(XmlNode node, out long value)
+        public static bool TryGetInt64FromNode(XmlNode node, out Int64 value)
         {
             if (node != null)
             {
                 XmlNode textNode = node.SelectSingleNode("text()");
-                if ((textNode != null) && long.TryParse(textNode.InnerText, out value))
+                if ((textNode != null) && Int64.TryParse(textNode.InnerText, out value))
                 {
                     return true;
                 }
             }
-
             value = 0;
             return false;
         }
@@ -125,7 +121,6 @@ namespace Depressurizer
                     return true;
                 }
             }
-
             value = false;
             return false;
         }
@@ -140,7 +135,6 @@ namespace Depressurizer
                     return att.Value;
                 }
             }
-
             return null;
         }
 
@@ -157,12 +151,12 @@ namespace Depressurizer
             {
                 return true;
             }
-
             value = false;
             return false;
         }
 
-        public static TEnum GetEnumFromNode<TEnum>(XmlNode node, TEnum defaultValue) where TEnum : struct, IComparable, IConvertible, IFormattable
+        public static TEnum GetEnumFromNode<TEnum>(XmlNode node, TEnum defaultValue)
+            where TEnum : struct, IComparable, IConvertible, IFormattable
         {
             if (node != null)
             {
@@ -177,7 +171,6 @@ namespace Depressurizer
                     }
                 }
             }
-
             return defaultValue;
         }
 
@@ -192,7 +185,6 @@ namespace Depressurizer
                     result.Add(s);
                 }
             }
-
             if (result.Count == 0)
             {
                 return null;

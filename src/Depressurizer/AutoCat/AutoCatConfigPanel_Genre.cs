@@ -81,7 +81,7 @@ namespace Depressurizer
             }
 
             ac.Prefix = txtPrefix.Text;
-            ac.MaxCategories = (int)numMaxCats.Value;
+            ac.MaxCategories = (int) numMaxCats.Value;
             ac.RemoveOtherGenres = chkRemoveExisting.Checked;
             ac.TagFallback = chkTagFallback.Checked;
 
