@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
+using Rallion;
 
 namespace Depressurizer
 {
@@ -35,6 +36,9 @@ namespace Depressurizer
 
         private void OptionsForm_Load(object sender, EventArgs e)
         {
+            string[] levels = Enum.GetNames(typeof(LoggerLevel));
+            cmbLogLevel.Items.AddRange(levels);
+
             //UI languages
             List<string> UILanguages = new List<string>();
             foreach (string l in Enum.GetNames(typeof(UILanguage)))
@@ -49,10 +53,8 @@ namespace Depressurizer
                         name = CultureInfo.GetCultureInfo(l).NativeName;
                         break;
                 }
-
                 UILanguages.Add(name);
             }
-
             cmbUILanguage.Items.AddRange(UILanguages.ToArray());
 
             //Store Languages
@@ -78,10 +80,8 @@ namespace Depressurizer
                         name = CultureInfo.GetCultureInfo(l).NativeName;
                         break;
                 }
-
                 storeLanguages.Add(name);
             }
-
             cmbStoreLanguage.Items.AddRange(storeLanguages.ToArray());
 
             FillFieldsFromSettings();
@@ -127,9 +127,13 @@ namespace Depressurizer
 
             chkRemoveExtraEntries.Checked = settings.RemoveExtraEntries;
 
+            cmbLogLevel.SelectedIndex = (int) settings.LogLevel;
+            numLogSize.Value = settings.LogSize;
+            numLogBackup.Value = settings.LogBackups;
+
             //supported languages have an enum value of 1-5 (en, es, ru, uk, nl). 0 is windows language.
-            cmbUILanguage.SelectedIndex = (int)settings.UserLang;
-            cmbStoreLanguage.SelectedIndex = (int)settings.StoreLang;
+            cmbUILanguage.SelectedIndex = (int) settings.UserLang;
+            cmbStoreLanguage.SelectedIndex = (int) settings.StoreLang;
         }
 
         private void SaveFieldsToSettings()
@@ -169,14 +173,18 @@ namespace Depressurizer
             settings.UpdateHltbOnStart = chkUpdateHltbOnStartup.Checked;
             settings.IncludeImputedTimes = chkIncludeImputedTimes.Checked;
             settings.AutosaveDB = chkAutosaveDB.Checked;
-            settings.ScrapePromptDays = (int)numScrapePromptDays.Value;
+            settings.ScrapePromptDays = (int) numScrapePromptDays.Value;
 
             settings.CheckForDepressurizerUpdates = chkCheckForDepressurizerUpdates.Checked;
 
             settings.RemoveExtraEntries = chkRemoveExtraEntries.Checked;
 
-            settings.UserLang = (UILanguage)cmbUILanguage.SelectedIndex;
-            settings.StoreLang = (StoreLanguage)cmbStoreLanguage.SelectedIndex;
+            settings.LogLevel = (LoggerLevel) cmbLogLevel.SelectedIndex;
+            settings.LogSize = (int) numLogSize.Value;
+            settings.LogBackups = (int) numLogBackup.Value;
+
+            settings.UserLang = (UILanguage) cmbUILanguage.SelectedIndex;
+            settings.StoreLang = (StoreLanguage) cmbStoreLanguage.SelectedIndex;
 
             try
             {
@@ -184,9 +192,12 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                MessageBox.Show(GlobalStrings.DlgOptions_ErrorSavingSettingsFile + e.Message, GlobalStrings.DBEditDlg_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(GlobalStrings.DlgOptions_ErrorSavingSettingsFile + e.Message,
+                    GlobalStrings.DBEditDlg_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        #region Event handlers
 
         private void cmdCancel_Click(object sender, EventArgs e)
         {
@@ -218,5 +229,7 @@ namespace Depressurizer
                 txtDefaultProfile.Text = dlg.FileName;
             }
         }
+
+        #endregion
     }
 }
