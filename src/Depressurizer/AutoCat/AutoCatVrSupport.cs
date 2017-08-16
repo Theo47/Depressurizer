@@ -20,8 +20,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
-using Rallion;
+using Depressurizer.Helpers;
+using Depressurizer.Model;
 
 namespace Depressurizer
 {
@@ -34,8 +34,7 @@ namespace Depressurizer
 
         public VrSupport IncludedVrSupportFlags;
 
-        public AutoCatVrSupport(string name, string filter = null, string prefix = null, List<string> headsets = null,
-            List<string> input = null, List<string> playArea = null, bool selected = false) : base(name)
+        public AutoCatVrSupport(string name, string filter = null, string prefix = null, List<string> headsets = null, List<string> input = null, List<string> playArea = null, bool selected = false) : base(name)
         {
             Filter = filter;
             Prefix = prefix;
@@ -63,19 +62,19 @@ namespace Depressurizer
         {
             if (games == null)
             {
-                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GamelistNull);
+                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
 
             if (db == null)
             {
-                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_DBNull);
+                Logger.Instance.Error(GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
 
             if (game == null)
             {
-                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GameNull);
+                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GameNull);
                 return AutoCatResult.Failure;
             }
 

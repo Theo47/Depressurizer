@@ -25,10 +25,7 @@ namespace Depressurizer
 {
     public partial class DlgSteamPath : Form
     {
-        public string Path
-        {
-            get { return txtPath.Text.Trim().TrimEnd('\\'); }
-        }
+        public string Path => txtPath.Text.Trim().TrimEnd('\\');
 
         public DlgSteamPath()
         {
@@ -40,14 +37,13 @@ namespace Depressurizer
         {
             if (!Directory.Exists(Path))
             {
-                DialogResult res = MessageBox.Show(GlobalStrings.DlgSteamPath_ThatPathDoesNotExist,
-                    GlobalStrings.Gen_Warning, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
-                    MessageBoxDefaultButton.Button2);
+                DialogResult res = MessageBox.Show(GlobalStrings.DlgSteamPath_ThatPathDoesNotExist, GlobalStrings.Gen_Warning, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
                 if (res == DialogResult.No)
                 {
                     return;
                 }
             }
+
             Close();
         }
 

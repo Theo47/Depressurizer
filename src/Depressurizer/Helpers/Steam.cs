@@ -23,7 +23,6 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 using Depressurizer.Properties;
-using Rallion;
 
 namespace Depressurizer.Helpers
 {
@@ -36,7 +35,7 @@ namespace Depressurizer.Helpers
         /// TODO Add unit test
         public static void LaunchStorePage(int appId)
         {
-            Program.Logger.Write(LoggerLevel.Trace, $"Steam.LaunchStorePage({appId}) Called");
+            Logger.Instance.Trace($"Steam.LaunchStorePage({appId}) Called");
 
             Process steamProcess = new Process();
             try
@@ -47,7 +46,7 @@ namespace Depressurizer.Helpers
             }
             catch (Exception exception)
             {
-                Program.Logger.WriteException("Steam.LaunchStorePage: ", exception);
+                Logger.Instance.Exception(exception);
             }
         }
 
@@ -62,7 +61,7 @@ namespace Depressurizer.Helpers
         /// TODO Add unit test
         public static Image GetAvatar(long steamId64)
         {
-            Program.Logger.Write(LoggerLevel.Trace, $"Steam.GetAvatar({steamId64}) Called");
+            Logger.Instance.Trace($"Steam.GetAvatar({steamId64}) Called");
 
             Image steamAvatar = null;
 
@@ -81,26 +80,24 @@ namespace Depressurizer.Helpers
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <returns></returns>
         /// TODO: Add proper error handling
         /// TODO: Improve / extend existing Unit Tests
         public static XmlDocument FetchAppList()
         {
-            Program.Logger.Write(LoggerLevel.Trace, "Steam.FetchAppList() Called");
+            Logger.Instance.Trace("Steam.FetchAppList() Called");
 
             return XmlParser.Load(@"http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=xml");
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="appId"></param>
         /// <returns></returns>
         public static bool FetchBanner(int appId)
         {
-            Program.Logger.Write(LoggerLevel.Trace, $"Steam.FetchBanner({appId}) Called");
+            Logger.Instance.Trace($"Steam.FetchBanner({appId}) Called");
 
             bool success = false;
 
@@ -118,7 +115,7 @@ namespace Depressurizer.Helpers
             }
             catch (Exception e)
             {
-                Program.Logger.WriteException("Steam.FetchBanner: ", e);
+                Logger.Instance.Exception(e);
                 success = false;
             }
 

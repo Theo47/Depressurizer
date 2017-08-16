@@ -24,23 +24,20 @@ using System.Xml;
 namespace Rallion
 {
     /// <summary>
-    /// Base class for a settings object. Capable of loading and saving values of all public properties.
+    ///     Base class for a settings object. Capable of loading and saving values of all public properties.
     /// </summary>
-    abstract class AppSettings
+    internal abstract class AppSettings
     {
         protected readonly object threadLock = new object();
 
-        protected bool outOfDate;
-
         public string FilePath;
 
-        protected AppSettings()
-        {
-            FilePath = "Settings.xml";
-        }
+        protected bool outOfDate;
+
+        protected AppSettings() => FilePath = "Settings.xml";
 
         /// <summary>
-        /// Saves the contents of this instance to the defined config file.
+        ///     Saves the contents of this instance to the defined config file.
         /// </summary>
         /// <param name="force">If false, will only save if the flag indicates that changes have been made. If true, always saves.</param>
         public void Save(bool force = false)
@@ -65,6 +62,7 @@ namespace Rallion
                         }
                     }
                 }
+
                 doc.AppendChild(config);
                 try
                 {
@@ -76,7 +74,7 @@ namespace Rallion
         }
 
         /// <summary>
-        /// Loads settings from the defined config file.
+        ///     Loads settings from the defined config file.
         /// </summary>
         public virtual void Load()
         {
@@ -104,6 +102,7 @@ namespace Rallion
                 }
                 catch (XmlException) { }
                 catch (IOException) { }
+
                 outOfDate = false;
             }
         }

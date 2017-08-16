@@ -42,8 +42,6 @@ namespace Depressurizer
             }
         }
 
-        #region UI Uptaters
-
         private void FillAutocatList()
         {
             clbAutocats.Items.Clear();
@@ -54,7 +52,10 @@ namespace Depressurizer
                     bool addAC = true;
                     if (ac.AutoCatType == AutoCatType.Group)
                     {
-                        addAC = SafeGroup(((AutoCatGroup) ac).Autocats, new List<string>(new[] {originalGroup}));
+                        addAC = SafeGroup(((AutoCatGroup)ac).Autocats, new List<string>(new[]
+                        {
+                            originalGroup
+                        }));
                     }
                     if (addAC)
                     {
@@ -62,12 +63,9 @@ namespace Depressurizer
                     }
                 }
             }
+
             clbAutocats.DisplayMember = "DisplayName";
         }
-
-        #endregion
-
-        #region Event Handlers
 
         private void DlgAutoCat_Load(object sender, EventArgs e)
         {
@@ -76,12 +74,8 @@ namespace Depressurizer
 
         private void clbAutocats_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            ((AutoCat) clbAutocats.Items[e.Index]).Selected = e.NewValue == CheckState.Checked ? true : false;
+            ((AutoCat)clbAutocats.Items[e.Index]).Selected = e.NewValue == CheckState.Checked ? true : false;
         }
-
-        #endregion
-
-        #region Utility
 
         private bool SafeGroup(List<string> autocats, List<string> groups)
         {
@@ -117,7 +111,7 @@ namespace Depressurizer
 
             foreach (AutoCat ac in AutoCatList)
             {
-                if (String.Equals(ac.Name, name, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(ac.Name, name, StringComparison.OrdinalIgnoreCase))
                 {
                     return ac;
                 }
@@ -129,9 +123,7 @@ namespace Depressurizer
         private bool IsGroup(string find)
         {
             AutoCat test = GetAutoCat(find);
-            return (test.AutoCatType == AutoCatType.Group) ? true : false;
+            return test.AutoCatType == AutoCatType.Group ? true : false;
         }
-
-        #endregion
     }
 }

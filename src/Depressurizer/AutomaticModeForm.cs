@@ -23,15 +23,17 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
-using Rallion;
+using Depressurizer.Helpers;
+using Depressurizer.Model;
+using Depressurizer.Properties;
 
 namespace Depressurizer
 {
     public partial class AutomaticModeForm : Form
     {
-        bool encounteredError;
-        bool dbModified;
-        AutomaticModeOptions options;
+        private bool dbModified;
+        private bool encounteredError;
+        private readonly AutomaticModeOptions options;
 
         public AutomaticModeForm(AutomaticModeOptions opts)
         {
@@ -48,8 +50,7 @@ namespace Depressurizer
         {
             Run();
 
-            if ((options.AutoClose == AutoCloseType.Always) ||
-                ((options.AutoClose == AutoCloseType.UnlessError) && !encounteredError))
+            if ((options.AutoClose == AutoCloseType.Always) || ((options.AutoClose == AutoCloseType.UnlessError) && !encounteredError))
             {
                 Close();
             }
@@ -66,7 +67,7 @@ namespace Depressurizer
                 txtOutput.AppendText("> ");
             }
             txtOutput.AppendText(text);
-            Program.Logger.Write(LoggerLevel.Info, "Automatic mode: " + text);
+            Logger.Instance.Info("Automatic mode: " + text);
         }
 
         private void WriteLine(string text = "")
@@ -77,7 +78,7 @@ namespace Depressurizer
 
         private void Run()
         {
-            Program.Logger.Write(LoggerLevel.Info, "Starting automatic operation.");
+            Logger.Instance.Info("Starting automatic operation.");
 
             if (!LoadGameDB())
             {
@@ -215,7 +216,7 @@ namespace Depressurizer
             catch (Exception e)
             {
                 WriteLine("Error loading database: " + e.Message);
-                Program.Logger.WriteException("Automatic mode: Error loading database.", e);
+                Logger.Instance.Exception("Automatic mode: Error loading database.", e);
             }
             if (success)
             {
@@ -237,21 +238,24 @@ namespace Depressurizer
                         WriteLine("Not found. Continuing.");
                         return true;
                     }
+
                     WriteLine("Found running Steam process.");
                     if (tryClose)
                     {
                         return TryCloseSteam(processes);
                     }
+
                     WriteLine("Skipping trying to close Steam.");
                     return false;
                 }
+
                 WriteLine("Skipping running Steam check.");
                 return true;
             }
             catch (Exception e)
             {
                 WriteLine("Checking for running Steam process failed: " + e.Message);
-                Program.Logger.WriteException("Automatic mode error:", e);
+                Logger.Instance.Exception("Automatic mode error:", e);
                 return false;
             }
         }
@@ -291,7 +295,7 @@ namespace Depressurizer
             catch (Exception e)
             {
                 WriteLine("Closing Steam failed: " + e.Message);
-                Program.Logger.WriteException("Automatic mode error:", e);
+                Logger.Instance.Exception("Automatic mode error:", e);
                 return false;
             }
         }
@@ -309,6 +313,7 @@ namespace Depressurizer
                     WriteLine("No profile specified in settings.");
                     return null;
                 }
+
                 WriteLine("Default profile found: " + Settings.Instance.ProfileToLoad);
                 profileToLoad = Settings.Instance.ProfileToLoad;
             }
@@ -329,7 +334,7 @@ namespace Depressurizer
             catch (Exception e)
             {
                 WriteLine("Profile loading failed: " + e.Message);
-                Program.Logger.WriteException("Automatic mode: Error loading profile.", e);
+                Logger.Instance.Exception("Automatic mode: Error loading profile.", e);
             }
             return profile;
         }
@@ -341,6 +346,7 @@ namespace Depressurizer
                 WriteLine("Skipping updating game list.");
                 return false;
             }
+
             Write("Updating game list...");
             bool success = false;
             if (profile.LocalUpdate)
@@ -349,14 +355,13 @@ namespace Depressurizer
                 try
                 {
                     Write("Trying local update...");
-                    profile.GameData.UpdateGameListFromOwnedPackageInfo(profile.SteamID64, profile.IgnoreList,
-                        profile.IncludeUnknown ? AppTypes.InclusionUnknown : AppTypes.InclusionNormal, out newApps);
+                    profile.GameData.UpdateGameListFromOwnedPackageInfo(profile.SteamID64, profile.IgnoreList, profile.IncludeUnknown ? AppTypes.InclusionUnknown : AppTypes.InclusionNormal, out newApps);
                     success = true;
                 }
                 catch (Exception e)
                 {
                     Write("Local update failed. ");
-                    Program.Logger.WriteException("Automatic mode: Error on local profile update.", e);
+                    Logger.Instance.Exception("Automatic mode: Error on local profile update.", e);
                 }
             }
             if (!success && profile.WebUpdate)
@@ -379,6 +384,7 @@ namespace Depressurizer
                         break;
                 }
             }
+
             if (success)
             {
                 WriteLine("Game list updated.");
@@ -396,13 +402,12 @@ namespace Depressurizer
             {
                 XmlDocument doc = GameList.FetchXmlGameList(profile.SteamID64);
                 int newApps;
-                profile.GameData.IntegrateXmlGameList(doc, false, profile.IgnoreList,
-                    profile.IncludeUnknown ? AppTypes.InclusionUnknown : AppTypes.InclusionNormal, out newApps);
+                profile.GameData.IntegrateXmlGameList(doc, false, profile.IgnoreList, profile.IncludeUnknown ? AppTypes.InclusionUnknown : AppTypes.InclusionNormal, out newApps);
                 return true;
             }
             catch (Exception e)
             {
-                Program.Logger.WriteException("Automatic mode: Error on XML web profile update.", e);
+                Logger.Instance.Exception("Automatic mode: Error on XML web profile update.", e);
                 return false;
             }
         }
@@ -413,13 +418,12 @@ namespace Depressurizer
             {
                 string doc = GameList.FetchHtmlGameList(profile.SteamID64);
                 int newApps;
-                profile.GameData.IntegrateHtmlGameList(doc, false, profile.IgnoreList,
-                    profile.IncludeUnknown ? AppTypes.InclusionUnknown : AppTypes.InclusionNormal, out newApps);
+                profile.GameData.IntegrateHtmlGameList(doc, false, profile.IgnoreList, profile.IncludeUnknown ? AppTypes.InclusionUnknown : AppTypes.InclusionNormal, out newApps);
                 return true;
             }
             catch (Exception e)
             {
-                Program.Logger.WriteException("Automatic mode: Error on HTML web profile update.", e);
+                Logger.Instance.Exception("Automatic mode: Error on HTML web profile update.", e);
                 return false;
             }
         }
@@ -431,6 +435,7 @@ namespace Depressurizer
                 WriteLine("Skipping Steam category import.");
                 return true;
             }
+
             Write("Importing Steam category data...");
             bool success = false;
             try
@@ -441,7 +446,7 @@ namespace Depressurizer
             catch (Exception e)
             {
                 WriteLine("Import failed: " + e.Message);
-                Program.Logger.WriteException("Automatic mode: Error on steam import.", e);
+                Logger.Instance.Exception("Automatic mode: Error on steam import.", e);
             }
             if (success)
             {
@@ -457,11 +462,12 @@ namespace Depressurizer
                 WriteLine("Skipping AppInfo update.");
                 return true;
             }
+
             Write("Updating database from AppInfo...");
             bool success = false;
             try
             {
-                string path = string.Format(Properties.Resources.AppInfoPath, Settings.Instance.SteamPath);
+                string path = string.Format(Resources.AppInfoPath, Settings.Instance.SteamPath);
                 if (Program.GameDatabase.UpdateFromAppInfo(path) > 0)
                 {
                     dbModified = true;
@@ -471,7 +477,7 @@ namespace Depressurizer
             catch (Exception e)
             {
                 WriteLine("Error updating database from AppInfo: " + e.Message);
-                Program.Logger.WriteException("Automatic mode: Error updating from AppInfo.", e);
+                Logger.Instance.Exception("Automatic mode: Error updating from AppInfo.", e);
             }
             if (success)
             {
@@ -487,12 +493,14 @@ namespace Depressurizer
                 WriteLine("Skipping HLTB update.");
                 return true;
             }
+
             int HalfAWeekInSecs = 84 * 24 * 60 * 60;
             if (Utility.GetCurrentUTime() > (Program.GameDatabase.LastHltbUpdate + HalfAWeekInSecs))
             {
                 WriteLine("Skipping HLTB update.");
                 return true;
             }
+
             Write("Updating database from HLTB...");
             bool success = false;
             try
@@ -506,7 +514,7 @@ namespace Depressurizer
             catch (Exception e)
             {
                 WriteLine("Error updating database from HLTB: " + e.Message);
-                Program.Logger.WriteException("Automatic mode: Error updating from HLTB.", e);
+                Logger.Instance.Exception("Automatic mode: Error updating from HLTB.", e);
             }
             if (success)
             {
@@ -522,6 +530,7 @@ namespace Depressurizer
                 WriteLine("Skipping game scraping.");
                 return true;
             }
+
             bool success = false;
             Write("Scraping unscraped games...");
             try
@@ -562,8 +571,9 @@ namespace Depressurizer
             catch (Exception e)
             {
                 WriteLine("Error updating database from web: " + e.Message);
-                Program.Logger.WriteException("Automatic mode: Error updating db from web.", e);
+                Logger.Instance.Exception("Automatic mode: Error updating db from web.", e);
             }
+
             return success;
         }
 
@@ -574,11 +584,13 @@ namespace Depressurizer
                 WriteLine("Skipping database saving.");
                 return true;
             }
+
             if (!dbModified)
             {
                 WriteLine("No database changes to save.");
                 return true;
             }
+
             bool success = false;
             Write("Saving database...");
             try
@@ -589,7 +601,7 @@ namespace Depressurizer
             catch (Exception e)
             {
                 WriteLine("Error saving database: " + e.Message);
-                Program.Logger.WriteException("Automatic mode: Error saving db.", e);
+                Logger.Instance.Exception("Automatic mode: Error saving db.", e);
             }
 
             if (success)
@@ -626,14 +638,16 @@ namespace Depressurizer
                         }
                     }
                 }
+
                 RunAutoCats(p, acList);
                 success = true;
             }
             catch (Exception e)
             {
                 WriteLine("Error autocategorizing games: " + e.Message);
-                Program.Logger.WriteException("Automatic mode: Error autocategorizing games.", e);
+                Logger.Instance.Exception("Automatic mode: Error autocategorizing games.", e);
             }
+
             if (success)
             {
                 WriteLine("Autocategorization complete.");
@@ -650,7 +664,7 @@ namespace Depressurizer
 
                 if (ac.AutoCatType == AutoCatType.Group)
                 {
-                    AutoCatGroup acg = (AutoCatGroup) ac;
+                    AutoCatGroup acg = (AutoCatGroup)ac;
                     RunAutoCats(p, p.CloneAutoCatList(acg.Autocats, p.GameData.GetFilter(acg.Filter)));
                 }
                 else
@@ -663,6 +677,7 @@ namespace Depressurizer
                         }
                     }
                 }
+
                 ac.DeProcess();
                 WriteLine(ac.Name + " complete.");
             }
@@ -675,6 +690,7 @@ namespace Depressurizer
                 WriteLine("Skipping profile save.");
                 return true;
             }
+
             Write("Saving profile...");
             bool success = false;
             try
@@ -685,7 +701,7 @@ namespace Depressurizer
             catch (Exception e)
             {
                 WriteLine("Error saving profile: " + e.Message);
-                Program.Logger.WriteException("Automatic mode: Error saving profile.", e);
+                Logger.Instance.Exception("Automatic mode: Error saving profile.", e);
             }
             if (success)
             {
@@ -701,6 +717,7 @@ namespace Depressurizer
                 WriteLine("Skipping Steam export.");
                 return true;
             }
+
             Write("Exporting to Steam...");
             bool success = false;
             try
@@ -711,7 +728,7 @@ namespace Depressurizer
             catch (Exception e)
             {
                 WriteLine("Error exporting Steam config: " + e.Message);
-                Program.Logger.WriteException("Automatic mode: Error exporting config.", e);
+                Logger.Instance.Exception("Automatic mode: Error exporting config.", e);
             }
             if (success)
             {
@@ -760,21 +777,21 @@ namespace Depressurizer
 
     public class AutomaticModeOptions
     {
+        public bool ApplyAllAutoCats = false;
+        public List<string> AutoCats = new List<string>();
+        public AutoCloseType AutoClose = AutoCloseType.None;
         public bool CheckSteam = true;
         public bool CloseSteam = true;
         public string CustomProfile = null;
-        public List<string> AutoCats = new List<string>();
-        public bool ApplyAllAutoCats = false;
-        public bool UpdateGameList = true;
+        public bool ExportToSteam = true;
         public bool ImportSteamCategories = false;
-        public bool UpdateAppInfo = true;
-        public bool UpdateHltb = true;
-        public bool ScrapeUnscrapedGames = true;
         public bool SaveDBChanges = true;
         public bool SaveProfile = true;
-        public bool ExportToSteam = true;
+        public bool ScrapeUnscrapedGames = true;
         public SteamLaunchType SteamLaunch = SteamLaunchType.None;
-        public AutoCloseType AutoClose = AutoCloseType.None;
         public bool TolerateMinorErrors = false;
+        public bool UpdateAppInfo = true;
+        public bool UpdateGameList = true;
+        public bool UpdateHltb = true;
     }
 }

@@ -1,23 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml;
-using Rallion;
+using Depressurizer.Helpers;
+using Depressurizer.Model;
 
 namespace Depressurizer
 {
     public class Filter : IComparable
     {
-        // Serialization strings
-        private const string TypeIdString = "Filter";
+        public SortedSet<Category> Allow
+        {
+            get => _allow;
+            set => _allow = new SortedSet<Category>(value);
+        }
 
-        private const string
-            XmlName_Name = "Name",
-            XmlName_Uncategorized = "Uncategorized",
-            XmlName_Hidden = "Hidden",
-            XmlName_VR = "VR",
-            XmlName_Allow = "Allow",
-            XmlName_Require = "Require",
-            XmlName_Exclude = "Exclude";
+        public SortedSet<Category> Exclude
+        {
+            get => _exclude;
+            set => _exclude = new SortedSet<Category>(value);
+        }
+
+        public SortedSet<Category> Require
+        {
+            get => _require;
+            set => _require = new SortedSet<Category>(value);
+        }
+
+        private SortedSet<Category> _allow;
+
+        private SortedSet<Category> _exclude;
+
+        private SortedSet<Category> _require;
+        public int Hidden;
+
+        public string Name;
+        public int Uncategorized;
+        public int VR;
 
         public Filter(string name)
         {
@@ -30,60 +48,10 @@ namespace Depressurizer
             Exclude = new SortedSet<Category>();
         }
 
-        public override string ToString()
-        {
-            return Name;
-        }
+        // Serialization strings
+        private const string TypeIdString = "Filter";
 
-        public string Name;
-        public int Uncategorized;
-        public int Hidden;
-        public int VR;
-
-        private SortedSet<Category> _allow;
-
-        public SortedSet<Category> Allow
-        {
-            get { return _allow; }
-            set
-            {
-                _allow = new SortedSet<Category>(value);
-                //foreach (Category c in value)
-                //{
-                //    _allow.Add(c);
-                //}
-            }
-        }
-
-        private SortedSet<Category> _require;
-
-        public SortedSet<Category> Require
-        {
-            get { return _require; }
-            set
-            {
-                _require = new SortedSet<Category>(value);
-                //foreach (Category c in value)
-                //{
-                //    _require.Add(c);
-                //}
-            }
-        }
-
-        private SortedSet<Category> _exclude;
-
-        public SortedSet<Category> Exclude
-        {
-            get { return _exclude; }
-            set
-            {
-                _exclude = new SortedSet<Category>(value);
-                //foreach (Category c in value)
-                //{
-                //    _exclude.Add(c);
-                //}
-            }
-        }
+        private const string XmlName_Name = "Name", XmlName_Uncategorized = "Uncategorized", XmlName_Hidden = "Hidden", XmlName_VR = "VR", XmlName_Allow = "Allow", XmlName_Require = "Require", XmlName_Exclude = "Exclude";
 
         public int CompareTo(object o)
         {
@@ -98,7 +66,7 @@ namespace Depressurizer
                 throw new ArgumentException(GlobalStrings.Category_Exception_ObjectNotCategory);
             }
 
-            int comp = String.Compare(Name, otherFilter.Name, StringComparison.OrdinalIgnoreCase);
+            int comp = string.Compare(Name, otherFilter.Name, StringComparison.OrdinalIgnoreCase);
 
             if (comp == 0)
             {
@@ -108,9 +76,11 @@ namespace Depressurizer
             return comp;
         }
 
+        public override string ToString() => Name;
+
         public void WriteToXml(XmlWriter writer)
         {
-            Program.Logger.Write(LoggerLevel.Info, GlobalStrings.Filter_SavingFilter, Name);
+            Logger.Instance.Info(GlobalStrings.Filter_SavingFilter, Name);
 
             writer.WriteStartElement(TypeIdString);
 
@@ -136,7 +106,7 @@ namespace Depressurizer
 
             writer.WriteEndElement(); // Filter
 
-            Program.Logger.Write(LoggerLevel.Info, GlobalStrings.Filter_FilterSaveComplete);
+            Logger.Instance.Info(GlobalStrings.Filter_FilterSaveComplete);
         }
     }
 }
