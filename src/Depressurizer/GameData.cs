@@ -799,12 +799,12 @@ namespace Depressurizer
                     removed = Games.Remove(appId);
                     if (removed)
                     {
-                        Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_RemovedGameFromGameList, appId,
+                        Logger.Instance.Debug(GlobalStrings.GameData_RemovedGameFromGameList, appId,
                             removedGame.Name);
                     }
                     else
                     {
-                        Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ErrorRemovingGame, appId,
+                        Logger.Instance.Error(GlobalStrings.GameData_ErrorRemovingGame, appId,
                             removedGame.Name);
                     }
                     return removed;
@@ -812,7 +812,7 @@ namespace Depressurizer
             }
             else
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ErrorRemovingSteamGame, appId);
+                Logger.Instance.Error(GlobalStrings.GameData_ErrorRemovingSteamGame, appId);
             }
 
             return removed;
@@ -1029,7 +1029,7 @@ namespace Depressurizer
             XmlDocument doc = new XmlDocument();
             try
             {
-                Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameData_AttemptingDownloadXMLGameList, url);
+                Logger.Instance.Info(GlobalStrings.GameData_AttemptingDownloadXMLGameList, url);
                 WebRequest req = HttpWebRequest.Create(url);
                 WebResponse response = req.GetResponse();
                 if (response.ResponseUri.Segments.Length < 4)
@@ -1042,17 +1042,17 @@ namespace Depressurizer
                 {
                     throw new ProfileAccessException(GlobalStrings.GameData_SpecifiedProfileNotPublic);
                 }
-                Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameData_SuccessDownloadXMLGameList, url);
+                Logger.Instance.Info(GlobalStrings.GameData_SuccessDownloadXMLGameList, url);
                 return doc;
             }
             catch (ProfileAccessException e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ProfileNotPublic);
+                Logger.Instance.Error(GlobalStrings.GameData_ProfileNotPublic);
                 throw e;
             }
             catch (Exception e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ExceptionDownloadXMLGameList, e.Message);
+                Logger.Instance.Error(GlobalStrings.GameData_ExceptionDownloadXMLGameList, e.Message);
                 throw new ApplicationException(e.Message, e);
             }
         }
@@ -1089,7 +1089,7 @@ namespace Depressurizer
             {
                 string result = "";
 
-                Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameData_AttemptingDownloadHTMLGameList, url);
+                Logger.Instance.Info(GlobalStrings.GameData_AttemptingDownloadHTMLGameList, url);
                 WebRequest req = HttpWebRequest.Create(url);
                 using (WebResponse response = req.GetResponse())
                 {
@@ -1100,17 +1100,17 @@ namespace Depressurizer
                     StreamReader sr = new StreamReader(response.GetResponseStream());
                     result = sr.ReadToEnd();
                 }
-                Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameData_SuccessDownloadHTMLGameList, url);
+                Logger.Instance.Info(GlobalStrings.GameData_SuccessDownloadHTMLGameList, url);
                 return result;
             }
             catch (ProfileAccessException e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ProfileNotPublic);
+                Logger.Instance.Error(GlobalStrings.GameData_ProfileNotPublic);
                 throw e;
             }
             catch (Exception e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ExceptionDownloadHTMLGameList,
+                Logger.Instance.Error(GlobalStrings.GameData_ExceptionDownloadHTMLGameList,
                     e.Message);
                 throw new ApplicationException(e.Message, e);
             }
@@ -1239,7 +1239,7 @@ namespace Depressurizer
                     }
                 }
             }
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameData_IntegratedXMLDataIntoGameList, loadedGames,
+            Logger.Instance.Info(GlobalStrings.GameData_IntegratedXMLDataIntoGameList, loadedGames,
                 newItems);
             return loadedGames;
         }
@@ -1288,7 +1288,7 @@ namespace Depressurizer
                     }
                 }
             }
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameData_IntegratedHTMLDataIntoGameList, totalItems,
+            Logger.Instance.Info(GlobalStrings.GameData_IntegratedHTMLDataIntoGameList, totalItems,
                 newItems);
             return totalItems;
         }
@@ -1326,7 +1326,7 @@ namespace Depressurizer
                         if (((ignore != null) && ignore.Contains(gameId)) ||
                             !Program.GameDatabase.IncludeItemInGameList(gameId, includedTypes))
                         {
-                            Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_SkippedProcessingGame,
+                            Logger.Instance.Debug(GlobalStrings.GameData_SkippedProcessingGame,
                                 gameId);
                         }
                         else if ((gameNodePair.Value != null) && (gameNodePair.Value.NodeType == ValueType.Array))
@@ -1338,7 +1338,7 @@ namespace Depressurizer
                             {
                                 game = new GameInfo(gameId, Program.GameDatabase.GetName(gameId), this);
                                 Games.Add(gameId, game);
-                                Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_AddedNewGame, gameId,
+                                Logger.Instance.Debug(GlobalStrings.GameData_AddedNewGame, gameId,
                                     game.Name);
                             }
                             else
@@ -1350,7 +1350,7 @@ namespace Depressurizer
                                 (gameNodePair.Value["LastPlayed"].NodeInt != 0))
                             {
                                 game.LastPlayed = gameNodePair.Value["LastPlayed"].NodeInt;
-                                Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_ProcessedGame, gameId,
+                                Logger.Instance.Debug(GlobalStrings.GameData_ProcessedGame, gameId,
                                     Utility.GetDTFromUTime(game.LastPlayed).Date);
                             }
                         }
@@ -1385,7 +1385,7 @@ namespace Depressurizer
                         if (((ignore != null) && ignore.Contains(gameId)) ||
                             !Program.GameDatabase.IncludeItemInGameList(gameId, includedTypes))
                         {
-                            Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_SkippedProcessingGame,
+                            Logger.Instance.Debug(GlobalStrings.GameData_SkippedProcessingGame,
                                 gameId);
                         }
                         else if ((gameNodePair.Value != null) && (gameNodePair.Value.NodeType == ValueType.Array))
@@ -1397,7 +1397,7 @@ namespace Depressurizer
                             {
                                 game = new GameInfo(gameId, Program.GameDatabase.GetName(gameId), this);
                                 Games.Add(gameId, game);
-                                Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_AddedNewGame, gameId,
+                                Logger.Instance.Debug(GlobalStrings.GameData_AddedNewGame, gameId,
                                     game.Name);
                             }
                             else
@@ -1438,7 +1438,7 @@ namespace Depressurizer
                                 }
                             }
 
-                            Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_ProcessedGame, gameId,
+                            Logger.Instance.Debug(GlobalStrings.GameData_ProcessedGame, gameId,
                                 string.Join(",", game.Categories));
                         }
                     }
@@ -1466,7 +1466,7 @@ namespace Depressurizer
             if (((ignore != null) && ignore.Contains(appId)) ||
                 !Program.GameDatabase.IncludeItemInGameList(appId, includedTypes))
             {
-                Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_SkippedIntegratingGame, appId,
+                Logger.Instance.Debug(GlobalStrings.GameData_SkippedIntegratingGame, appId,
                     appName);
                 return null;
             }
@@ -1488,7 +1488,7 @@ namespace Depressurizer
             }
             result.ApplySource(src);
 
-            Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_IntegratedGameIntoGameList, appId, appName,
+            Logger.Instance.Debug(GlobalStrings.GameData_IntegratedGameIntoGameList, appId, appName,
                 isNew);
             return result;
         }
@@ -1506,7 +1506,7 @@ namespace Depressurizer
         /// <returns>The number of game entries found</returns>
         public int ImportSteamConfigFile(string filePath, SortedSet<int> ignore, AppTypes includedTypes)
         {
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameData_OpeningSteamConfigFile, filePath);
+            Logger.Instance.Info(GlobalStrings.GameData_OpeningSteamConfigFile, filePath);
             VdfFileNode dataRoot;
 
             try
@@ -1518,18 +1518,18 @@ namespace Depressurizer
             }
             catch (ParseException e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ErrorParsingConfigFileParam, e.Message);
+                Logger.Instance.Error(GlobalStrings.GameData_ErrorParsingConfigFileParam, e.Message);
                 throw new ApplicationException(GlobalStrings.GameData_ErrorParsingSteamConfigFile + e.Message, e);
             }
             catch (IOException e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ErrorOpeningConfigFileParam, e.Message);
+                Logger.Instance.Error(GlobalStrings.GameData_ErrorOpeningConfigFileParam, e.Message);
                 throw new ApplicationException(GlobalStrings.GameData_ErrorOpeningSteamConfigFile + e.Message, e);
             }
 
             VdfFileNode appsNode = dataRoot.GetNodeAt(new[] {"Software", "Valve", "Steam", "apps"}, true);
             int count = IntegrateGamesFromVdf(appsNode, ignore, includedTypes);
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameData_SteamConfigFileLoaded, count);
+            Logger.Instance.Info(GlobalStrings.GameData_SteamConfigFileLoaded, count);
             return count;
         }
 
@@ -1577,7 +1577,7 @@ namespace Depressurizer
         /// <param name="discardMissing">If true, any pre-existing game entries in the file that do not have corresponding entries in the GameList are removed</param>
         public void ExportSteamConfigFile(string filePath, bool discardMissing)
         {
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameData_SavingSteamConfigFile, filePath);
+            Logger.Instance.Info(GlobalStrings.GameData_SavingSteamConfigFile, filePath);
 
             VdfFileNode fileData = new VdfFileNode();
             try
@@ -1589,7 +1589,7 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                Logger.Instance.Write(LogLevel.Warn, GlobalStrings.GameData_LoadingErrorSteamConfig, e.Message);
+                Logger.Instance.Warn(GlobalStrings.GameData_LoadingErrorSteamConfig, e.Message);
             }
 
             VdfFileNode appListNode = fileData.GetNodeAt(new[] {"Software", "Valve", "Steam", "apps"}, true);
@@ -1605,7 +1605,7 @@ namespace Depressurizer
                         int gameId;
                         if (!(int.TryParse(pair.Key, out gameId) && Games.ContainsKey(gameId)))
                         {
-                            Logger.Instance.Write(LogLevel.Debug,
+                            Logger.Instance.Debug(
                                 GlobalStrings.GameData_RemovingGameCategoryFromSteamConfig, gameId);
                             pair.Value.RemoveSubnode("tags");
                         }
@@ -1621,7 +1621,7 @@ namespace Depressurizer
                 if (game.Id > 0)
                 {
                     // External games have negative identifier
-                    Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_AddingGameToConfigFile, game.Id);
+                    Logger.Instance.Debug(GlobalStrings.GameData_AddingGameToConfigFile, game.Id);
                     VdfFileNode gameNode = appListNode[game.Id.ToString()];
                     gameNode.MakeArray();
 
@@ -1658,10 +1658,10 @@ namespace Depressurizer
             }
 
 
-            Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_CleaningUpSteamConfigTree);
+            Logger.Instance.Debug(GlobalStrings.GameData_CleaningUpSteamConfigTree);
             appListNode.CleanTree();
 
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameData_WritingToDisk);
+            Logger.Instance.Info(GlobalStrings.GameData_WritingToDisk);
             VdfFileNode fullFile = new VdfFileNode();
             fullFile["UserLocalConfigStore"] = fileData;
             try
@@ -1670,7 +1670,7 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.Log_GameData_ConfigBackupFailed, e.Message);
+                Logger.Instance.Error(GlobalStrings.Log_GameData_ConfigBackupFailed, e.Message);
             }
             try
             {
@@ -1688,19 +1688,19 @@ namespace Depressurizer
             }
             catch (ArgumentException e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ErrorSavingSteamConfigFile,
+                Logger.Instance.Error(GlobalStrings.GameData_ErrorSavingSteamConfigFile,
                     e.ToString());
                 throw new ApplicationException(GlobalStrings.GameData_FailedToSaveSteamConfigBadPath, e);
             }
             catch (IOException e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ErrorSavingSteamConfigFile,
+                Logger.Instance.Error(GlobalStrings.GameData_ErrorSavingSteamConfigFile,
                     e.ToString());
                 throw new ApplicationException(GlobalStrings.GameData_FailedToSaveSteamConfigFile + e.Message, e);
             }
             catch (UnauthorizedAccessException e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ErrorSavingSteamConfigFile,
+                Logger.Instance.Error(GlobalStrings.GameData_ErrorSavingSteamConfigFile,
                     e.ToString());
                 throw new ApplicationException(GlobalStrings.GameData_AccessDeniedSteamConfigFile + e.Message, e);
             }
@@ -1720,7 +1720,7 @@ namespace Depressurizer
         {
             string filePath = string.Format(Properties.Resources.ShortCutsFilePath, Settings.Instance.SteamPath,
                 Profile.ID64toDirName(SteamId));
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameData_SavingSteamConfigFile, filePath);
+            Logger.Instance.Info(GlobalStrings.GameData_SavingSteamConfigFile, filePath);
             FileStream fStream = null;
             BinaryReader binReader = null;
             VdfFileNode dataRoot = null;
@@ -1733,12 +1733,12 @@ namespace Depressurizer
             }
             catch (FileNotFoundException e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ErrorOpeningConfigFileParam,
+                Logger.Instance.Error(GlobalStrings.GameData_ErrorOpeningConfigFileParam,
                     e.ToString());
             }
             catch (IOException e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_LoadingErrorSteamConfig, e.ToString());
+                Logger.Instance.Error(GlobalStrings.GameData_LoadingErrorSteamConfig, e.ToString());
             }
             if (binReader != null)
             {
@@ -1776,7 +1776,7 @@ namespace Depressurizer
                         GameInfo game = gamesToSave[matchingIndex];
                         gamesToSave.RemoveAt(matchingIndex);
 
-                        Logger.Instance.Write(LogLevel.Debug, GlobalStrings.GameData_AddingGameToConfigFile,
+                        Logger.Instance.Debug(GlobalStrings.GameData_AddingGameToConfigFile,
                             game.Id);
 
                         VdfFileNode tagsNode = nodeGame.GetNodeAt(new[] {"tags"}, true);
@@ -1803,14 +1803,14 @@ namespace Depressurizer
                 }
                 if (dataRoot.NodeType == ValueType.Array)
                 {
-                    Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameData_SavingShortcutConfigFile, filePath);
+                    Logger.Instance.Info(GlobalStrings.GameData_SavingShortcutConfigFile, filePath);
                     try
                     {
                         Utility.BackupFile(filePath, Settings.Instance.ConfigBackupCount);
                     }
                     catch (Exception e)
                     {
-                        Logger.Instance.Write(LogLevel.Error, GlobalStrings.Log_GameData_ShortcutBackupFailed,
+                        Logger.Instance.Error(GlobalStrings.Log_GameData_ShortcutBackupFailed,
                             e.Message);
                     }
                     try
@@ -1828,20 +1828,20 @@ namespace Depressurizer
                     }
                     catch (ArgumentException e)
                     {
-                        Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ErrorSavingSteamConfigFile,
+                        Logger.Instance.Error(GlobalStrings.GameData_ErrorSavingSteamConfigFile,
                             e.ToString());
                         throw new ApplicationException(GlobalStrings.GameData_FailedToSaveSteamConfigBadPath, e);
                     }
                     catch (IOException e)
                     {
-                        Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ErrorSavingSteamConfigFile,
+                        Logger.Instance.Error(GlobalStrings.GameData_ErrorSavingSteamConfigFile,
                             e.ToString());
                         throw new ApplicationException(GlobalStrings.GameData_FailedToSaveSteamConfigFile + e.Message,
                             e);
                     }
                     catch (UnauthorizedAccessException e)
                     {
-                        Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ErrorSavingSteamConfigFile,
+                        Logger.Instance.Error(GlobalStrings.GameData_ErrorSavingSteamConfigFile,
                             e.ToString());
                         throw new ApplicationException(GlobalStrings.GameData_AccessDeniedSteamConfigFile + e.Message,
                             e);
@@ -1885,12 +1885,12 @@ namespace Depressurizer
             }
             catch (FileNotFoundException e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ErrorOpeningConfigFileParam,
+                Logger.Instance.Error(GlobalStrings.GameData_ErrorOpeningConfigFileParam,
                     e.ToString());
             }
             catch (IOException e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_LoadingErrorSteamConfig, e.ToString());
+                Logger.Instance.Error(GlobalStrings.GameData_LoadingErrorSteamConfig, e.ToString());
             }
 
             if (reader != null)
@@ -1968,16 +1968,16 @@ namespace Depressurizer
             }
             catch (FileNotFoundException e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_ErrorOpeningConfigFileParam,
+                Logger.Instance.Error(GlobalStrings.GameData_ErrorOpeningConfigFileParam,
                     e.ToString());
             }
             catch (IOException e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.GameData_LoadingErrorSteamConfig, e.ToString());
+                Logger.Instance.Error(GlobalStrings.GameData_LoadingErrorSteamConfig, e.ToString());
             }
             catch (ParseException e)
             {
-                Logger.Instance.Write(LogLevel.Error, e.ToString());
+                Logger.Instance.Error(e.ToString());
             }
             finally
             {
@@ -1991,7 +1991,7 @@ namespace Depressurizer
                 }
             }
 
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.GameData_IntegratedShortCuts, loadedGames);
+            Logger.Instance.Info(GlobalStrings.GameData_IntegratedShortCuts, loadedGames);
 
             return loadedGames;
         }

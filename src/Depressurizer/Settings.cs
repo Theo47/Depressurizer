@@ -580,14 +580,14 @@ namespace Depressurizer
 
         private Settings()
         {
-            Logger.Instance.Write(LogLevel.Trace, "Settings()");
+            Logger.Instance.Trace("Settings()");
             FilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Depressurizer\Settings.xml";
         }
 
         public override void Load()
         {
-            Logger.Instance.Write(LogLevel.Trace, "Load()");
-            Logger.Instance.Write(LogLevel.Info, "Loading Settings");
+            Logger.Instance.Trace("Load()");
+            Logger.Instance.Info("Loading Settings");
             base.Load();
         }
     }

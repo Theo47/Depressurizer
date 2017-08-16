@@ -32,7 +32,7 @@ namespace Depressurizer.Helpers
         /// <returns></returns>
         public static XmlDocument Load(string xmlPath)
         {
-            Logger.Instance.Write(LogLevel.Trace, $"XmlParser.Load({xmlPath}) Called");
+            Logger.Instance.Trace($"XmlParser.Load({xmlPath}) Called");
 
             XmlDocument xmlDocument = new XmlDocument();
             bool parsingSucceeded = false;
@@ -44,14 +44,14 @@ namespace Depressurizer.Helpers
             }
             catch (WebException webException)
             {
-                Logger.Instance.WriteException(webException);
+                Logger.Instance.Exception(webException);
 
                 if ((webException.Status == WebExceptionStatus.ProtocolError) && (webException.Response != null))
                 {
                     HttpWebResponse resp = (HttpWebResponse)webException.Response;
                     if (resp.StatusCode == HttpStatusCode.NotFound)
                     {
-                        Logger.Instance.Write(LogLevel.Error, $"Invalid XmlPath supplied: {xmlPath}");
+                        Logger.Instance.Error($"Invalid XmlPath supplied: {xmlPath}");
                         xmlDocument = null;
                     }
                 }
@@ -60,11 +60,11 @@ namespace Depressurizer.Helpers
             {
                 if (!parsingSucceeded)
                 {
-                    Logger.Instance.Write(LogLevel.Error, $"Error while parsing: {xmlPath}");
+                    Logger.Instance.Error($"Error while parsing: {xmlPath}");
                 }
                 else
                 {
-                    Logger.Instance.WriteException(ex);
+                    Logger.Instance.Exception(ex);
                 }
                 xmlDocument = null;
             }
@@ -80,7 +80,7 @@ namespace Depressurizer.Helpers
         /// <returns></returns>
         public static XmlDocument Load(string xmlPath, params object[] args)
         {
-            Logger.Instance.Write(LogLevel.Trace, $"XmlParser.Load({xmlPath}, {args}) Called");
+            Logger.Instance.Trace($"XmlParser.Load({xmlPath}, {args}) Called");
 
             return Load(string.Format(xmlPath, args));
         }

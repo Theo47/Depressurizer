@@ -111,7 +111,7 @@ namespace Depressurizer
 
         public void WriteToXml(XmlWriter writer)
         {
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.Filter_SavingFilter, Name);
+            Logger.Instance.Info(GlobalStrings.Filter_SavingFilter, Name);
 
             writer.WriteStartElement(TypeIdString);
 
@@ -137,7 +137,7 @@ namespace Depressurizer
 
             writer.WriteEndElement(); // Filter
 
-            Logger.Instance.Write(LogLevel.Info, GlobalStrings.Filter_FilterSaveComplete);
+            Logger.Instance.Info(GlobalStrings.Filter_FilterSaveComplete);
         }
     }
 }

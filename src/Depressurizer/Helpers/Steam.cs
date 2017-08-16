@@ -35,7 +35,7 @@ namespace Depressurizer.Helpers
         /// TODO Add unit test
         public static void LaunchStorePage(int appId)
         {
-            Logger.Instance.Write(LogLevel.Trace, $"Steam.LaunchStorePage({appId}) Called");
+            Logger.Instance.Trace($"Steam.LaunchStorePage({appId}) Called");
 
             Process steamProcess = new Process();
             try
@@ -46,7 +46,7 @@ namespace Depressurizer.Helpers
             }
             catch (Exception exception)
             {
-                Logger.Instance.WriteException(exception);
+                Logger.Instance.Exception(exception);
             }
         }
 
@@ -61,7 +61,7 @@ namespace Depressurizer.Helpers
         /// TODO Add unit test
         public static Image GetAvatar(long steamId64)
         {
-            Logger.Instance.Write(LogLevel.Trace, $"Steam.GetAvatar({steamId64}) Called");
+            Logger.Instance.Trace($"Steam.GetAvatar({steamId64}) Called");
 
             Image steamAvatar = null;
 
@@ -87,7 +87,7 @@ namespace Depressurizer.Helpers
         /// TODO: Improve / extend existing Unit Tests
         public static XmlDocument FetchAppList()
         {
-            Logger.Instance.Write(LogLevel.Trace, "Steam.FetchAppList() Called");
+            Logger.Instance.Trace("Steam.FetchAppList() Called");
 
             return XmlParser.Load(@"http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=xml");
         }
@@ -99,7 +99,7 @@ namespace Depressurizer.Helpers
         /// <returns></returns>
         public static bool FetchBanner(int appId)
         {
-            Logger.Instance.Write(LogLevel.Trace, $"Steam.FetchBanner({appId}) Called");
+            Logger.Instance.Trace($"Steam.FetchBanner({appId}) Called");
 
             bool success = false;
 
@@ -117,7 +117,7 @@ namespace Depressurizer.Helpers
             }
             catch (Exception e)
             {
-                Logger.Instance.WriteException(e);
+                Logger.Instance.Exception(e);
                 success = false;
             }
 

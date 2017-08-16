@@ -47,17 +47,17 @@ namespace Depressurizer
             try
             {
                 string url = string.Format(Properties.Resources.UrlCustomProfileXml, customUrlName);
-                Logger.Instance.Write(LogLevel.Info, GlobalStrings.CDlgGetSteamID_AttemptingDownloadXMLProfile,
+                Logger.Instance.Info(GlobalStrings.CDlgGetSteamID_AttemptingDownloadXMLProfile,
                     customUrlName, url);
                 WebRequest req = HttpWebRequest.Create(url);
                 WebResponse response = req.GetResponse();
                 doc.Load(response.GetResponseStream());
                 response.Close();
-                Logger.Instance.Write(LogLevel.Info, GlobalStrings.CDlgGetSteamID_XMLProfileDownloaded);
+                Logger.Instance.Info(GlobalStrings.CDlgGetSteamID_XMLProfileDownloaded);
             }
             catch (Exception e)
             {
-                Logger.Instance.Write(LogLevel.Error, GlobalStrings.CDlgGetSteamID_ExceptionDownloadingXMLProfile,
+                Logger.Instance.Error(GlobalStrings.CDlgGetSteamID_ExceptionDownloadingXMLProfile,
                     e.Message);
                 throw new ApplicationException(GlobalStrings.CDlgGetSteamID_FailedToDownloadProfile + e.Message, e);
             }

@@ -77,12 +77,12 @@ namespace Depressurizer
                         .Union(GetCuratorRecommendationsFromPage(resultsHtml)).ToDictionary(k => k.Key, v => v.Value);
                 }
             }
-            else { Logger.Instance.Write(LogLevel.Error, "Error: CDlgCurator: Couldn't determine total count of recommendations"); }
+            else { Logger.Instance.Error("Error: CDlgCurator: Couldn't determine total count of recommendations"); }
             if (CuratorRecommendations.Count != TotalCount)
             {
-                Logger.Instance.Write(LogLevel.Error, "Error: CDlgCurator: Count of recommendations retrieved is different than expected");
+                Logger.Instance.Error("Error: CDlgCurator: Count of recommendations retrieved is different than expected");
             }
-            else { Logger.Instance.Write(LogLevel.Error, String.Format("Retrieved {0} curator recommendations.", TotalCount)); }
+            else { Logger.Instance.Error(String.Format("Retrieved {0} curator recommendations.", TotalCount)); }
             OnThreadCompletion();
         }
 
@@ -129,11 +129,11 @@ namespace Depressurizer
                     if (int.TryParse(ma.Groups[1].Value, out int id) && recommendation != CuratorRecommendation.Error)
                     {
                         curatorRecommendations.Add(id, recommendation);
-                        Logger.Instance.Write(LogLevel.Debug, "Retrieved recommendation for game " + id + ": " + ma.Groups[2].Value);
+                        Logger.Instance.Debug("Retrieved recommendation for game " + id + ": " + ma.Groups[2].Value);
                     }
                     if (recommendation == CuratorRecommendation.Error)
                     {
-                        Logger.Instance.Write(LogLevel.Error, "Error: For game " + id + ": recommendation recognized as \"" + ma.Groups[2].Value + '"');
+                        Logger.Instance.Error("Error: For game " + id + ": recommendation recognized as \"" + ma.Groups[2].Value + '"');
                     }
                 }
             }

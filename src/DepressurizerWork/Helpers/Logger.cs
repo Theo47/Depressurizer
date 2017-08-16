@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
 
 namespace Depressurizer.Helpers
 {
@@ -136,47 +137,6 @@ namespace Depressurizer.Helpers
         /// <summary>
         /// </summary>
         /// <param name="logMessage"></param>
-        public void Error(string logMessage)
-        {
-            Write(LogLevel.Error, logMessage);
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="logMessage"></param>
-        /// <param name="args"></param>
-        public void Error(string logMessage, params object[] args)
-        {
-            Write(LogLevel.Error, string.Format(logMessage, args));
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="logMessage"></param>
-        /// TODO: Properly implement
-        public void Exception(string logMessage)
-        {
-            Write(LogLevel.Error, logMessage);
-        }
-
-        public void Exception(Exception exception)
-        {
-            Write(LogLevel.Error, exception.ToString());
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="logMessage"></param>
-        /// <param name="args"></param>
-        /// TODO: Properly implement
-        public void Exception(string logMessage, params object[] args)
-        {
-            Write(LogLevel.Error, string.Format(logMessage, args));
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="logMessage"></param>
         public void Info(string logMessage)
         {
             Write(LogLevel.Info, logMessage);
@@ -189,40 +149,6 @@ namespace Depressurizer.Helpers
         public void Info(string logMessage, params object[] args)
         {
             Write(LogLevel.Info, string.Format(logMessage, args));
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="logMessage"></param>
-        public void Trace(string logMessage)
-        {
-            Write(LogLevel.Trace, logMessage);
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="logMessage"></param>
-        /// <param name="args"></param>
-        public void Trace(string logMessage, params object[] args)
-        {
-            Write(LogLevel.Trace, string.Format(logMessage, args));
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="logMessage"></param>
-        public void Warn(string logMessage)
-        {
-            Write(LogLevel.Warn, logMessage);
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="logMessage"></param>
-        /// <param name="args"></param>
-        public void Warn(string logMessage, params object[] args)
-        {
-            Write(LogLevel.Warn, string.Format(logMessage, args));
         }
 
         /// <summary>
