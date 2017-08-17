@@ -326,6 +326,7 @@
     <Compile Include="ListViewComparer.cs" />
     <Compile Include="Model\AppInfo.cs" />
     <Compile Include="Model\Category.cs" />
+    <Compile Include="Model\GameDatabase.cs" />
     <Compile Include="Model\GameInfo.cs" />
     <Compile Include="Model\GameList.cs" />
     <Compile Include="PackageInfo.cs" />

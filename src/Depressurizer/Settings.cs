@@ -473,6 +473,11 @@ namespace Depressurizer
 
         private static Settings instance;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="storeLanguage"></param>
+        /// TODO: Why save twice
         public void ChangeStoreLanguage(StoreLanguage storeLanguage)
         {
             if (Program.GameDatabase == null)
@@ -508,9 +513,9 @@ namespace Depressurizer
             {
                 dbLanguage = storeLanguage;
             }
-            if (Program.GameDatabase.dbLanguage != dbLanguage)
+            if (Program.GameDatabase.DatabaseLanguage != dbLanguage)
             {
-                Program.GameDatabase.dbLanguage = dbLanguage;
+                Program.GameDatabase.DatabaseLanguage = dbLanguage;
                 //clean DB from data in wrong language
                 foreach (GameDBEntry g in Program.GameDatabase.Games.Values)
                 {
@@ -526,7 +531,7 @@ namespace Depressurizer
                     }
                 }
 
-                Program.GameDatabase.Save("GameDB.xml.gz");
+                Program.GameDatabase.Save();
 
                 //Update DB with data in correct language
                 Queue<int> gamesToUpdate = new Queue<int>();
@@ -545,7 +550,7 @@ namespace Depressurizer
 
                     if ((scrapeRes != DialogResult.Cancel) && (scrapeDlg.JobsCompleted > 0))
                     {
-                        Program.GameDatabase.Save("GameDB.xml.gz");
+                        Program.GameDatabase.Save();
                     }
                 }
             }

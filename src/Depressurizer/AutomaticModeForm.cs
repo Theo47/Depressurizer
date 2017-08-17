@@ -200,12 +200,12 @@ namespace Depressurizer
                 Program.GameDatabase = new GameDB();
                 if (File.Exists("GameDB.xml.gz"))
                 {
-                    Program.GameDatabase.Load("GameDB.xml.gz");
+                    Program.GameDatabase.Load();
                     success = true;
                 }
                 else if (File.Exists("GameDB.xml"))
                 {
-                    Program.GameDatabase.Load("GameDB.xml");
+                    Program.GameDatabase.Load();
                     success = true;
                 }
                 else
@@ -577,6 +577,12 @@ namespace Depressurizer
             return success;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="doSave"></param>
+        /// <returns></returns>
+        /// TODO: Cleanup
         private bool SaveDB(bool doSave)
         {
             if (!doSave)
@@ -591,8 +597,14 @@ namespace Depressurizer
                 return true;
             }
 
-            bool success = false;
+            bool success = true;
             Write("Saving database...");
+            if (!Program.GameDatabase.Save())
+            {
+                // TODO: Handle error
+            }
+
+            /*
             try
             {
                 Program.GameDatabase.Save("GameDB.xml.gz");
@@ -603,11 +615,13 @@ namespace Depressurizer
                 WriteLine("Error saving database: " + e.Message);
                 Logger.Instance.Exception("Automatic mode: Error saving db.", e);
             }
+            */
 
             if (success)
             {
                 WriteLine("Saved.");
             }
+
             return success;
         }
 

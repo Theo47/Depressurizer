@@ -113,13 +113,14 @@ namespace Depressurizer
         /// </summary>
         /// <param name="filename">Path to save to</param>
         /// <returns>True if successful</returns>
+        /// TODO: Change logic
         private bool Save(string filename)
         {
             Cursor c = Cursor;
             Cursor = Cursors.WaitCursor;
             try
             {
-                Program.GameDatabase.Save(filename);
+                Program.GameDatabase.Save();
             }
             catch (Exception e)
             {
@@ -148,7 +149,7 @@ namespace Depressurizer
                 if (res == DialogResult.OK)
                 {
                     Cursor = Cursors.WaitCursor;
-                    Program.GameDatabase.Load(dlg.FileName);
+                    Program.GameDatabase.Load();
                     RebuildDisplayList();
                     AddStatusMsg(GlobalStrings.DBEditDlg_FileLoaded);
                     UnsavedChanges = true;

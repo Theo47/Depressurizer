@@ -470,7 +470,7 @@ namespace Depressurizer
 
                 int id = ((GameInfo)g).Id;
                 DateTime releaseDate;
-                CultureInfo culture = Utility.GetCultureInfoFromStoreLanguage(Program.GameDatabase.dbLanguage);
+                CultureInfo culture = Utility.GetCultureInfoFromStoreLanguage(Program.GameDatabase.DatabaseLanguage);
                 if (Program.GameDatabase.Games.ContainsKey(id) && DateTime.TryParse(Program.GameDatabase.Games[id].SteamReleaseDate, culture, DateTimeStyles.None, out releaseDate))
                 {
                     return releaseDate.Year.ToString();
@@ -865,6 +865,7 @@ namespace Depressurizer
 
         /// <summary>
         /// </summary>
+        /// TODO: Cleanup
         private static void LoadGameDatabase()
         {
             Logger.Instance.Trace("MainFrom.LoadGameDatabase Called");
@@ -872,7 +873,12 @@ namespace Depressurizer
             try
             {
                 Program.GameDatabase = new GameDB();
+                if (!Program.GameDatabase.Load())
+                {
+                    // TODO: Handle error
+                }
 
+                /*
                 if (File.Exists("GameDB.xml.gz"))
                 {
                     Logger.Instance.Info("Found GameDB.xml.gz");
@@ -890,6 +896,7 @@ namespace Depressurizer
                     Logger.Instance.Warn("Couldn't find GameDB.xml or GameDB.xml.gz");
                     MessageBox.Show(GlobalStrings.MainForm_ErrorLoadingGameDB + GlobalStrings.MainForm_GameDBFileNotExist);
                 }
+                */
             }
             catch (Exception exception)
             {
@@ -3965,21 +3972,21 @@ namespace Depressurizer
             contextGameHidden_No.Checked = false;
             if (Program.GameDatabase != null)
             {
-                if (Program.GameDatabase.dbLanguage == StoreLanguage.zh_Hans)
+                if (Program.GameDatabase.DatabaseLanguage == StoreLanguage.zh_Hans)
                 {
                     storeLanguage = "schinese";
                 }
-                else if (Program.GameDatabase.dbLanguage == StoreLanguage.zh_Hant)
+                else if (Program.GameDatabase.DatabaseLanguage == StoreLanguage.zh_Hant)
                 {
                     storeLanguage = "tchinese";
                 }
-                else if (Program.GameDatabase.dbLanguage == StoreLanguage.pt_BR)
+                else if (Program.GameDatabase.DatabaseLanguage == StoreLanguage.pt_BR)
                 {
                     storeLanguage = "brazilian";
                 }
                 else
                 {
-                    storeLanguage = CultureInfo.GetCultureInfo(Enum.GetName(typeof(StoreLanguage), Program.GameDatabase.dbLanguage)).EnglishName.ToLowerInvariant();
+                    storeLanguage = CultureInfo.GetCultureInfo(Enum.GetName(typeof(StoreLanguage), Program.GameDatabase.DatabaseLanguage)).EnglishName.ToLowerInvariant();
                 }
             }
 
