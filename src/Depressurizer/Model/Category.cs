@@ -16,11 +16,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
+
 namespace Depressurizer.Model
 {
     /// <summary>
     /// </summary>
-    public sealed class Category
+    public sealed class Category : IComparable
     {
         /// <summary>
         /// </summary>
@@ -37,6 +39,42 @@ namespace Depressurizer.Model
         {
             Name = name;
             Count = 0;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public int CompareTo(object other)
+        {
+            if (other == null)
+            {
+                return 1;
+            }
+
+            Category otherCat = other as Category;
+            if (otherCat == null)
+            {
+                throw new Exception();
+            }
+
+            int compareValue = string.Compare(Name, otherCat.Name, StringComparison.OrdinalIgnoreCase);
+            if (compareValue == 0)
+            {
+                return 0;
+            }
+
+            if (string.Equals(Name, "favorite", StringComparison.OrdinalIgnoreCase))
+            {
+                return -1;
+            }
+
+            if (string.Equals(otherCat.Name, "favorite", StringComparison.OrdinalIgnoreCase))
+            {
+                return 1;
+            }
+
+            return compareValue;
         }
 
         /// <summary>
