@@ -23,14 +23,15 @@ using Rallion;
 
 namespace Depressurizer
 {
-    internal class DbScrapeDlg : CancelableDlg
+    class DbScrapeDlg : CancelableDlg
     {
-        private readonly Queue<int> jobs;
-        private readonly List<GameDBEntry> results;
+        Queue<int> jobs;
+        List<GameDBEntry> results;
 
-        private DateTime start;
+        DateTime start;
 
-        public DbScrapeDlg(Queue<int> jobs) : base(GlobalStrings.CDlgScrape_ScrapingGameInfo, true)
+        public DbScrapeDlg(Queue<int> jobs)
+            : base(GlobalStrings.CDlgScrape_ScrapingGameInfo, true)
         {
             this.jobs = jobs;
             totalJobs = jobs.Count;
@@ -52,7 +53,6 @@ namespace Depressurizer
                 {
                     return jobs.Dequeue();
                 }
-
                 return 0;
             }
         }
@@ -64,12 +64,11 @@ namespace Depressurizer
             {
                 stillRunning = RunNextJob();
             }
-
             OnThreadCompletion();
         }
 
         /// <summary>
-        ///     Runs the next job in the queue, in a thread-safe manner. Aborts ASAP if the form is closed.
+        /// Runs the next job in the queue, in a thread-safe manner. Aborts ASAP if the form is closed.
         /// </summary>
         /// <returns>True if a job was run, false if it was aborted first</returns>
         private bool RunNextJob()
@@ -98,7 +97,6 @@ namespace Depressurizer
                     OnJobCompletion();
                     return true;
                 }
-
                 return false;
             }
         }

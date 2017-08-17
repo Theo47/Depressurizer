@@ -325,16 +325,7 @@
     <Compile Include="Lib\Options.cs" />
     <Compile Include="ListViewComparer.cs" />
     <Compile Include="Model\AppInfo.cs" />
-    <Compile Include="Model\Category.cs" />
-    <Compile Include="Model\GameDatabase.cs" />
-    <Compile Include="Model\GameInfo.cs" />
-    <Compile Include="Model\GameList.cs" />
     <Compile Include="PackageInfo.cs" />
-    <Compile Include="Properties\Constants.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Constants.resx</DependentUpon>
-    </Compile>
     <Compile Include="Utility.cs" />
     <Compile Include="GlobalStrings.es.Designer.cs">
       <DependentUpon>GlobalStrings.es.resx</DependentUpon>
@@ -374,6 +365,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GlobalStrings.resx</DependentUpon>
     </Compile>
+    <Compile Include="Lib\AppLogger.cs" />
     <Compile Include="Lib\AppSettings.cs" />
     <Compile Include="DlgGame.cs">
       <SubType>Form</SubType>
@@ -703,10 +695,6 @@
     <EmbeddedResource Include="MainForm.uk.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Constants.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Constants.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -743,22 +731,22 @@
   <ItemGroup>
     <PublishFile Include="Depressurizer.exe.config">
       <Visible>False</Visible>
-      <PublishState>Auto</PublishState>
-      <IncludeHash>False</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Auto</PublishState>
+      <IncludeHash>False</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Depressurizer.exe.manifest">
       <Visible>False</Visible>
-      <PublishState>Auto</PublishState>
-      <IncludeHash>False</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Auto</PublishState>
+      <IncludeHash>False</IncludeHash>
       <FileType>ManifestEntryPoint</FileType>
     </PublishFile>
   </ItemGroup>

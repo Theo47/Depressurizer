@@ -25,8 +25,8 @@ namespace Depressurizer
 {
     public partial class AutoCatConfigPanel_Hltb : AutoCatConfigPanel
     {
-        private readonly BindingSource binding = new BindingSource();
-        private readonly BindingList<Hltb_Rule> ruleList = new BindingList<Hltb_Rule>();
+        BindingList<Hltb_Rule> ruleList = new BindingList<Hltb_Rule>();
+        BindingSource binding = new BindingSource();
 
         public AutoCatConfigPanel_Hltb()
         {
@@ -35,7 +35,9 @@ namespace Depressurizer
             //initialize combobox
             cmbTimeType.Items.AddRange(new object[]
             {
-                TimeType.Main, TimeType.Extras, TimeType.Completionist
+                TimeType.Main,
+                TimeType.Extras,
+                TimeType.Completionist
             });
             cmbTimeType.SelectedItem = TimeType.Main;
 
@@ -86,7 +88,7 @@ namespace Depressurizer
 
             txtPrefix.Text = acHltb.Prefix;
             chkIncludeUnknown.Checked = acHltb.IncludeUnknown;
-            txtUnknownText.Text = acHltb.UnknownText == null ? string.Empty : acHltb.UnknownText;
+            txtUnknownText.Text = (acHltb.UnknownText == null) ? string.Empty : acHltb.UnknownText;
             acHltb.IncludeUnknown = chkIncludeUnknown.Checked;
             acHltb.UnknownText = txtUnknownText.Text;
 
@@ -95,25 +97,26 @@ namespace Depressurizer
             {
                 ruleList.Add(new Hltb_Rule(rule));
             }
-
             UpdateEnabledSettings();
         }
 
         /// <summary>
-        ///     Updates enabled states of all form elements that depend on the rule selection.
+        /// Updates enabled states of all form elements that depend on the rule selection.
         /// </summary>
         private void UpdateEnabledSettings()
         {
-            bool ruleSelected = lstRules.SelectedIndex >= 0;
+            bool ruleSelected = (lstRules.SelectedIndex >= 0);
 
-            txtRuleName.Enabled = numRuleMaxTime.Enabled = numRuleMinTime.Enabled = cmbTimeType.Enabled = cmdRuleRemove.Enabled = ruleSelected;
+            txtRuleName.Enabled =
+                numRuleMaxTime.Enabled = numRuleMinTime.Enabled =
+                    cmbTimeType.Enabled =
+                        cmdRuleRemove.Enabled = ruleSelected;
             cmdRuleUp.Enabled = ruleSelected && (lstRules.SelectedIndex != 0);
             cmdRuleDown.Enabled = ruleSelected = ruleSelected && (lstRules.SelectedIndex != (lstRules.Items.Count - 1));
         }
 
         /// <summary>
-        ///     Moves the specified rule a certain number of spots up or down in the list. Does nothing if the spot would be off
-        ///     the list.
+        /// Moves the specified rule a certain number of spots up or down in the list. Does nothing if the spot would be off the list.
         /// </summary>
         /// <param name="mainIndex">Index of the rule to move.</param>
         /// <param name="offset">Number of spots to move the rule. Negative moves up, positive moves down.</param>
@@ -121,7 +124,8 @@ namespace Depressurizer
         private void MoveItem(int mainIndex, int offset, bool selectMoved)
         {
             int alterIndex = mainIndex + offset;
-            if ((mainIndex < 0) || (mainIndex >= lstRules.Items.Count) || (alterIndex < 0) || (alterIndex >= lstRules.Items.Count))
+            if ((mainIndex < 0) || (mainIndex >= lstRules.Items.Count) || (alterIndex < 0) ||
+                (alterIndex >= lstRules.Items.Count))
             {
                 return;
             }
@@ -136,17 +140,18 @@ namespace Depressurizer
         }
 
         /// <summary>
-        ///     Adds a new rule to the end of the list and selects it.
+        /// Adds a new rule to the end of the list and selects it.
         /// </summary>
         private void AddRule()
         {
-            Hltb_Rule newRule = new Hltb_Rule(GlobalStrings.AutoCatUserScore_NewRuleName, 0, 0, (TimeType)cmbTimeType.SelectedItem);
+            Hltb_Rule newRule = new Hltb_Rule(GlobalStrings.AutoCatUserScore_NewRuleName, 0, 0,
+                (TimeType) cmbTimeType.SelectedItem);
             ruleList.Add(newRule);
             lstRules.SelectedIndex = lstRules.Items.Count - 1;
         }
 
         /// <summary>
-        ///     Removes the rule at the given index
+        /// Removes the rule at the given index
         /// </summary>
         /// <param name="index">Index of the rule to remove</param>
         private void RemoveRule(int index)
@@ -156,6 +161,8 @@ namespace Depressurizer
                 ruleList.RemoveAt(index);
             }
         }
+
+        #region Event Handlers
 
         private void lstRules_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -181,5 +188,7 @@ namespace Depressurizer
         {
             MoveItem(lstRules.SelectedIndex, 1, true);
         }
+
+        #endregion
     }
 }

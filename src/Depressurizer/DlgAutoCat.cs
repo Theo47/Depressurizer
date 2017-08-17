@@ -19,7 +19,6 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Depressurizer.Model;
 using Rallion;
 
 namespace Depressurizer
@@ -28,15 +27,14 @@ namespace Depressurizer
     {
         public List<AutoCat> AutoCatList;
 
-        private AutoCat current;
-
-        private AutoCatConfigPanel currentConfigPanel;
-        private readonly AutoCat initial;
-
         //public List<Filter> FilterList;
-        private readonly GameList ownedGames;
+        private GameList ownedGames;
 
+        private AutoCat current;
+        private AutoCat initial;
         private string profilePath;
+
+        AutoCatConfigPanel currentConfigPanel;
 
         public DlgAutoCat(List<AutoCat> autoCats, GameList ownedGames, AutoCat selected, string profile)
         {
@@ -59,6 +57,8 @@ namespace Depressurizer
             this.ownedGames = ownedGames;
         }
 
+        #region UI Updaters
+
         private void FillAutocatList()
         {
             lstAutoCats.Items.Clear();
@@ -66,7 +66,6 @@ namespace Depressurizer
             {
                 lstAutoCats.Items.Add(ac);
             }
-
             lstAutoCats.DisplayMember = "DisplayName";
         }
 
@@ -114,6 +113,10 @@ namespace Depressurizer
             cboFilter.DisplayMember = "Name";
             cboFilter.Text = "";
         }
+
+        #endregion
+
+        #region Data modifiers
 
         private void SaveToAutoCat()
         {
@@ -163,7 +166,6 @@ namespace Depressurizer
                     }
                 }
             } while ((res == DialogResult.OK) && !good);
-
             AutoCat newAutoCat = null;
             if (res == DialogResult.OK)
             {
@@ -194,7 +196,8 @@ namespace Depressurizer
 
             do
             {
-                GetStringDlg dlg = new GetStringDlg(ac.Name, GlobalStrings.DlgAutoCat_RenameBoxTitle, GlobalStrings.DlgAutoCat_RenameBoxLabel, GlobalStrings.DlgAutoCat_RenameBoxButton);
+                GetStringDlg dlg = new GetStringDlg(ac.Name, GlobalStrings.DlgAutoCat_RenameBoxTitle,
+                    GlobalStrings.DlgAutoCat_RenameBoxLabel, GlobalStrings.DlgAutoCat_RenameBoxButton);
                 res = dlg.ShowDialog();
                 name = dlg.Value;
                 if (string.IsNullOrEmpty(name))
@@ -208,7 +211,6 @@ namespace Depressurizer
                     good = false;
                 }
             } while ((res == DialogResult.OK) && !good);
-
             if (res == DialogResult.OK)
             {
                 ac.Name = name;
@@ -227,6 +229,10 @@ namespace Depressurizer
             lstAutoCats.Items.Remove(ac);
             AutoCatList.Remove(ac);
         }
+
+        #endregion
+
+        #region Event Handlers
 
         private void DlgAutoCat_Load(object sender, EventArgs e)
         {
@@ -252,8 +258,8 @@ namespace Depressurizer
 
             if (lstAutoCats.SelectedItem != null)
             {
-                btnUp.Enabled = lstAutoCats.SelectedIndex == 0 ? false : true;
-                btnDown.Enabled = lstAutoCats.SelectedIndex == (lstAutoCats.Items.Count - 1) ? false : true;
+                btnUp.Enabled = (lstAutoCats.SelectedIndex == 0) ? false : true;
+                btnDown.Enabled = (lstAutoCats.SelectedIndex == (lstAutoCats.Items.Count - 1)) ? false : true;
             }
             else
             {
@@ -313,6 +319,10 @@ namespace Depressurizer
             }
         }
 
+        #endregion
+
+        #region Utility
+
         private void RepositionAutoCats()
         {
             AutoCatList.Clear();
@@ -321,6 +331,7 @@ namespace Depressurizer
                 AutoCatList.Add(ac);
             }
         }
+
 
         private bool NameExists(string name)
         {
@@ -331,8 +342,9 @@ namespace Depressurizer
                     return true;
                 }
             }
-
             return false;
         }
+
+        #endregion
     }
 }

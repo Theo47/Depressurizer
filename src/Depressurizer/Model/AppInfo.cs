@@ -22,14 +22,15 @@ using System;
 namespace Depressurizer.Model
 {
     /// <summary>
+    /// 
     /// </summary>
     public class AppInfo
     {
-        public AppTypes AppType { get; set; }
         public int Id { get; set; }
         public string Name { get; set; }
-        public int Parent { get; set; } // Is 0 if no parent
+        public AppTypes AppType { get; set; }
         public AppPlatforms Platforms { get; set; }
+        public int Parent { get; set; } // Is 0 if no parent
 
         public AppInfo(int id, string name = null, AppTypes type = AppTypes.Unknown, AppPlatforms platforms = AppPlatforms.All)
         {
@@ -49,10 +50,7 @@ namespace Depressurizer.Model
 
             AppInfo appInfo = null;
 
-            VdfFileNode idNode = commonNode.GetNodeAt(new[]
-            {
-                "gameid"
-            }, false);
+            VdfFileNode idNode = commonNode.GetNodeAt(new[] {"gameid"}, false);
             int id = -1;
             if (idNode != null)
             {
@@ -73,10 +71,7 @@ namespace Depressurizer.Model
             {
                 // Get name
                 string name = null;
-                VdfFileNode nameNode = commonNode.GetNodeAt(new[]
-                {
-                    "name"
-                }, false);
+                VdfFileNode nameNode = commonNode.GetNodeAt(new[] {"name"}, false);
                 if (nameNode != null)
                 {
                     name = nameNode.NodeData.ToString();
@@ -85,10 +80,7 @@ namespace Depressurizer.Model
                 // Get type
                 string typeStr = null;
                 AppTypes type = AppTypes.Unknown;
-                VdfFileNode typeNode = commonNode.GetNodeAt(new[]
-                {
-                    "type"
-                }, false);
+                VdfFileNode typeNode = commonNode.GetNodeAt(new[] {"type"}, false);
                 if (typeNode != null)
                 {
                     typeStr = typeNode.NodeData.ToString();
@@ -104,10 +96,7 @@ namespace Depressurizer.Model
 
                 // Get platforms
                 AppPlatforms platforms = AppPlatforms.None;
-                VdfFileNode oslistNode = commonNode.GetNodeAt(new[]
-                {
-                    "oslist"
-                }, false);
+                VdfFileNode oslistNode = commonNode.GetNodeAt(new[] {"oslist"}, false);
                 if (oslistNode != null)
                 {
                     string oslist = oslistNode.NodeData.ToString();
@@ -128,10 +117,7 @@ namespace Depressurizer.Model
                 appInfo = new AppInfo(id, name, type, platforms);
 
                 // Get parent
-                VdfFileNode parentNode = commonNode.GetNodeAt(new[]
-                {
-                    "parent"
-                }, false);
+                VdfFileNode parentNode = commonNode.GetNodeAt(new[] {"parent"}, false);
                 if (parentNode != null)
                 {
                     appInfo.Parent = parentNode.NodeInt;

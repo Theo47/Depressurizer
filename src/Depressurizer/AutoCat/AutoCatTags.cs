@@ -18,31 +18,36 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Serialization;
-using Depressurizer.Helpers;
-using Depressurizer.Model;
+using Rallion;
 
 namespace Depressurizer
 {
     public class AutoCatTags : AutoCat
     {
-        public override AutoCatType AutoCatType => AutoCatType.Tags;
+        public override AutoCatType AutoCatType
+        {
+            get { return AutoCatType.Tags; }
+        }
 
+        public string Prefix { get; set; }
+        public int MaxTags { get; set; }
         [XmlArray("Tags"), XmlArrayItem("Tag")]
         public HashSet<string> IncludedTags { get; set; }
 
-        public bool ListExcludeGenres { get; set; }
-        public int ListMinScore { get; set; }
-
         public bool ListOwnedOnly { get; set; }
-        public bool ListScoreSort { get; set; }
-        public int ListTagsPerGame { get; set; }
         public float ListWeightFactor { get; set; }
-        public int MaxTags { get; set; }
+        public int ListMinScore { get; set; }
+        public int ListTagsPerGame { get; set; }
+        public bool ListScoreSort { get; set; }
+        public bool ListExcludeGenres { get; set; }
 
-        public string Prefix { get; set; }
-
-        public AutoCatTags(string name, string filter = null, string prefix = null, HashSet<string> tags = null, int maxTags = 0, bool listOwnedOnly = true, float listWeightFactor = 1, int listMinScore = 0, int listTagsPerGame = 0, bool listScoreSort = true, bool listExcludeGenres = false, bool selected = false) : base(name)
+        public AutoCatTags(string name, string filter = null, string prefix = null,
+            HashSet<string> tags = null, int maxTags = 0,
+            bool listOwnedOnly = true, float listWeightFactor = 1, int listMinScore = 0, int listTagsPerGame = 0,
+            bool listScoreSort = true, bool listExcludeGenres = false, bool selected = false)
+            : base(name)
         {
             Filter = filter;
             Prefix = prefix;
@@ -69,7 +74,8 @@ namespace Depressurizer
         //XmlSerializer requires a parameterless constructor
         private AutoCatTags() { }
 
-        protected AutoCatTags(AutoCatTags other) : base(other)
+        protected AutoCatTags(AutoCatTags other)
+            : base(other)
         {
             Filter = other.Filter;
             Prefix = other.Prefix;
@@ -85,25 +91,26 @@ namespace Depressurizer
             Selected = other.Selected;
         }
 
-        public override AutoCat Clone() => new AutoCatTags(this);
+        public override AutoCat Clone()
+        {
+            return new AutoCatTags(this);
+        }
 
         public override AutoCatResult CategorizeGame(GameInfo game, Filter filter)
         {
             if (games == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GamelistNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
-
             if (db == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_DBNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
-
             if (game == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GameNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GameNull);
                 return AutoCatResult.Failure;
             }
 
@@ -141,7 +148,6 @@ namespace Depressurizer
             {
                 return s;
             }
-
             return Prefix + s;
         }
     }

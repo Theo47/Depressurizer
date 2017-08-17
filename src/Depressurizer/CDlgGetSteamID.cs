@@ -19,19 +19,18 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Net;
 using System.Xml;
-using Depressurizer.Helpers;
-using Depressurizer.Properties;
 using Rallion;
 
 namespace Depressurizer
 {
-    internal class CDlgGetSteamID : CancelableDlg
+    class CDlgGetSteamID : CancelableDlg
     {
-        public long SteamID { get; private set; }
+        public Int64 SteamID { get; private set; }
+        private string customUrlName;
         public bool Success { get; private set; }
-        private readonly string customUrlName;
 
-        public CDlgGetSteamID(string customUrl) : base(GlobalStrings.CDlgGetSteamID_GettingSteamID, false)
+        public CDlgGetSteamID(string customUrl)
+            : base(GlobalStrings.CDlgGetSteamID_GettingSteamID, false)
         {
             SteamID = 0;
             Success = false;
@@ -46,25 +45,27 @@ namespace Depressurizer
 
             try
             {
-                string url = string.Format(Resources.UrlCustomProfileXml, customUrlName);
-                Logger.Instance.Info(GlobalStrings.CDlgGetSteamID_AttemptingDownloadXMLProfile, customUrlName, url);
-                WebRequest req = WebRequest.Create(url);
+                string url = string.Format(Properties.Resources.UrlCustomProfileXml, customUrlName);
+                Program.Logger.Write(LoggerLevel.Info, GlobalStrings.CDlgGetSteamID_AttemptingDownloadXMLProfile,
+                    customUrlName, url);
+                WebRequest req = HttpWebRequest.Create(url);
                 WebResponse response = req.GetResponse();
                 doc.Load(response.GetResponseStream());
                 response.Close();
-                Logger.Instance.Info(GlobalStrings.CDlgGetSteamID_XMLProfileDownloaded);
+                Program.Logger.Write(LoggerLevel.Info, GlobalStrings.CDlgGetSteamID_XMLProfileDownloaded);
             }
             catch (Exception e)
             {
-                Logger.Instance.Error(GlobalStrings.CDlgGetSteamID_ExceptionDownloadingXMLProfile, e.Message);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.CDlgGetSteamID_ExceptionDownloadingXMLProfile,
+                    e.Message);
                 throw new ApplicationException(GlobalStrings.CDlgGetSteamID_FailedToDownloadProfile + e.Message, e);
             }
 
             XmlNode idNode = doc.SelectSingleNode("/profile/steamID64");
             if (idNode != null)
             {
-                long tmp;
-                Success = long.TryParse(idNode.InnerText, out tmp);
+                Int64 tmp;
+                Success = Int64.TryParse(idNode.InnerText, out tmp);
                 if (Success)
                 {
                     SteamID = tmp;

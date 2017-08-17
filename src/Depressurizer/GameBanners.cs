@@ -2,17 +2,18 @@
 using System.IO;
 using System.Windows.Forms;
 using Depressurizer.Helpers;
-using Depressurizer.Model;
-using Depressurizer.Properties;
 
 namespace Depressurizer
 {
-    internal class GameBanners
+    class GameBanners
     {
-        private readonly List<GameInfo> _games;
         private volatile bool _shouldStop;
+        private List<GameInfo> _games;
 
-        public GameBanners(List<GameInfo> games) => _games = games;
+        public GameBanners(List<GameInfo> games)
+        {
+            _games = games;
+        }
 
         public void Grab()
         {
@@ -28,7 +29,7 @@ namespace Depressurizer
                     continue; //external game
                 }
 
-                string bannerFile = string.Format(Resources.GameBannerPath, Path.GetDirectoryName(Application.ExecutablePath), g.Id);
+                string bannerFile = string.Format(Properties.Resources.GameBannerPath, Path.GetDirectoryName(Application.ExecutablePath), g.Id);
                 if (!File.Exists(bannerFile))
                 {
                     Steam.FetchBanner(g.Id);

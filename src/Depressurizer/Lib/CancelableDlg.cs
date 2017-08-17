@@ -24,13 +24,28 @@ namespace Rallion
 {
     public partial class CancelableDlg : Form
     {
-        public Exception Error { get; protected set; }
+        #region Fields
 
-        public int JobsCompleted => jobsCompleted;
+        protected object abortLock = new object();
 
-        public int JobsTotal => totalJobs;
+        protected int threadsToRun = 5;
+        protected int runningThreads;
 
-        protected bool Canceled { get; private set; }
+        protected int totalJobs = 1;
+
+        public int JobsTotal
+        {
+            get { return totalJobs; }
+        }
+
+        protected int jobsCompleted;
+
+        public int JobsCompleted
+        {
+            get { return jobsCompleted; }
+        }
+
+        private bool _stopped;
 
         protected bool Stopped
         {
@@ -50,16 +65,19 @@ namespace Rallion
             }
         }
 
-        private bool _stopped;
+        protected bool Canceled { get; private set; }
 
-        protected object abortLock = new object();
+        public Exception Error { get; protected set; }
 
-        protected int jobsCompleted;
-        protected int runningThreads;
+        delegate void SimpleDelegate();
 
-        protected int threadsToRun = 5;
+        delegate void TextUpdateDelegate(string s);
 
-        protected int totalJobs = 1;
+        delegate void EndProcDelegate(bool b);
+
+        #endregion
+
+        #region Initialization
 
         public CancelableDlg(string title, bool stopButton)
         {
@@ -70,12 +88,6 @@ namespace Rallion
             cmdStop.Enabled = cmdStop.Visible = stopButton;
         }
 
-        private delegate void SimpleDelegate();
-
-        private delegate void TextUpdateDelegate(string s);
-
-        private delegate void EndProcDelegate(bool b);
-
         protected virtual void UpdateForm_Load(object sender, EventArgs e)
         {
             threadsToRun = Math.Min(threadsToRun, totalJobs);
@@ -85,7 +97,6 @@ namespace Rallion
                 t.Start();
                 runningThreads++;
             }
-
             UpdateText();
         }
 
@@ -110,11 +121,19 @@ namespace Rallion
             }
         }
 
+        #endregion
+
+        #region Methods to override
+
         protected virtual void RunProcess() { }
 
         protected virtual void UpdateText() { }
 
         protected virtual void Finish() { }
+
+        #endregion
+
+        #region Status Updaters
 
         protected void OnJobCompletion()
         {
@@ -140,6 +159,10 @@ namespace Rallion
                 }
             }
         }
+
+        #endregion
+
+        #region Event Handlers
 
         private void cmdStop_Click(object sender, EventArgs e)
         {
@@ -171,6 +194,10 @@ namespace Rallion
             }
         }
 
+        #endregion
+
+        #region UI Updaters
+
         protected void SetText(string s)
         {
             if (InvokeRequired)
@@ -194,6 +221,8 @@ namespace Rallion
                 cmdStop.Enabled = cmdCancel.Enabled = false;
             }
         }
+
+        #endregion
 
         private void cmdCancel_Click(object sender, EventArgs e)
         {

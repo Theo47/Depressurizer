@@ -23,9 +23,9 @@ namespace Depressurizer
 {
     public partial class DlgManualDownload : Form
     {
-        public bool Custom;
-        public long IdVal;
+        public Int64 IdVal;
         public string UrlVal;
+        public bool Custom;
 
         public DlgManualDownload()
         {
@@ -36,7 +36,7 @@ namespace Depressurizer
         {
             if (radId.Checked)
             {
-                if (long.TryParse(txtEntry.Text, out IdVal))
+                if (Int64.TryParse(txtEntry.Text, out IdVal))
                 {
                     Custom = false;
                     DialogResult = DialogResult.OK;

@@ -18,20 +18,25 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Serialization;
-using Depressurizer.Helpers;
-using Depressurizer.Model;
+using Rallion;
 
 namespace Depressurizer
 {
     public class AutoCatGroup : AutoCat
     {
+        #region Properties
+
         // Autocat configuration properties
         [XmlArrayItem("Autocat")]
         public List<string> Autocats { get; set; }
 
         // Meta properies
-        public override AutoCatType AutoCatType => AutoCatType.Group;
+        public override AutoCatType AutoCatType
+        {
+            get { return AutoCatType.Group; }
+        }
 
         public override string DisplayName
         {
@@ -46,42 +51,53 @@ namespace Depressurizer
             }
         }
 
-        public AutoCatGroup(string name, string filter = null, List<string> autocats = null, bool selected = false) : base(name)
+        #endregion
+
+        #region Construction
+
+        public AutoCatGroup(string name, string filter = null, List<string> autocats = null, bool selected = false)
+            : base(name)
         {
             Filter = filter;
-            Autocats = autocats == null ? new List<string>() : autocats;
+            Autocats = (autocats == null) ? new List<string>() : autocats;
             Selected = selected;
         }
 
         //XmlSerializer requires a parameterless constructor
         private AutoCatGroup() { }
 
-        protected AutoCatGroup(AutoCatGroup other) : base(other)
+        protected AutoCatGroup(AutoCatGroup other)
+            : base(other)
         {
             Filter = other.Filter;
             Autocats = new List<string>(other.Autocats);
             Selected = other.Selected;
         }
 
-        public override AutoCat Clone() => new AutoCatGroup(this);
+        public override AutoCat Clone()
+        {
+            return new AutoCatGroup(this);
+        }
+
+        #endregion
+
+        #region Autocategorization Methods
 
         public override AutoCatResult CategorizeGame(GameInfo game, Filter filter)
         {
             if (games == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GamelistNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
-
             if (db == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_DBNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
-
             if (game == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GameNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GameNull);
                 return AutoCatResult.Failure;
             }
 
@@ -97,5 +113,7 @@ namespace Depressurizer
 
             return AutoCatResult.Success;
         }
+
+        #endregion
     }
 }
