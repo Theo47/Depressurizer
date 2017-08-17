@@ -18,65 +18,26 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Xml;
 using Depressurizer.Helpers;
-using Rallion;
+using Depressurizer.Model;
 
 namespace Depressurizer
 {
     public class Profile
     {
-        #region Serialization constants
+        public List<AutoCat> AutoCats = new List<AutoCat>();
+        public bool AutoExport = true;
 
-        private const string
-            XmlName_Profile = "profile",
-            XmlName_Version = "version",
-            XmlName_SteamID = "steam_id_64",
-            XmlName_AutoUpdate = "auto_update",
-            XmlName_AutoImport = "auto_import",
-            XmlName_AutoExport = "auto_export",
-            XmlName_LocalUpdate = "local_update",
-            XmlName_WebUpdate = "web_update",
-            XmlName_ExportDiscard = "export_discard",
-            XmlName_AutoIgnore = "auto_ignore",
-            XmlName_IncludeUnknown = "include_unknown",
-            XmlName_BypassIgnoreOnImport = "bypass_ignore_on_import",
-            XmlName_OverwriteNames = "overwrite_names",
-            XmlName_IncludeShortcuts = "include_shortcuts",
-            XmlName_ExclusionList = "exclusions",
-            XmlName_Exclusion = "exclusion",
-            XmlName_GameList = "games",
-            XmlName_Game = "game",
-            XmlName_AutoCatList = "autocats",
-            XmlName_FilterList = "Filters",
-            XmlName_Filter = "Filter",
-            XmlName_FilterName = "Name",
-            XmlName_FilterUncategorized = "Uncategorized",
-            XmlName_FilterVR = "VR",
-            XmlName_FilterHidden = "Hidden",
-            XmlName_FilterAllow = "Allow",
-            XmlName_FilterRequire = "Require",
-            XmlName_FilterExclude = "Exclude",
-            XmlName_Game_Id = "id",
-            XmlName_Game_Source = "source",
-            XmlName_Game_Name = "name",
-            XmlName_Game_Hidden = "hidden",
-            XmlName_Game_CategoryList = "categories",
-            XmlName_Game_Category = "category",
-            XmlName_Game_Executable = "executable",
-            XmlName_Game_LastPlayed = "lastplayed";
+        public bool AutoIgnore = true;
 
-        // Old Xml names
-        private const string XmlName_Old_SteamIDShort = "account_id",
-            XmlName_Old_IgnoreExternal = "ignore_external",
-            XmlName_Old_AutoDownload = "auto_download",
-            XmlName_Old_Game_Favorite = "favorite";
+        public bool AutoImport = true;
 
-        public const int VERSION = 3;
+        public bool AutoUpdate = true;
+        public bool BypassIgnoreOnImport;
 
-        #endregion
+        public bool ExportDiscard = true;
 
         public string FilePath;
 
@@ -84,27 +45,22 @@ namespace Depressurizer
 
         public SortedSet<int> IgnoreList = new SortedSet<int>();
 
-        public List<AutoCat> AutoCats = new List<AutoCat>();
-
-        public Int64 SteamID64;
-
-        public bool AutoUpdate = true;
-
-        public bool AutoImport = true;
-        public bool AutoExport = true;
+        public bool IncludeShortcuts = true;
+        public bool IncludeUnknown;
 
         public bool LocalUpdate = true;
-        public bool WebUpdate = true;
-
-        public bool ExportDiscard = true;
 
         public bool OverwriteOnDownload = true;
 
-        public bool AutoIgnore = true;
-        public bool IncludeUnknown;
-        public bool BypassIgnoreOnImport;
+        public long SteamID64;
+        public bool WebUpdate = true;
 
-        public bool IncludeShortcuts = true;
+        private const string XmlName_Profile = "profile", XmlName_Version = "version", XmlName_SteamID = "steam_id_64", XmlName_AutoUpdate = "auto_update", XmlName_AutoImport = "auto_import", XmlName_AutoExport = "auto_export", XmlName_LocalUpdate = "local_update", XmlName_WebUpdate = "web_update", XmlName_ExportDiscard = "export_discard", XmlName_AutoIgnore = "auto_ignore", XmlName_IncludeUnknown = "include_unknown", XmlName_BypassIgnoreOnImport = "bypass_ignore_on_import", XmlName_OverwriteNames = "overwrite_names", XmlName_IncludeShortcuts = "include_shortcuts", XmlName_ExclusionList = "exclusions", XmlName_Exclusion = "exclusion", XmlName_GameList = "games", XmlName_Game = "game", XmlName_AutoCatList = "autocats", XmlName_FilterList = "Filters", XmlName_Filter = "Filter", XmlName_FilterName = "Name", XmlName_FilterUncategorized = "Uncategorized", XmlName_FilterVR = "VR", XmlName_FilterHidden = "Hidden", XmlName_FilterAllow = "Allow", XmlName_FilterRequire = "Require", XmlName_FilterExclude = "Exclude", XmlName_Game_Id = "id", XmlName_Game_Source = "source", XmlName_Game_Name = "name", XmlName_Game_Hidden = "hidden", XmlName_Game_CategoryList = "categories", XmlName_Game_Category = "category", XmlName_Game_Executable = "executable", XmlName_Game_LastPlayed = "lastplayed";
+
+        // Old Xml names
+        private const string XmlName_Old_SteamIDShort = "account_id", XmlName_Old_IgnoreExternal = "ignore_external", XmlName_Old_AutoDownload = "auto_download", XmlName_Old_Game_Favorite = "favorite";
+
+        public const int VERSION = 3;
 
         public int ImportSteamData()
         {
@@ -126,16 +82,11 @@ namespace Depressurizer
             GameData.ExportSteamConfig(SteamID64, ExportDiscard, IncludeShortcuts);
         }
 
-        public bool IgnoreGame(int gameId)
-        {
-            return IgnoreList.Add(gameId);
-        }
-
-        #region Saving and Loading
+        public bool IgnoreGame(int gameId) => IgnoreList.Add(gameId);
 
         public static Profile Load(string path)
         {
-            Program.Logger.Write(LoggerLevel.Info, GlobalStrings.Profile_LoadingProfile, path);
+            Logger.Instance.Info(GlobalStrings.Profile_LoadingProfile, path);
             Profile profile = new Profile();
 
             profile.FilePath = path;
@@ -148,7 +99,7 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                Program.Logger.Write(LoggerLevel.Warning, GlobalStrings.Profile_FailedToLoadProfile, e.Message);
+                Logger.Instance.Warn(GlobalStrings.Profile_FailedToLoadProfile, e.Message);
                 throw new ApplicationException(GlobalStrings.Profile_ErrorLoadingProfile + e.Message, e);
             }
 
@@ -167,7 +118,7 @@ namespace Depressurizer
                     }
                 }
                 // Get the 64-bit Steam ID
-                Int64 accId = XmlUtil.GetInt64FromNode(profileNode[XmlName_SteamID], 0);
+                long accId = XmlUtil.GetInt64FromNode(profileNode[XmlName_SteamID], 0);
                 if (accId == 0)
                 {
                     string oldAcc = XmlUtil.GetStringFromNode(profileNode[XmlName_Old_SteamIDShort], null);
@@ -187,16 +138,12 @@ namespace Depressurizer
                 profile.LocalUpdate = XmlUtil.GetBoolFromNode(profileNode[XmlName_LocalUpdate], profile.LocalUpdate);
                 profile.WebUpdate = XmlUtil.GetBoolFromNode(profileNode[XmlName_WebUpdate], profile.WebUpdate);
 
-                profile.IncludeUnknown =
-                    XmlUtil.GetBoolFromNode(profileNode[XmlName_IncludeUnknown], profile.IncludeUnknown);
-                profile.BypassIgnoreOnImport = XmlUtil.GetBoolFromNode(profileNode[XmlName_BypassIgnoreOnImport],
-                    profile.BypassIgnoreOnImport);
+                profile.IncludeUnknown = XmlUtil.GetBoolFromNode(profileNode[XmlName_IncludeUnknown], profile.IncludeUnknown);
+                profile.BypassIgnoreOnImport = XmlUtil.GetBoolFromNode(profileNode[XmlName_BypassIgnoreOnImport], profile.BypassIgnoreOnImport);
 
-                profile.ExportDiscard =
-                    XmlUtil.GetBoolFromNode(profileNode[XmlName_ExportDiscard], profile.ExportDiscard);
+                profile.ExportDiscard = XmlUtil.GetBoolFromNode(profileNode[XmlName_ExportDiscard], profile.ExportDiscard);
                 profile.AutoIgnore = XmlUtil.GetBoolFromNode(profileNode[XmlName_AutoIgnore], profile.AutoIgnore);
-                profile.OverwriteOnDownload =
-                    XmlUtil.GetBoolFromNode(profileNode[XmlName_OverwriteNames], profile.OverwriteOnDownload);
+                profile.OverwriteOnDownload = XmlUtil.GetBoolFromNode(profileNode[XmlName_OverwriteNames], profile.OverwriteOnDownload);
 
                 if (profileVersion < 2)
                 {
@@ -208,8 +155,7 @@ namespace Depressurizer
                 }
                 else
                 {
-                    profile.IncludeShortcuts =
-                        XmlUtil.GetBoolFromNode(profileNode[XmlName_IncludeShortcuts], profile.IncludeShortcuts);
+                    profile.IncludeShortcuts = XmlUtil.GetBoolFromNode(profileNode[XmlName_IncludeShortcuts], profile.IncludeShortcuts);
                 }
 
                 XmlNode exclusionListNode = profileNode.SelectSingleNode(XmlName_ExclusionList);
@@ -269,7 +215,8 @@ namespace Depressurizer
                 }
                 //profile.AutoCats.Sort();
             }
-            Program.Logger.Write(LoggerLevel.Info, GlobalStrings.MainForm_ProfileLoaded);
+
+            Logger.Instance.Info(GlobalStrings.MainForm_ProfileLoaded);
             return profile;
         }
 
@@ -300,6 +247,7 @@ namespace Depressurizer
                         f.Allow.Add(profile.GameData.GetCategory(catName));
                     }
                 }
+
                 filterNodes = node.SelectNodes(XmlName_FilterRequire);
                 foreach (XmlNode fNode in filterNodes)
                 {
@@ -309,6 +257,7 @@ namespace Depressurizer
                         f.Require.Add(profile.GameData.GetCategory(catName));
                     }
                 }
+
                 filterNodes = node.SelectNodes(XmlName_FilterExclude);
                 foreach (XmlNode fNode in filterNodes)
                 {
@@ -326,8 +275,7 @@ namespace Depressurizer
             int id;
             if (XmlUtil.TryGetIntFromNode(node[XmlName_Game_Id], out id))
             {
-                GameListingSource source =
-                    XmlUtil.GetEnumFromNode(node[XmlName_Game_Source], GameListingSource.Unknown);
+                GameListingSource source = XmlUtil.GetEnumFromNode(node[XmlName_Game_Source], GameListingSource.Unknown);
 
                 if ((source < GameListingSource.Manual) && profile.IgnoreList.Contains(id))
                 {
@@ -339,7 +287,7 @@ namespace Depressurizer
                 game.Source = source;
                 profile.GameData.Games.Add(id, game);
 
-                game.Hidden = XmlUtil.GetBoolFromNode(node[XmlName_Game_Hidden], false);
+                game.IsHidden = XmlUtil.GetBoolFromNode(node[XmlName_Game_Hidden], false);
                 game.Executable = XmlUtil.GetStringFromNode(node[XmlName_Game_Executable], null);
                 game.LastPlayed = XmlUtil.GetIntFromNode(node[XmlName_Game_LastPlayed], 0);
 
@@ -350,7 +298,7 @@ namespace Depressurizer
                     {
                         game.AddCategory(profile.GameData.GetCategory(catName));
                     }
-                    if ((node.SelectSingleNode(XmlName_Old_Game_Favorite) != null))
+                    if (node.SelectSingleNode(XmlName_Old_Game_Favorite) != null)
                     {
                         game.SetFavorite(true);
                     }
@@ -381,10 +329,12 @@ namespace Depressurizer
 
         public bool Save(string path)
         {
-            Program.Logger.Write(LoggerLevel.Info, GlobalStrings.Profile_SavingProfile, path);
-            XmlWriterSettings writeSettings = new XmlWriterSettings();
-            writeSettings.CloseOutput = true;
-            writeSettings.Indent = true;
+            Logger.Instance.Info(GlobalStrings.Profile_SavingProfile, path);
+            XmlWriterSettings writeSettings = new XmlWriterSettings
+            {
+                CloseOutput = true,
+                Indent = true
+            };
 
             try
             {
@@ -392,162 +342,158 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_Profile_ConfigBackupFailed, e.Message);
+                Logger.Instance.Error(GlobalStrings.Log_Profile_ConfigBackupFailed, e.Message);
             }
 
-            XmlWriter writer;
             try
             {
-                writer = XmlWriter.Create(path, writeSettings);
+                using (XmlWriter writer = XmlWriter.Create(path, writeSettings))
+                {
+                    writer.WriteStartElement(XmlName_Profile);
+
+                    writer.WriteAttributeString(XmlName_Version, VERSION.ToString());
+
+                    writer.WriteElementString(XmlName_SteamID, SteamID64.ToString());
+
+                    writer.WriteElementString(XmlName_AutoUpdate, AutoUpdate.ToString());
+                    writer.WriteElementString(XmlName_AutoImport, AutoImport.ToString());
+                    writer.WriteElementString(XmlName_AutoExport, AutoExport.ToString());
+                    writer.WriteElementString(XmlName_LocalUpdate, LocalUpdate.ToString());
+                    writer.WriteElementString(XmlName_WebUpdate, WebUpdate.ToString());
+                    writer.WriteElementString(XmlName_ExportDiscard, ExportDiscard.ToString());
+                    writer.WriteElementString(XmlName_AutoIgnore, AutoIgnore.ToString());
+                    writer.WriteElementString(XmlName_IncludeUnknown, IncludeUnknown.ToString());
+                    writer.WriteElementString(XmlName_BypassIgnoreOnImport, BypassIgnoreOnImport.ToString());
+                    writer.WriteElementString(XmlName_OverwriteNames, OverwriteOnDownload.ToString());
+                    writer.WriteElementString(XmlName_IncludeShortcuts, IncludeShortcuts.ToString());
+
+                    writer.WriteStartElement(XmlName_GameList);
+
+                    foreach (GameInfo g in GameData.Games.Values)
+                    {
+                        if (IncludeShortcuts || (g.Id > 0))
+                        {
+                            // Don't save shortcuts if we aren't including them
+                            writer.WriteStartElement(XmlName_Game);
+
+                            writer.WriteElementString(XmlName_Game_Id, g.Id.ToString());
+                            writer.WriteElementString(XmlName_Game_Source, g.Source.ToString());
+
+                            if (g.Name != null)
+                            {
+                                writer.WriteElementString(XmlName_Game_Name, g.Name);
+                            }
+
+                            writer.WriteElementString(XmlName_Game_Hidden, g.IsHidden.ToString());
+
+                            if (g.LastPlayed != 0)
+                            {
+                                writer.WriteElementString(XmlName_Game_LastPlayed, g.LastPlayed.ToString());
+                            }
+
+                            if (!g.Executable.Contains("steam://"))
+                            {
+                                writer.WriteElementString(XmlName_Game_Executable, g.Executable);
+                            }
+
+                            writer.WriteStartElement(XmlName_Game_CategoryList);
+                            foreach (Category c in g.Categories)
+                            {
+                                string catName = c.Name;
+                                if (c.Name == GameList.FAVORITE_NEW_CONFIG_VALUE)
+                                {
+                                    catName = GameList.FAVORITE_CONFIG_VALUE;
+                                }
+                                writer.WriteElementString(XmlName_Game_Category, catName);
+                            }
+
+                            writer.WriteEndElement(); // categories
+
+                            writer.WriteEndElement(); // game
+                        }
+                    }
+
+                    writer.WriteEndElement(); // games
+
+                    writer.WriteStartElement(XmlName_FilterList);
+
+                    foreach (Filter f in GameData.Filters)
+                    {
+                        f.WriteToXml(writer);
+                    }
+
+                    writer.WriteEndElement(); //game filters
+
+                    writer.WriteStartElement(XmlName_AutoCatList);
+
+                    foreach (AutoCat autocat in AutoCats)
+                    {
+                        autocat.WriteToXml(writer);
+                    }
+
+                    writer.WriteEndElement(); //autocats
+
+                    writer.WriteStartElement(XmlName_ExclusionList);
+
+                    foreach (int i in IgnoreList)
+                    {
+                        writer.WriteElementString(XmlName_Exclusion, i.ToString());
+                    }
+
+                    writer.WriteEndElement(); // exclusions
+
+                    writer.WriteEndElement(); // profile
+                }
             }
             catch (Exception e)
             {
-                Program.Logger.Write(LoggerLevel.Warning, GlobalStrings.Profile_FailedToOpenProfileFile, e.Message);
+                Logger.Instance.Warn(GlobalStrings.Profile_FailedToOpenProfileFile, e.Message);
                 throw new ApplicationException(GlobalStrings.Profile_ErrorSavingProfileFile + e.Message, e);
             }
-            writer.WriteStartElement(XmlName_Profile);
 
-            writer.WriteAttributeString(XmlName_Version, VERSION.ToString());
-
-            writer.WriteElementString(XmlName_SteamID, SteamID64.ToString());
-
-            writer.WriteElementString(XmlName_AutoUpdate, AutoUpdate.ToString());
-            writer.WriteElementString(XmlName_AutoImport, AutoImport.ToString());
-            writer.WriteElementString(XmlName_AutoExport, AutoExport.ToString());
-            writer.WriteElementString(XmlName_LocalUpdate, LocalUpdate.ToString());
-            writer.WriteElementString(XmlName_WebUpdate, WebUpdate.ToString());
-            writer.WriteElementString(XmlName_ExportDiscard, ExportDiscard.ToString());
-            writer.WriteElementString(XmlName_AutoIgnore, AutoIgnore.ToString());
-            writer.WriteElementString(XmlName_IncludeUnknown, IncludeUnknown.ToString());
-            writer.WriteElementString(XmlName_BypassIgnoreOnImport, BypassIgnoreOnImport.ToString());
-            writer.WriteElementString(XmlName_OverwriteNames, OverwriteOnDownload.ToString());
-            writer.WriteElementString(XmlName_IncludeShortcuts, IncludeShortcuts.ToString());
-
-            writer.WriteStartElement(XmlName_GameList);
-
-            foreach (GameInfo g in GameData.Games.Values)
-            {
-                if (IncludeShortcuts || (g.Id > 0))
-                {
-                    // Don't save shortcuts if we aren't including them
-                    writer.WriteStartElement(XmlName_Game);
-
-                    writer.WriteElementString(XmlName_Game_Id, g.Id.ToString());
-                    writer.WriteElementString(XmlName_Game_Source, g.Source.ToString());
-
-                    if (g.Name != null)
-                    {
-                        writer.WriteElementString(XmlName_Game_Name, g.Name);
-                    }
-
-                    writer.WriteElementString(XmlName_Game_Hidden, g.Hidden.ToString());
-
-                    if (g.LastPlayed != 0)
-                    {
-                        writer.WriteElementString(XmlName_Game_LastPlayed, g.LastPlayed.ToString());
-                    }
-
-                    if (!g.Executable.Contains("steam://"))
-                    {
-                        writer.WriteElementString(XmlName_Game_Executable, g.Executable);
-                    }
-
-                    writer.WriteStartElement(XmlName_Game_CategoryList);
-                    foreach (Category c in g.Categories)
-                    {
-                        String catName = c.Name;
-                        if (c.Name == GameList.FAVORITE_NEW_CONFIG_VALUE)
-                        {
-                            catName = GameList.FAVORITE_CONFIG_VALUE;
-                        }
-                        writer.WriteElementString(XmlName_Game_Category, catName);
-                    }
-                    writer.WriteEndElement(); // categories
-
-                    writer.WriteEndElement(); // game
-                }
-            }
-
-            writer.WriteEndElement(); // games
-
-            writer.WriteStartElement(XmlName_FilterList);
-
-            foreach (Filter f in GameData.Filters)
-            {
-                f.WriteToXml(writer);
-            }
-
-            writer.WriteEndElement(); //game filters
-
-            writer.WriteStartElement(XmlName_AutoCatList);
-
-            foreach (AutoCat autocat in AutoCats)
-            {
-                autocat.WriteToXml(writer);
-            }
-
-            writer.WriteEndElement(); //autocats
-
-            writer.WriteStartElement(XmlName_ExclusionList);
-
-            foreach (int i in IgnoreList)
-            {
-                writer.WriteElementString(XmlName_Exclusion, i.ToString());
-            }
-
-            writer.WriteEndElement(); // exclusions
-
-            writer.WriteEndElement(); // profile
-
-            writer.Close();
             FilePath = path;
-            Program.Logger.Write(LoggerLevel.Info, GlobalStrings.Profile_ProfileSaveComplete);
+            Logger.Instance.Info(GlobalStrings.Profile_ProfileSaveComplete);
             return true;
         }
 
         public static void GenerateDefaultAutoCatSet(List<AutoCat> list)
         {
             //By Genre
-            list.Add(new AutoCatGenre(GlobalStrings.Profile_DefaultAutoCatName_Genre, null,
-                "(" + GlobalStrings.Name_Genre + ") "));
+            list.Add(new AutoCatGenre(GlobalStrings.Profile_DefaultAutoCatName_Genre, null, "(" + GlobalStrings.Name_Genre + ") "));
 
             //By Year
-            list.Add(new AutoCatYear(GlobalStrings.Profile_DefaultAutoCatName_Year, null,
-                "(" + GlobalStrings.Name_Year + ") "));
+            list.Add(new AutoCatYear(GlobalStrings.Profile_DefaultAutoCatName_Year, null, "(" + GlobalStrings.Name_Year + ") "));
 
             //By Score
-            AutoCatUserScore ac = new AutoCatUserScore(GlobalStrings.Profile_DefaultAutoCatName_UserScore, null,
-                "(" + GlobalStrings.Name_Score + ") ");
+            AutoCatUserScore ac = new AutoCatUserScore(GlobalStrings.Profile_DefaultAutoCatName_UserScore, null, "(" + GlobalStrings.Name_Score + ") ");
             ac.GenerateSteamRules(ac.Rules);
             list.Add(ac);
 
             //By Tags
-            AutoCatTags act = new AutoCatTags(GlobalStrings.Profile_DefaultAutoCatName_Tags, null,
-                "(" + GlobalStrings.Name_Tags + ") ");
+            AutoCatTags act = new AutoCatTags(GlobalStrings.Profile_DefaultAutoCatName_Tags, null, "(" + GlobalStrings.Name_Tags + ") ");
             foreach (Tuple<string, float> tag in Program.GameDatabase.CalculateSortedTagList(null, 1, 20, 0, false, false))
             {
                 act.IncludedTags.Add(tag.Item1);
             }
+
             list.Add(act);
 
             //By Flags
-            AutoCatFlags acf = new AutoCatFlags(GlobalStrings.Profile_DefaultAutoCatName_Flags, null,
-                "(" + GlobalStrings.Name_Flags + ") ");
+            AutoCatFlags acf = new AutoCatFlags(GlobalStrings.Profile_DefaultAutoCatName_Flags, null, "(" + GlobalStrings.Name_Flags + ") ");
             foreach (string flag in Program.GameDatabase.GetAllStoreFlags())
             {
                 acf.IncludedFlags.Add(flag);
             }
+
             list.Add(acf);
 
             //By Developer
-            AutoCatDevPub acd = new AutoCatDevPub(GlobalStrings.Profile_DefaultAutoCatName_Developer, null,
-                "(" + GlobalStrings.Name_Developer + ") ");
+            AutoCatDevPub acd = new AutoCatDevPub(GlobalStrings.Profile_DefaultAutoCatName_Developer, null, "(" + GlobalStrings.Name_Developer + ") ");
             acd.AllDevelopers = true;
             list.Add(acd);
 
             //By Publisher
-            AutoCatDevPub acp = new AutoCatDevPub(GlobalStrings.Profile_DefaultAutoCatName_Publisher, null,
-                "(" + GlobalStrings.Name_Publisher + ") ");
+            AutoCatDevPub acp = new AutoCatDevPub(GlobalStrings.Profile_DefaultAutoCatName_Publisher, null, "(" + GlobalStrings.Name_Publisher + ") ");
             acp.AllPublishers = true;
             list.Add(acp);
 
@@ -561,26 +507,22 @@ namespace Depressurizer
             list.Add(ach);
         }
 
-        #endregion
-
-        public static Int64 DirNametoID64(string cId)
+        public static long DirNametoID64(string cId)
         {
-            Int64 res;
-            if (Int64.TryParse(cId, out res))
+            long res;
+            if (long.TryParse(cId, out res))
             {
-                return (res + 0x0110000100000000);
+                return res + 0x0110000100000000;
             }
+
             return 0;
         }
 
-        public static string ID64toDirName(Int64 id)
-        {
-            return (id - 0x0110000100000000).ToString();
-        }
+        public static string ID64toDirName(long id) => (id - 0x0110000100000000).ToString();
 
         // TODO Remove
         public Image GetAvatar() => Steam.GetAvatar(SteamID64);
-        
+
         // find and return AutoCat using the name
         public AutoCat GetAutoCat(string name)
         {
@@ -591,7 +533,7 @@ namespace Depressurizer
 
             foreach (AutoCat ac in AutoCats)
             {
-                if (String.Equals(ac.Name, name, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(ac.Name, name, StringComparison.OrdinalIgnoreCase))
                 {
                     return ac;
                 }
@@ -621,6 +563,7 @@ namespace Depressurizer
                     newList.Add(clone);
                 }
             }
+
             return newList;
         }
     }

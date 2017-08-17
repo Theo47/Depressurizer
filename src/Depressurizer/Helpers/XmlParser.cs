@@ -17,23 +17,20 @@
 */
 
 using System;
-using System.Diagnostics;
 using System.Net;
 using System.Xml;
-using Rallion;
 
 namespace Depressurizer.Helpers
 {
     public sealed class XmlParser
     {
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="xmlPath"></param>
         /// <returns></returns>
         public static XmlDocument Load(string xmlPath)
         {
-            Program.Logger.Write(LoggerLevel.Info, $"Loading: {xmlPath}");
+            Logger.Instance.Trace($"XmlParser.Load({xmlPath}) Called");
 
             XmlDocument xmlDocument = new XmlDocument();
             bool parsingSucceeded = false;
@@ -42,17 +39,23 @@ namespace Depressurizer.Helpers
             {
                 xmlDocument.Load(xmlPath);
                 parsingSucceeded = true;
+
+                if (xmlDocument.InnerText.Contains("This profile is private."))
+                {
+                    Logger.Instance.Warn("User profile is private");
+                    xmlDocument = null;
+                }
             }
             catch (WebException webException)
             {
-                Program.Logger.WriteException("XmlParser.Load: ", webException);
+                Logger.Instance.Exception(webException);
 
                 if ((webException.Status == WebExceptionStatus.ProtocolError) && (webException.Response != null))
                 {
                     HttpWebResponse resp = (HttpWebResponse)webException.Response;
                     if (resp.StatusCode == HttpStatusCode.NotFound)
                     {
-                        Program.Logger.Write(LoggerLevel.Error, $"Invalid XmlPath supplied: {xmlPath}");
+                        Logger.Instance.Error($"Invalid XmlPath supplied: {xmlPath}");
                         xmlDocument = null;
                     }
                 }
@@ -61,28 +64,26 @@ namespace Depressurizer.Helpers
             {
                 if (!parsingSucceeded)
                 {
-                    Program.Logger.Write(LoggerLevel.Error, $"Error while parsing: {xmlPath}");
+                    Logger.Instance.Error($"Error while parsing: {xmlPath}");
                 }
                 else
                 {
-                    Program.Logger.Write(LoggerLevel.Error, $"Unknown Exception: {ex}");
-                    throw new Exception(ex.Message);
+                    Logger.Instance.Exception(ex);
                 }
-                    xmlDocument = null;
+                xmlDocument = null;
             }
 
             return xmlDocument;
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="xmlPath"></param>
         /// <param name="args"></param>
         /// <returns></returns>
         public static XmlDocument Load(string xmlPath, params object[] args)
         {
-            Program.Logger.Write(LoggerLevel.Trace, $"XmlParser.Load({xmlPath}, {args}) Called");
+            Logger.Instance.Trace($"XmlParser.Load({xmlPath}, {args}) Called");
 
             return Load(string.Format(xmlPath, args));
         }

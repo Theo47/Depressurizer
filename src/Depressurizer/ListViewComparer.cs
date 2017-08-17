@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Depressurizer.Model;
 
 namespace Depressurizer
 {
     // Compares two ListView items based on a selected column.
-    public class ListViewComparer : System.Collections.IComparer
+    public class ListViewComparer : IComparer
     {
-        private int ColumnNumber;
-        private SortOrder SortOrder;
+        private readonly int ColumnNumber;
+        private readonly SortOrder SortOrder;
 
-        public ListViewComparer(int column_number,
-            SortOrder sort_order)
+        public ListViewComparer(int column_number, SortOrder sort_order)
         {
             ColumnNumber = column_number;
             SortOrder = sort_order;
@@ -34,8 +35,7 @@ namespace Depressurizer
             // Compare them.
             int result;
             double double_x, double_y;
-            if (double.TryParse(string_x, out double_x) &&
-                double.TryParse(string_y, out double_y))
+            if (double.TryParse(string_x, out double_x) && double.TryParse(string_y, out double_y))
             {
                 // Treat as a number.
                 result = double_x.CompareTo(double_y);
@@ -43,8 +43,7 @@ namespace Depressurizer
             else
             {
                 DateTime date_x, date_y;
-                if (DateTime.TryParse(string_x, out date_x) &&
-                    DateTime.TryParse(string_y, out date_y))
+                if (DateTime.TryParse(string_x, out date_x) && DateTime.TryParse(string_y, out date_y))
                 {
                     // Treat as a date.
                     result = date_x.CompareTo(date_y);
@@ -62,12 +61,13 @@ namespace Depressurizer
             {
                 return result;
             }
+
             return -result;
         }
     }
 
     // Compares two lstCategories items based on a selected column.
-    public class lstCategoriesComparer : System.Collections.IComparer
+    public class lstCategoriesComparer : IComparer
     {
         public enum categorySortMode
         {
@@ -75,11 +75,10 @@ namespace Depressurizer
             Count
         }
 
-        private categorySortMode SortMode;
-        private SortOrder SortOrder;
+        private readonly categorySortMode SortMode;
+        private readonly SortOrder SortOrder;
 
-        public lstCategoriesComparer(categorySortMode sortMode,
-            SortOrder sortOrder)
+        public lstCategoriesComparer(categorySortMode sortMode, SortOrder sortOrder)
         {
             SortMode = sortMode;
             SortOrder = sortOrder;
@@ -142,6 +141,7 @@ namespace Depressurizer
             {
                 return result;
             }
+
             return -result;
         }
     }

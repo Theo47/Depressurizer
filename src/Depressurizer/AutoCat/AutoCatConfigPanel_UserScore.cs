@@ -25,11 +25,10 @@ namespace Depressurizer
 {
     public partial class AutoCatConfigPanel_UserScore : AutoCatConfigPanel
     {
-        public delegate void UserScorePresetDelegate(ICollection<UserScore_Rule> rules);
+        private readonly BindingSource binding = new BindingSource();
+        private readonly Dictionary<string, UserScorePresetDelegate> presetMap = new Dictionary<string, UserScorePresetDelegate>();
 
-        BindingList<UserScore_Rule> ruleList = new BindingList<UserScore_Rule>();
-        BindingSource binding = new BindingSource();
-        Dictionary<string, UserScorePresetDelegate> presetMap = new Dictionary<string, UserScorePresetDelegate>();
+        private readonly BindingList<UserScore_Rule> ruleList = new BindingList<UserScore_Rule>();
 
         public AutoCatConfigPanel_UserScore()
         {
@@ -60,10 +59,13 @@ namespace Depressurizer
             {
                 cmbPresets.Items.Add(s);
             }
+
             cmbPresets.SelectedIndex = 0;
 
             UpdateEnabledSettings();
         }
+
+        public delegate void UserScorePresetDelegate(ICollection<UserScore_Rule> rules);
 
         public override void SaveToAutoCat(AutoCat ac)
         {
@@ -94,26 +96,25 @@ namespace Depressurizer
             {
                 ruleList.Add(new UserScore_Rule(rule));
             }
+
             UpdateEnabledSettings();
         }
 
         /// <summary>
-        /// Updates enabled states of all form elements that depend on the rule selection.
+        ///     Updates enabled states of all form elements that depend on the rule selection.
         /// </summary>
         private void UpdateEnabledSettings()
         {
-            bool ruleSelected = (lstRules.SelectedIndex >= 0);
+            bool ruleSelected = lstRules.SelectedIndex >= 0;
 
-            txtRuleName.Enabled =
-                numRuleMaxScore.Enabled = numRuleMinScore.Enabled =
-                    numRuleMinReviews.Enabled = numRuleMaxReviews.Enabled =
-                        cmdRuleRemove.Enabled = ruleSelected;
+            txtRuleName.Enabled = numRuleMaxScore.Enabled = numRuleMinScore.Enabled = numRuleMinReviews.Enabled = numRuleMaxReviews.Enabled = cmdRuleRemove.Enabled = ruleSelected;
             cmdRuleUp.Enabled = ruleSelected && (lstRules.SelectedIndex != 0);
             cmdRuleDown.Enabled = ruleSelected = ruleSelected && (lstRules.SelectedIndex != (lstRules.Items.Count - 1));
         }
 
         /// <summary>
-        /// Moves the specified rule a certain number of spots up or down in the list. Does nothing if the spot would be off the list.
+        ///     Moves the specified rule a certain number of spots up or down in the list. Does nothing if the spot would be off
+        ///     the list.
         /// </summary>
         /// <param name="mainIndex">Index of the rule to move.</param>
         /// <param name="offset">Number of spots to move the rule. Negative moves up, positive moves down.</param>
@@ -121,8 +122,7 @@ namespace Depressurizer
         private void MoveItem(int mainIndex, int offset, bool selectMoved)
         {
             int alterIndex = mainIndex + offset;
-            if ((mainIndex < 0) || (mainIndex >= lstRules.Items.Count) || (alterIndex < 0) ||
-                (alterIndex >= lstRules.Items.Count))
+            if ((mainIndex < 0) || (mainIndex >= lstRules.Items.Count) || (alterIndex < 0) || (alterIndex >= lstRules.Items.Count))
             {
                 return;
             }
@@ -137,16 +137,15 @@ namespace Depressurizer
         }
 
         /// <summary>
-        /// Replaces the current rule list with the named preset. Asks for user confirmation if the current rule list is not empty.
+        ///     Replaces the current rule list with the named preset. Asks for user confirmation if the current rule list is not
+        ///     empty.
         /// </summary>
         /// <param name="name">Name of the preset to apply.</param>
         private void ApplyPreset(string name)
         {
             if ((name != null) && presetMap.ContainsKey(name))
             {
-                if ((ruleList.Count == 0) || (MessageBox.Show(GlobalStrings.AutoCatUserScore_Dialog_ConfirmPreset,
-                                                  GlobalStrings.Gen_Warning, MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-                                              == DialogResult.Yes))
+                if ((ruleList.Count == 0) || (MessageBox.Show(GlobalStrings.AutoCatUserScore_Dialog_ConfirmPreset, GlobalStrings.Gen_Warning, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes))
                 {
                     UserScorePresetDelegate dlgt = presetMap[name];
                     ruleList.Clear();
@@ -157,7 +156,7 @@ namespace Depressurizer
         }
 
         /// <summary>
-        /// Adds a new rule to the end of the list and selects it.
+        ///     Adds a new rule to the end of the list and selects it.
         /// </summary>
         private void AddRule()
         {
@@ -167,7 +166,7 @@ namespace Depressurizer
         }
 
         /// <summary>
-        /// Removes the rule at the given index
+        ///     Removes the rule at the given index
         /// </summary>
         /// <param name="index">Index of the rule to remove</param>
         private void RemoveRule(int index)
@@ -177,8 +176,6 @@ namespace Depressurizer
                 ruleList.RemoveAt(index);
             }
         }
-
-        #region Event Handlers
 
         private void lstRules_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -210,12 +207,8 @@ namespace Depressurizer
             ApplyPreset(cmbPresets.SelectedItem as string);
         }
 
-        #endregion
-
-        #region Preset generators
-
         /// <summary>
-        /// Generates rules that match the Steam Store rating labels
+        ///     Generates rules that match the Steam Store rating labels
         /// </summary>
         /// <param name="rules">List of UserScore_Rule objects to populate with the new ones. Should generally be empty.</param>
         public void GenerateSteamRules(ICollection<UserScore_Rule> rules)
@@ -230,7 +223,5 @@ namespace Depressurizer
             rules.Add(new UserScore_Rule(GlobalStrings.AutoCatUserScore_Preset_Steam_Negative3, 0, 19, 50, 0));
             rules.Add(new UserScore_Rule(GlobalStrings.AutoCatUserScore_Preset_Steam_Negative2, 0, 19, 1, 0));
         }
-
-        #endregion
     }
 }
