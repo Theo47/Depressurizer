@@ -289,7 +289,7 @@ namespace Depressurizer.Helpers
         /// </summary>
         public void Dispose()
         {
-            lock (SyncRoot)
+            lock (this)
             {
                 FlushLog();
 
@@ -301,6 +301,7 @@ namespace Depressurizer.Helpers
                 _outputStream.Dispose();
                 _outputStream.Close();
                 _outputStream = null;
+                _instance = null;
             }
         }
     }
