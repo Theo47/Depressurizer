@@ -19,34 +19,40 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using System.Xml.Serialization;
-using Depressurizer.Helpers;
-using Depressurizer.Model;
+using Rallion;
 
 namespace Depressurizer
 {
     public class AutoCatFlags : AutoCat
     {
-        public override AutoCatType AutoCatType => AutoCatType.Flags;
-
-        [XmlArray("Flags"), XmlArrayItem("Flag")]
-        public List<string> IncludedFlags { get; set; }
+        public override AutoCatType AutoCatType
+        {
+            get { return AutoCatType.Flags; }
+        }
 
         // AutoCat configuration
         public string Prefix { get; set; }
 
-        public AutoCatFlags(string name, string filter = null, string prefix = null, List<string> flags = null, bool selected = false) : base(name)
+        [XmlArray("Flags"), XmlArrayItem("Flag")]
+        public List<string> IncludedFlags { get; set; }
+
+        public AutoCatFlags(string name, string filter = null, string prefix = null, List<string> flags = null,
+            bool selected = false)
+            : base(name)
         {
             Filter = filter;
             Prefix = prefix;
-            IncludedFlags = flags == null ? new List<string>() : flags;
+            IncludedFlags = (flags == null) ? (new List<string>()) : flags;
             Selected = selected;
         }
 
         //XmlSerializer requires a parameterless constructor
         private AutoCatFlags() { }
 
-        protected AutoCatFlags(AutoCatFlags other) : base(other)
+        protected AutoCatFlags(AutoCatFlags other)
+            : base(other)
         {
             Filter = other.Filter;
             Prefix = other.Prefix;
@@ -54,25 +60,26 @@ namespace Depressurizer
             Selected = other.Selected;
         }
 
-        public override AutoCat Clone() => new AutoCatFlags(this);
+        public override AutoCat Clone()
+        {
+            return new AutoCatFlags(this);
+        }
 
         public override AutoCatResult CategorizeGame(GameInfo game, Filter filter)
         {
             if (games == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GamelistNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
-
             if (db == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_DBNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
-
             if (game == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GameNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GameNull);
                 return AutoCatResult.Failure;
             }
 
@@ -98,7 +105,6 @@ namespace Depressurizer
                 Category c = games.GetCategory(GetProcessedString(catString));
                 game.AddCategory(c);
             }
-
             return AutoCatResult.Success;
         }
 
@@ -108,7 +114,6 @@ namespace Depressurizer
             {
                 return baseString;
             }
-
             return Prefix + baseString;
         }
     }

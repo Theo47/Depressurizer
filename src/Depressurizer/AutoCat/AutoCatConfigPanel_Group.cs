@@ -25,7 +25,7 @@ namespace Depressurizer
     public partial class AutoCatConfigPanel_Group : AutoCatConfigPanel
     {
         //private List<string> stringAutocats;
-        private readonly List<AutoCat> Autocats;
+        private List<AutoCat> Autocats;
 
         private AutoCat current;
 
@@ -35,6 +35,8 @@ namespace Depressurizer
 
             Autocats = autocats;
         }
+
+        #region Data modifiers
 
         public override void LoadFromAutoCat(AutoCat autocat)
         {
@@ -58,6 +60,10 @@ namespace Depressurizer
 
             ac.Autocats = GetGroup();
         }
+
+        #endregion
+
+        #region Event Handlers
 
         private void btnUp_Click(object sender, EventArgs e)
         {
@@ -113,8 +119,8 @@ namespace Depressurizer
             else if (lbAutocats.SelectedItem != null)
             {
                 btnRemove.Enabled = true;
-                btnUp.Enabled = lbAutocats.SelectedIndex == 0 ? false : true;
-                btnDown.Enabled = lbAutocats.SelectedIndex == (lbAutocats.Items.Count - 1) ? false : true;
+                btnUp.Enabled = (lbAutocats.SelectedIndex == 0) ? false : true;
+                btnDown.Enabled = (lbAutocats.SelectedIndex == (lbAutocats.Items.Count - 1)) ? false : true;
             }
             else
             {
@@ -123,6 +129,10 @@ namespace Depressurizer
                 btnDown.Enabled = false;
             }
         }
+
+        #endregion
+
+        #region UI Updaters
 
         private void FillAutocatList(List<string> group)
         {
@@ -138,6 +148,10 @@ namespace Depressurizer
             }
         }
 
+        #endregion
+
+        #region Utility
+
         private bool InGroup(string find)
         {
             foreach (string name in lbAutocats.Items)
@@ -147,7 +161,6 @@ namespace Depressurizer
                     return true;
                 }
             }
-
             return false;
         }
 
@@ -158,8 +171,9 @@ namespace Depressurizer
             {
                 group.Add(name);
             }
-
             return group;
         }
+
+        #endregion
     }
 }

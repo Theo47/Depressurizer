@@ -20,18 +20,16 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
-using Depressurizer.Model;
 
 namespace Depressurizer
 {
     public partial class AutoCatConfigPanel_Manual : AutoCatConfigPanel
     {
-        private bool loaded;
-
-        private readonly GameList ownedGames;
-
         // used to remove unchecked items from the Add and Remove checkedlistbox.
         private Thread workerThread;
+
+        private bool loaded;
+        private GameList ownedGames;
 
         public AutoCatConfigPanel_Manual(GameList gamelist)
         {
@@ -52,9 +50,7 @@ namespace Depressurizer
             lstAdd.Columns[1].Width = 0;
         }
 
-        private delegate void RemoveItemCallback(ListViewItem obj);
-
-        private delegate void AddItemCallback(ListViewItem obj);
+        #region Data modifiers
 
         public override void LoadFromAutoCat(AutoCat autocat)
         {
@@ -75,7 +71,6 @@ namespace Depressurizer
                 item.Checked = ac.RemoveCategories.Contains(item.Name);
                 found.Add(item.Name);
             }
-
             lstRemove.EndUpdate();
 
             foreach (string s in ac.RemoveCategories)
@@ -96,7 +91,6 @@ namespace Depressurizer
                 item.Checked = ac.AddCategories.Contains(item.Name);
                 found.Add(item.Name);
             }
-
             lstAdd.EndUpdate();
 
             foreach (string s in ac.AddCategories)
@@ -143,6 +137,10 @@ namespace Depressurizer
             }
         }
 
+        #endregion
+
+        #region UI Updaters
+
         public void FillRemoveList()
         {
             clbRemoveSelected.Items.Clear();
@@ -158,7 +156,6 @@ namespace Depressurizer
                     lstRemove.Items.Add(l);
                 }
             }
-
             lstRemove.Columns[0].Width = -1;
             SortRemove(1, SortOrder.Descending);
             lstRemove.EndUpdate();
@@ -179,7 +176,6 @@ namespace Depressurizer
                     lstAdd.Items.Add(l);
                 }
             }
-
             lstAdd.Columns[0].Width = -1;
             SortAdd(1, SortOrder.Descending);
             lstAdd.EndUpdate();
@@ -243,6 +239,12 @@ namespace Depressurizer
             SortAdd(1, SortOrder.Descending);
         }
 
+        #endregion
+
+        #region Remove Categories
+
+        #region Event Handlers
+
         private void btnRemoveCheckAll_Click(object sender, EventArgs e)
         {
             SetAllListCheckStates(lstRemove, true);
@@ -279,7 +281,7 @@ namespace Depressurizer
             {
                 clbRemoveSelected.Items.Add(e.Item, true);
             }
-            else if (!e.Item.Checked && loaded)
+            else if ((!e.Item.Checked) && loaded)
             {
                 workerThread = new Thread(RemoveItemWorker);
                 workerThread.Start(e.Item);
@@ -291,7 +293,7 @@ namespace Depressurizer
         {
             if (e.NewValue == CheckState.Unchecked)
             {
-                ((ListViewItem)clbRemoveSelected.Items[e.Index]).Checked = false;
+                ((ListViewItem) clbRemoveSelected.Items[e.Index]).Checked = false;
             }
         }
 
@@ -309,6 +311,12 @@ namespace Depressurizer
             }
         }
 
+        #endregion
+
+        #region Helper Thread 
+
+        delegate void RemoveItemCallback(ListViewItem obj);
+
         private void RemoveItem(ListViewItem obj)
         {
             if (clbRemoveSelected.InvokeRequired)
@@ -325,8 +333,16 @@ namespace Depressurizer
 
         private void RemoveItemWorker(object obj)
         {
-            RemoveItem((ListViewItem)obj);
+            RemoveItem((ListViewItem) obj);
         }
+
+        #endregion
+
+        #endregion
+
+        #region Add Categories
+
+        #region Event Handlers
 
         private void btnAddCheckAll_Click(object sender, EventArgs e)
         {
@@ -346,7 +362,7 @@ namespace Depressurizer
             {
                 clbAddSelected.Items.Add(e.Item, true);
             }
-            else if (!e.Item.Checked && loaded)
+            else if ((!e.Item.Checked) && loaded)
             {
                 workerThread = new Thread(AddItemWorker);
                 workerThread.Start(e.Item);
@@ -358,7 +374,7 @@ namespace Depressurizer
         {
             if (e.NewValue == CheckState.Unchecked)
             {
-                ((ListViewItem)clbAddSelected.Items[e.Index]).Checked = false;
+                ((ListViewItem) clbAddSelected.Items[e.Index]).Checked = false;
             }
         }
 
@@ -376,6 +392,12 @@ namespace Depressurizer
             }
         }
 
+        #endregion
+
+        #region Helper Thread
+
+        delegate void AddItemCallback(ListViewItem obj);
+
         private void AddItem(ListViewItem obj)
         {
             if (clbAddSelected.InvokeRequired)
@@ -392,13 +414,20 @@ namespace Depressurizer
 
         private void AddItemWorker(object obj)
         {
-            AddItem((ListViewItem)obj);
+            AddItem((ListViewItem) obj);
         }
+
+        #endregion
+
+        #endregion
+
+        #region Utility
 
         private void SortRemove(int c, SortOrder so)
         {
             // Create a comparer.
-            lstRemove.ListViewItemSorter = new ListViewComparer(c, so);
+            lstRemove.ListViewItemSorter =
+                new ListViewComparer(c, so);
 
             // Sort.
             lstRemove.Sort();
@@ -407,7 +436,8 @@ namespace Depressurizer
         private void SortAdd(int c, SortOrder so)
         {
             // Create a comparer.
-            lstAdd.ListViewItemSorter = new ListViewComparer(c, so);
+            lstAdd.ListViewItemSorter =
+                new ListViewComparer(c, so);
 
             // Sort.
             lstAdd.Sort();
@@ -420,5 +450,7 @@ namespace Depressurizer
             i.Name = c.Name;
             return i;
         }
+
+        #endregion
     }
 }

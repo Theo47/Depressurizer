@@ -7,8 +7,8 @@ namespace Depressurizer
 {
     public partial class DlgAutomaticModeHelper : Form
     {
-        private readonly AutomaticModeOptions defaultOpts = new AutomaticModeOptions();
-        private readonly Profile profile;
+        private AutomaticModeOptions defaultOpts = new AutomaticModeOptions();
+        Profile profile;
 
         public DlgAutomaticModeHelper(Profile profile)
         {
@@ -28,7 +28,10 @@ namespace Depressurizer
             ttHelp.Ext_SetToolTip(hlpUpdateHltb, GlobalStrings.AutoMode_Help_UpdateHltb);
         }
 
-        private string GenerateCommand() => '"' + Application.ExecutablePath + '"' + GenerateArguments();
+        private string GenerateCommand()
+        {
+            return '"' + Application.ExecutablePath + '"' + GenerateArguments();
+        }
 
         private string GenerateArguments()
         {
@@ -37,6 +40,7 @@ namespace Depressurizer
 
             sb.Append(profile.FilePath);
             sb.Append('"');
+
 
             switch (cmbSteamCheck.SelectedIndex)
             {
@@ -133,11 +137,13 @@ namespace Depressurizer
             {
                 return " " + name + GetToggle(val);
             }
-
             return "";
         }
 
-        private string GetToggle(bool val) => val ? "+" : "-";
+        private string GetToggle(bool val)
+        {
+            return val ? "+" : "-";
+        }
 
         private void CreateShortcut()
         {
@@ -153,7 +159,7 @@ namespace Depressurizer
             if (res == DialogResult.OK)
             {
                 WshShell shell = new WshShell();
-                IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(dlg.FileName);
+                IWshShortcut shortcut = (IWshShortcut) shell.CreateShortcut(dlg.FileName);
                 shortcut.TargetPath = Application.ExecutablePath;
                 shortcut.WorkingDirectory = Application.StartupPath;
                 shortcut.Arguments = GenerateArguments();

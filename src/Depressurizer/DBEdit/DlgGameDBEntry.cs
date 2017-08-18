@@ -24,28 +24,25 @@ namespace Depressurizer
 {
     public partial class GameDBEntryDialog : Form
     {
-        private readonly char[] SPLIT_CHAR =
-        {
-            ','
-        };
-
-        private bool editMode;
         public GameDBEntry Game;
 
-        public GameDBEntryDialog() : this(null) { }
+        private bool editMode;
+
+        public GameDBEntryDialog()
+            : this(null) { }
 
         public GameDBEntryDialog(GameDBEntry game)
         {
             InitializeComponent();
             Game = game;
-            editMode = game == null ? false : true;
+            editMode = (game == null) ? false : true;
         }
 
         private void GameDBEntryForm_Load(object sender, EventArgs e)
         {
             foreach (object o in Enum.GetValues(typeof(AppTypes)))
             {
-                int val = (int)o;
+                int val = (int) o;
                 if ((val & (val - 1)) == 0)
                 {
                     cmbType.Items.Add(o);
@@ -67,7 +64,7 @@ namespace Depressurizer
                 txtId.Text = Game.Id.ToString();
                 txtId.Enabled = false;
 
-                txtParent.Text = Game.ParentId < 0 ? "" : Game.ParentId.ToString();
+                txtParent.Text = (Game.ParentId < 0) ? "" : Game.ParentId.ToString();
 
                 cmbType.SelectedItem = Game.AppType;
 
@@ -100,12 +97,17 @@ namespace Depressurizer
                 {
                     txtRelease.Text = Game.SteamReleaseDate;
                 }
-                numAchievements.Value = Utility.Clamp(Game.Achievements, (int)numAchievements.Minimum, (int)numAchievements.Maximum);
-                numReviewScore.Value = Utility.Clamp(Game.ReviewPositivePercentage, (int)numReviewScore.Minimum, (int)numReviewScore.Maximum);
-                numReviewCount.Value = Utility.Clamp(Game.ReviewTotal, (int)numReviewCount.Minimum, (int)numReviewCount.Maximum);
-                numHltbMain.Value = Utility.Clamp(Game.HltbMain, (int)numHltbMain.Minimum, (int)numHltbMain.Maximum);
-                numHltbExtras.Value = Utility.Clamp(Game.HltbExtras, (int)numHltbExtras.Minimum, (int)numHltbExtras.Maximum);
-                numHltbCompletionist.Value = Utility.Clamp(Game.HltbCompletionist, (int)numHltbCompletionist.Minimum, (int)numHltbCompletionist.Maximum);
+                numAchievements.Value = Utility.Clamp(Game.Achievements, (int) numAchievements.Minimum,
+                    (int) numAchievements.Maximum);
+                numReviewScore.Value = Utility.Clamp(Game.ReviewPositivePercentage, (int) numReviewScore.Minimum,
+                    (int) numReviewScore.Maximum);
+                numReviewCount.Value = Utility.Clamp(Game.ReviewTotal, (int) numReviewCount.Minimum,
+                    (int) numReviewCount.Maximum);
+                numHltbMain.Value = Utility.Clamp(Game.HltbMain, (int) numHltbMain.Minimum, (int) numHltbMain.Maximum);
+                numHltbExtras.Value = Utility.Clamp(Game.HltbExtras, (int) numHltbExtras.Minimum,
+                    (int) numHltbExtras.Maximum);
+                numHltbCompletionist.Value = Utility.Clamp(Game.HltbCompletionist, (int) numHltbCompletionist.Minimum,
+                    (int) numHltbCompletionist.Maximum);
                 chkPlatWin.Checked = Game.Platforms.HasFlag(AppPlatforms.Windows);
                 chkPlatMac.Checked = Game.Platforms.HasFlag(AppPlatforms.Mac);
                 chkPlatLinux.Checked = Game.Platforms.HasFlag(AppPlatforms.Linux);
@@ -126,7 +128,6 @@ namespace Depressurizer
                 MessageBox.Show(GlobalStrings.DlgGameDBEntry_IDMustBeInteger);
                 return false;
             }
-
             if (!string.IsNullOrEmpty(txtParent.Text) && !int.TryParse(txtParent.Text, out parent))
             {
                 MessageBox.Show(GlobalStrings.DlgGameDBEntry_ParentMustBeInt);
@@ -150,8 +151,9 @@ namespace Depressurizer
 
             Game.ParentId = parent;
 
-            Game.AppType = (AppTypes)cmbType.SelectedItem;
+            Game.AppType = (AppTypes) cmbType.SelectedItem;
             Game.Name = txtName.Text;
+
 
             Game.Genres = SplitAndTrim(txtGenres.Text);
             Game.Flags = SplitAndTrim(txtFlags.Text);
@@ -159,13 +161,13 @@ namespace Depressurizer
             Game.Developers = SplitAndTrim(txtDev.Text);
             Game.Publishers = SplitAndTrim(txtPub.Text);
 
-            Game.Achievements = (int)numAchievements.Value;
-            Game.ReviewPositivePercentage = (int)numReviewScore.Value;
-            Game.ReviewTotal = (int)numReviewCount.Value;
+            Game.Achievements = (int) numAchievements.Value;
+            Game.ReviewPositivePercentage = (int) numReviewScore.Value;
+            Game.ReviewTotal = (int) numReviewCount.Value;
 
-            Game.HltbMain = (int)numHltbMain.Value;
-            Game.HltbExtras = (int)numHltbExtras.Value;
-            Game.HltbCompletionist = (int)numHltbCompletionist.Value;
+            Game.HltbMain = (int) numHltbMain.Value;
+            Game.HltbExtras = (int) numHltbExtras.Value;
+            Game.HltbCompletionist = (int) numHltbCompletionist.Value;
 
             Game.MC_Url = txtMCName.Text;
             Game.SteamReleaseDate = txtRelease.Text;
@@ -190,6 +192,8 @@ namespace Depressurizer
             return true;
         }
 
+        private readonly char[] SPLIT_CHAR = {','};
+
         private List<string> SplitAndTrim(string s)
         {
             if (string.IsNullOrWhiteSpace(s))
@@ -206,7 +210,6 @@ namespace Depressurizer
                     result.Add(sp.Trim());
                 }
             }
-
             if (result.Count > 0)
             {
                 return result;

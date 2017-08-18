@@ -22,15 +22,18 @@ using System.Windows.Forms;
 
 namespace Depressurizer.Lib
 {
-    internal class ExtListView : ListView
+    class ExtListView : ListView
     {
+        public event EventHandler SelectionChanged;
+
         private bool isSelecting;
         private IComparer suspendedComparer;
         private int suspendSortDepth;
 
-        public ExtListView() => SelectedIndexChanged += ExtListView_SelectedIndexChanged;
-
-        public event EventHandler SelectionChanged;
+        public ExtListView()
+        {
+            SelectedIndexChanged += ExtListView_SelectedIndexChanged;
+        }
 
         public void ExtBeginUpdate()
         {
@@ -45,7 +48,7 @@ namespace Depressurizer.Lib
         }
 
         /// <summary>
-        ///     Suspends sorting until ResumeSorting is called. Does so by clearing the ListViewItemSorter property.
+        /// Suspends sorting until ResumeSorting is called. Does so by clearing the ListViewItemSorter property.
         /// </summary>
         public void SuspendSorting()
         {
@@ -58,7 +61,7 @@ namespace Depressurizer.Lib
         }
 
         /// <summary>
-        ///     Resumes sorting after SuspendSorting has been called.
+        /// Resumes sorting after SuspendSorting has been called.
         /// </summary>
         /// <param name="sortNow">If true, will sort immediately.</param>
         public void ResumeSorting(bool sortNow = false)
@@ -80,7 +83,7 @@ namespace Depressurizer.Lib
             suspendSortDepth--;
         }
 
-        private void ExtListView_SelectedIndexChanged(object sender, EventArgs e)
+        void ExtListView_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (!isSelecting)
             {
@@ -89,7 +92,7 @@ namespace Depressurizer.Lib
             }
         }
 
-        private void Application_Idle(object sender, EventArgs e)
+        void Application_Idle(object sender, EventArgs e)
         {
             isSelecting = false;
             Application.Idle -= Application_Idle;

@@ -18,59 +18,62 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Serialization;
-using Depressurizer.Helpers;
-using Depressurizer.Model;
+using Rallion;
 
 namespace Depressurizer
 {
     /// <summary>
-    ///     Autocategorization scheme that adds genre categories.
+    /// Autocategorization scheme that adds genre categories.
     /// </summary>
     public class AutoCatGenre : AutoCat
     {
-        public override AutoCatType AutoCatType => AutoCatType.Genre;
-
-        [XmlArray("Ignored"), XmlArrayItem("Ignore")]
-        public List<string> IgnoredGenres { get; set; }
+        public override AutoCatType AutoCatType
+        {
+            get { return AutoCatType.Genre; }
+        }
 
         // Autocat configuration
         public int MaxCategories { get; set; }
 
-        public string Prefix { get; set; }
-
         [XmlElement("RemoveOthers")]
         public bool RemoveOtherGenres { get; set; }
-
         public bool TagFallback { get; set; }
+        public string Prefix { get; set; }
+
+        [XmlArray("Ignored"), XmlArrayItem("Ignore")]
+        public List<string> IgnoredGenres { get; set; }
+
+        const int MAX_PARENT_DEPTH = 3;
 
         private SortedSet<Category> genreCategories;
 
         /// <summary>
-        ///     Creates a new AutoCatGenre object, which autocategorizes games based on the genres in the Steam store.
+        /// Creates a new AutoCatGenre object, which autocategorizes games based on the genres in the Steam store.
         /// </summary>
         /// <param name="db">Reference to GameDB to use</param>
         /// <param name="games">Reference to the GameList to act on</param>
         /// <param name="maxCategories">Maximum number of categories to assign per game. 0 indicates no limit.</param>
-        /// <param name="removeOthers">
-        ///     If true, removes any OTHER genre-named categories from each game processed. Will not remove
-        ///     categories that do not match a genre found in the database.
-        /// </param>
-        public AutoCatGenre(string name, string filter = null, string prefix = null, int maxCategories = 0, bool removeOthers = false, bool tagFallback = true, List<string> ignore = null, bool selected = false) : base(name)
+        /// <param name="removeOthers">If true, removes any OTHER genre-named categories from each game processed. Will not remove categories that do not match a genre found in the database.</param>
+        public AutoCatGenre(string name, string filter = null, string prefix = null, int maxCategories = 0,
+            bool removeOthers = false, bool tagFallback = true, List<string> ignore = null, bool selected = false)
+            : base(name)
         {
             Filter = filter;
             MaxCategories = maxCategories;
             RemoveOtherGenres = removeOthers;
             TagFallback = tagFallback;
             Prefix = prefix;
-            IgnoredGenres = ignore == null ? new List<string>() : ignore;
+            IgnoredGenres = (ignore == null) ? new List<string>() : ignore;
             Selected = selected;
         }
 
         //XmlSerializer requires a parameterless constructor
         private AutoCatGenre() { }
 
-        protected AutoCatGenre(AutoCatGenre other) : base(other)
+        protected AutoCatGenre(AutoCatGenre other)
+            : base(other)
         {
             Filter = other.Filter;
             MaxCategories = other.MaxCategories;
@@ -81,13 +84,13 @@ namespace Depressurizer
             Selected = other.Selected;
         }
 
-        private const int MAX_PARENT_DEPTH = 3;
-
-        public override AutoCat Clone() => new AutoCatGenre(this);
+        public override AutoCat Clone()
+        {
+            return new AutoCatGenre(this);
+        }
 
         /// <summary>
-        ///     Prepares to categorize games. Prepares a list of genre categories to remove. Does nothing if removeothergenres is
-        ///     false.
+        /// Prepares to categorize games. Prepares a list of genre categories to remove. Does nothing if removeothergenres is false.
         /// </summary>
         public override void PreProcess(GameList games, GameDB db)
         {
@@ -99,7 +102,8 @@ namespace Depressurizer
 
                 foreach (string cStr in genreStrings)
                 {
-                    if (games.CategoryExists(string.IsNullOrEmpty(Prefix) ? cStr : Prefix + cStr) && !IgnoredGenres.Contains(cStr))
+                    if (games.CategoryExists(String.IsNullOrEmpty(Prefix) ? (cStr) : (Prefix + cStr)) &&
+                        !IgnoredGenres.Contains(cStr))
                     {
                         genreCategories.Add(games.GetCategory(cStr));
                     }
@@ -117,19 +121,17 @@ namespace Depressurizer
         {
             if (games == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GamelistNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
-
             if (db == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_DBNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
-
             if (game == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GameNull);
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GameNull);
                 return AutoCatResult.Failure;
             }
 
@@ -148,7 +150,7 @@ namespace Depressurizer
                 game.RemoveCategory(genreCategories);
             }
 
-            List<string> genreList = db.GetGenreList(game.Id, MAX_PARENT_DEPTH, TagFallback);
+            List<string> genreList = db.GetGenreList(game.Id, depth: MAX_PARENT_DEPTH, tagFallback: TagFallback);
             if ((genreList != null) && (genreList.Count > 0))
             {
                 List<Category> categories = new List<Category>();
@@ -167,7 +169,6 @@ namespace Depressurizer
 
                 game.AddCategory(categories);
             }
-
             return AutoCatResult.Success;
         }
 
@@ -177,7 +178,6 @@ namespace Depressurizer
             {
                 return baseString;
             }
-
             return Prefix + baseString;
         }
     }

@@ -18,25 +18,26 @@ You should have received a copy of the GNU General Public License
 along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using Depressurizer.Helpers;
 using Depressurizer.Properties;
 using Newtonsoft.Json.Linq;
 using Rallion;
 
 namespace Depressurizer
 {
-    internal class GetCuratorRecommendationsDlg : CancelableDlg
+    class GetCuratorRecommendationsDlg : CancelableDlg
     {
-        private readonly long curatorId;
+        private long curatorId;
         public Dictionary<int, CuratorRecommendation> CuratorRecommendations;
         public int TotalCount;
 
-        public GetCuratorRecommendationsDlg(long curatorId) : base(GlobalStrings.CDlgCurator_GettingRecommendations, false)
+        public GetCuratorRecommendationsDlg(long curatorId)
+            : base(GlobalStrings.CDlgCurator_GettingRecommendations, false)
         {
             SetText(GlobalStrings.CDlgCurator_GettingRecommendations);
             this.curatorId = curatorId;
@@ -56,58 +57,53 @@ namespace Depressurizer
             JObject parsedJson = JObject.Parse(json);
             if (int.TryParse(parsedJson["total_count"].ToString(), out TotalCount))
             {
-                SetText(GlobalStrings.CDlgCurator_GettingRecommendations + " " + string.Format(GlobalStrings.CDlg_Progress, 0, TotalCount));
+                SetText(GlobalStrings.CDlgCurator_GettingRecommendations + " " + String.Format(GlobalStrings.CDlg_Progress, 0, TotalCount));
                 string resultsHtml = parsedJson["results_html"].ToString();
-                CuratorRecommendations = CuratorRecommendations.Union(GetCuratorRecommendationsFromPage(resultsHtml)).ToDictionary(k => k.Key, v => v.Value);
+                CuratorRecommendations = CuratorRecommendations.Union(GetCuratorRecommendationsFromPage(resultsHtml))
+                    .ToDictionary(k => k.Key, v => v.Value);
                 for (int currentPosition = 50; currentPosition < TotalCount; currentPosition += 50)
                 {
-                    SetText(GlobalStrings.CDlgCurator_GettingRecommendations + " " + string.Format(GlobalStrings.CDlg_Progress, currentPosition, TotalCount));
+                    SetText(GlobalStrings.CDlgCurator_GettingRecommendations + " " + String.Format(GlobalStrings.CDlg_Progress, currentPosition, TotalCount));
                     using (WebClient wc = new WebClient())
                     {
                         wc.Encoding = Encoding.UTF8;
-                        json = wc.DownloadString(string.Format(Resources.UrlSteamCuratorRecommendations, curatorId, currentPosition));
+                        json = wc.DownloadString(string.Format(Resources.UrlSteamCuratorRecommendations, curatorId,
+                            currentPosition));
                     }
                     parsedJson = JObject.Parse(json);
                     resultsHtml = parsedJson["results_html"].ToString();
-                    CuratorRecommendations = CuratorRecommendations.Union(GetCuratorRecommendationsFromPage(resultsHtml)).ToDictionary(k => k.Key, v => v.Value);
+                    CuratorRecommendations = CuratorRecommendations
+                        .Union(GetCuratorRecommendationsFromPage(resultsHtml)).ToDictionary(k => k.Key, v => v.Value);
                 }
             }
-            else
-            {
-                Logger.Instance.Error("Error: CDlgCurator: Couldn't determine total count of recommendations");
-            }
-
+            else { Program.Logger.Write(LoggerLevel.Error, "Error: CDlgCurator: Couldn't determine total count of recommendations"); }
             if (CuratorRecommendations.Count != TotalCount)
             {
-                Logger.Instance.Error("Error: CDlgCurator: Count of recommendations retrieved is different than expected");
+                Program.Logger.Write(LoggerLevel.Error, "Error: CDlgCurator: Count of recommendations retrieved is different than expected");
             }
-            else
-            {
-                Logger.Instance.Error(string.Format("Retrieved {0} curator recommendations.", TotalCount));
-            }
+            else { Program.Logger.Write(LoggerLevel.Error, String.Format("Retrieved {0} curator recommendations.", TotalCount)); }
             OnThreadCompletion();
         }
 
         protected override void Finish()
         {
-            if (!Canceled && (CuratorRecommendations.Count > 0) && (Error == null))
+            if (!Canceled  && CuratorRecommendations.Count>0 && Error == null)
             {
                 OnJobCompletion();
             }
         }
 
         /// <summary>
-        ///     Retrieves all curator recomendations in selected string
+        /// Retrieves all curator recomendations in selected string
         /// </summary>
-        /// <param name="page">
-        ///     The results_html json node you get from
-        ///     http://store.steampowered.com/curators/ajaxgetcuratorrecommendations/{0}/?query=&amp;start={1}&amp;count=50
-        /// </param>
+        /// <param name="page">The results_html json node you get from http://store.steampowered.com/curators/ajaxgetcuratorrecommendations/{0}/?query=&amp;start={1}&amp;count=50</param>
         /// <returns>A dictionary containing ids of games and their respective recommendations</returns>
         private static Dictionary<int, CuratorRecommendation> GetCuratorRecommendationsFromPage(string page)
         {
-            Dictionary<int, CuratorRecommendation> curatorRecommendations = new Dictionary<int, CuratorRecommendation>();
-            Regex curatorRegex = new Regex(@"data-ds-appid=\""(\d+)\"".*?><span class='color_([^']*)", RegexOptions.Singleline | RegexOptions.Compiled);
+            Dictionary<int, CuratorRecommendation> curatorRecommendations =
+                new Dictionary<int, CuratorRecommendation>();
+            Regex curatorRegex = new Regex(@"data-ds-appid=\""(\d+)\"".*?><span class='color_([^']*)",
+                RegexOptions.Singleline | RegexOptions.Compiled);
             MatchCollection matches = curatorRegex.Matches(page);
             if (matches.Count > 0)
             {
@@ -129,19 +125,17 @@ namespace Depressurizer
                             recommendation = CuratorRecommendation.Error;
                             break;
                     }
-
-                    if (int.TryParse(ma.Groups[1].Value, out int id) && (recommendation != CuratorRecommendation.Error))
+                    if (int.TryParse(ma.Groups[1].Value, out int id) && recommendation != CuratorRecommendation.Error)
                     {
                         curatorRecommendations.Add(id, recommendation);
-                        Logger.Instance.Debug("Retrieved recommendation for game " + id + ": " + ma.Groups[2].Value);
+                        Program.Logger.Write(LoggerLevel.Verbose, "Retrieved recommendation for game " + id + ": " + ma.Groups[2].Value);
                     }
                     if (recommendation == CuratorRecommendation.Error)
                     {
-                        Logger.Instance.Error("Error: For game " + id + ": recommendation recognized as \"" + ma.Groups[2].Value + '"');
+                        Program.Logger.Write(LoggerLevel.Error, "Error: For game " + id + ": recommendation recognized as \"" + ma.Groups[2].Value + '"');
                     }
                 }
             }
-
             return curatorRecommendations;
         }
     }
