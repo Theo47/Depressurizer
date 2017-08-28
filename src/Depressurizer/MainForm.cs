@@ -255,26 +255,26 @@ namespace Depressurizer
                     return string.Join(", ", Program.GameDB.Games[id].VrSupport.PlayArea);
                 return string.Empty;
             };
-            colLanguageInterface.AspectGetter = delegate (object g)
+            colLanguageInterface.AspectGetter = delegate(object g)
             {
                 if (g == null) return string.Empty;
-                int id = ((GameInfo)g).Id;
+                int id = ((GameInfo) g).Id;
                 if (Program.GameDB.Games.ContainsKey(id) && Program.GameDB.Games[id].LanguageSupport.Interface != null)
                     return string.Join(", ", Program.GameDB.Games[id].LanguageSupport.Interface);
                 return string.Empty;
             };
-            colLanguageSubtitles.AspectGetter = delegate (object g)
+            colLanguageSubtitles.AspectGetter = delegate(object g)
             {
                 if (g == null) return string.Empty;
-                int id = ((GameInfo)g).Id;
+                int id = ((GameInfo) g).Id;
                 if (Program.GameDB.Games.ContainsKey(id) && Program.GameDB.Games[id].LanguageSupport.Subtitles != null)
                     return string.Join(", ", Program.GameDB.Games[id].LanguageSupport.Subtitles);
                 return string.Empty;
             };
-            colLanguageFullAudio.AspectGetter = delegate (object g)
+            colLanguageFullAudio.AspectGetter = delegate(object g)
             {
                 if (g == null) return string.Empty;
-                int id = ((GameInfo)g).Id;
+                int id = ((GameInfo) g).Id;
                 if (Program.GameDB.Games.ContainsKey(id) && Program.GameDB.Games[id].LanguageSupport.FullAudio != null)
                     return string.Join(", ", Program.GameDB.Games[id].LanguageSupport.FullAudio);
                 return string.Empty;
@@ -305,8 +305,8 @@ namespace Depressurizer
             colPlatforms.AspectGetter = delegate(object g)
             {
                 if (g == null) return "";
-                AppPlatforms platforms = Program.GameDB.Games[((GameInfo)g).Id].Platforms;
-                return (platforms & AppPlatforms.Linux) != 0 && platforms != AppPlatforms.All ? platforms + ", SteamOS" : platforms.ToString() ;
+                AppPlatforms platforms = Program.GameDB.Games[((GameInfo) g).Id].Platforms;
+                return (platforms & AppPlatforms.Linux) != 0 && platforms != AppPlatforms.All ? platforms + ", SteamOS" : platforms.ToString();
             };
             colDevelopers.AspectGetter = delegate(object g)
             {
@@ -582,13 +582,13 @@ namespace Depressurizer
                 {
                     MessageBox.Show(GlobalStrings.MainForm_ErrorLoadingGameDB +
                                     GlobalStrings.MainForm_GameDBFileNotExist);
-                    Logger.Instance.Warn(GlobalStrings.MainForm_GameDBFileNotExist);
+                    Program.Logger.WriteWarn(GlobalStrings.MainForm_GameDBFileNotExist);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(GlobalStrings.MainForm_ErrorLoadingGameDB + ex.Message);
-                Logger.Instance.Exception(GlobalStrings.MainForm_Log_ExceptionOnDBLoad, ex);
+                Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionOnDBLoad, ex);
                 Program.GameDB = new GameDB();
             }
         }
@@ -605,7 +605,7 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                Logger.Instance.Exception(GlobalStrings.MainForm_Log_ExceptionAutosavingDB, e);
+                Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionAutosavingDB, e);
                 MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorAutosavingDB, e.Message),
                     GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -628,7 +628,7 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                Logger.Instance.Exception(GlobalStrings.MainForm_Log_ExceptionAppInfo, e);
+                Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionAppInfo, e);
                 MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorAppInfo, e.Message),
                     GlobalStrings.Gen_Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -646,7 +646,7 @@ namespace Depressurizer
 
             if (dlg.Error != null)
             {
-                Logger.Instance.Error(GlobalStrings.DBEditDlg_Log_ExceptionHltb, dlg.Error.Message);
+                Program.Logger.WriteError(GlobalStrings.DBEditDlg_Log_ExceptionHltb, dlg.Error.Message);
                 MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorHltb, dlg.Error.Message),
                     GlobalStrings.Gen_Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 AddStatus(GlobalStrings.DBEditDlg_ErrorUpdatingHltb);
@@ -798,7 +798,7 @@ namespace Depressurizer
             {
                 MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorLoadingProfile, e.Message),
                     GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                Logger.Instance.Exception(GlobalStrings.MainForm_Log_ExceptionLoadingProfile, e);
+                Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionLoadingProfile, e);
                 OnProfileChange();
                 AddStatus(GlobalStrings.MainForm_FailedLoadProfile);
                 return;
@@ -870,7 +870,7 @@ namespace Depressurizer
             {
                 MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorSavingProfile, e.Message),
                     GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Logger.Instance.Exception(GlobalStrings.MainForm_Log_ExceptionSavingProfile, e);
+                Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionSavingProfile, e);
                 AddStatus(GlobalStrings.MainForm_FailedSaveProfile);
                 return false;
             }
@@ -905,7 +905,7 @@ namespace Depressurizer
                 {
                     MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_LocalUpdateError, e.Message),
                         GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    Logger.Instance.Exception(GlobalStrings.MainForm_Log_ExceptionLocalUpdate, e);
+                    Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionLocalUpdate, e);
                     AddStatus(GlobalStrings.MainForm_Status_LocalUpdateFailed);
                     success = false;
                 }
@@ -926,7 +926,7 @@ namespace Depressurizer
 
                     if (updateDlg.Error != null)
                     {
-                        Logger.Instance.Exception(GlobalStrings.MainForm_Log_ExceptionWebUpdateDialog,
+                        Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionWebUpdateDialog,
                             updateDlg.Error);
                         AddStatus(string.Format(GlobalStrings.MainForm_ErrorDownloadingProfileData,
                             updateDlg.UseHtml ? "HTML" : "XML"));
@@ -964,7 +964,7 @@ namespace Depressurizer
                 }
                 catch (Exception e)
                 {
-                    Logger.Instance.Exception(GlobalStrings.MainForm_Log_ExceptionWebUpdate, e);
+                    Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionWebUpdate, e);
                     MessageBox.Show(string.Format(GlobalStrings.MainForm_ErrorDowloadingProfile, e.Message),
                         GlobalStrings.DBEditDlg_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     AddStatus(GlobalStrings.MainForm_DownloadFailed);
@@ -995,7 +995,7 @@ namespace Depressurizer
             {
                 MessageBox.Show(string.Format(GlobalStrings.MainForm_ErrorImportingSteamDataList, e.Message),
                     GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                Logger.Instance.Exception("Exception encountered while importing the remoteconfig file.", e);
+                Program.Logger.WriteException("Exception encountered while importing the remoteconfig file.", e);
                 AddStatus(GlobalStrings.MainForm_ImportFailed);
             }
             Cursor = Cursors.Default;
@@ -1017,7 +1017,7 @@ namespace Depressurizer
                 {
                     MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorExportingToSteam, e.Message),
                         GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Logger.Instance.Exception(GlobalStrings.MainForm_Log_ExceptionExport, e);
+                    Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionExport, e);
                     AddStatus(GlobalStrings.MainForm_ExportFailed);
                 }
             }
@@ -1045,7 +1045,7 @@ namespace Depressurizer
                 {
                     MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorManualExport, e.Message),
                         GlobalStrings.Gen_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Logger.Instance.Exception(GlobalStrings.MainForm_Log_ExceptionExport, e);
+                    Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionExport, e);
                     AddStatus(GlobalStrings.MainForm_ExportFailed);
                 }
                 Cursor = Cursors.Default;
@@ -3992,15 +3992,15 @@ namespace Depressurizer
             AutoCat selected = null;
             if (lvAutoCatType.SelectedItems.Count > 0)
             {
-                selected = (AutoCat)lvAutoCatType.SelectedItems[0].Tag;
+                selected = (AutoCat) lvAutoCatType.SelectedItems[0].Tag;
             }
             else if (lvAutoCatType.CheckedItems.Count > 0)
             {
-                selected = (AutoCat)lvAutoCatType.CheckedItems[0].Tag;
+                selected = (AutoCat) lvAutoCatType.CheckedItems[0].Tag;
             }
             else if (lvAutoCatType.Items.Count > 0)
             {
-                selected = (AutoCat)lvAutoCatType.Items[0].Tag;
+                selected = (AutoCat) lvAutoCatType.Items[0].Tag;
             }
             EditAutoCats(selected);
             FlushStatus();
@@ -4049,7 +4049,7 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                Logger.Instance.Exception(GlobalStrings.MainForm_Log_ExceptionDepressurizerUpdate, e);
+                Program.Logger.WriteException(GlobalStrings.MainForm_Log_ExceptionDepressurizerUpdate, e);
                 MessageBox.Show(string.Format(GlobalStrings.MainForm_Msg_ErrorDepressurizerUpdate, e.Message),
                     GlobalStrings.Gen_Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }

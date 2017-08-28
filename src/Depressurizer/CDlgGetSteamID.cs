@@ -19,7 +19,6 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Net;
 using System.Xml;
-using Depressurizer.Helpers;
 using Rallion;
 
 namespace Depressurizer
@@ -47,17 +46,17 @@ namespace Depressurizer
             try
             {
                 string url = string.Format(Properties.Resources.UrlCustomProfileXml, customUrlName);
-                Logger.Instance.Info(GlobalStrings.CDlgGetSteamID_AttemptingDownloadXMLProfile,
+                Program.Logger.WriteInfo(GlobalStrings.CDlgGetSteamID_AttemptingDownloadXMLProfile,
                     customUrlName, url);
                 WebRequest req = HttpWebRequest.Create(url);
                 WebResponse response = req.GetResponse();
                 doc.Load(response.GetResponseStream());
                 response.Close();
-                Logger.Instance.Info(GlobalStrings.CDlgGetSteamID_XMLProfileDownloaded);
+                Program.Logger.WriteInfo(GlobalStrings.CDlgGetSteamID_XMLProfileDownloaded);
             }
             catch (Exception e)
             {
-                Logger.Instance.Error(GlobalStrings.CDlgGetSteamID_ExceptionDownloadingXMLProfile,
+                Program.Logger.WriteError(GlobalStrings.CDlgGetSteamID_ExceptionDownloadingXMLProfile,
                     e.Message);
                 throw new ApplicationException(GlobalStrings.CDlgGetSteamID_FailedToDownloadProfile + e.Message, e);
             }

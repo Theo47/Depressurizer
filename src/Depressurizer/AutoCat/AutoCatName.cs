@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Xml;
-using Depressurizer.Helpers;
 
 namespace Depressurizer
 {
@@ -44,17 +43,17 @@ namespace Depressurizer
         {
             if (games == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GamelistNull);
+                Program.Logger.WriteError(GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
             if (db == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_DBNull);
+                Program.Logger.WriteError(GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
             if (game == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GameNull);
+                Program.Logger.WriteError(GlobalStrings.Log_AutoCat_GameNull);
                 return AutoCatResult.Failure;
             }
 
@@ -67,7 +66,7 @@ namespace Depressurizer
                 cat = game.Name.Substring(4, 1).ToUpper();
             if (GroupNumbers && Char.IsDigit(cat[0])) cat = "#";
             else if (GroupNonEnglishCharacters && !string.IsNullOrEmpty(GroupNonEnglishCharactersText) &&
-                Regex.IsMatch(cat, "[^a-z0-9]", RegexOptions.IgnoreCase))
+                     Regex.IsMatch(cat, "[^a-z0-9]", RegexOptions.IgnoreCase))
                 cat = GroupNonEnglishCharactersText;
             if (Prefix != null) cat = Prefix + cat;
 

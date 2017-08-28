@@ -45,7 +45,7 @@
     <DocumentationFile>
     </DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
@@ -275,8 +275,8 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Helpers\Steam.cs" />
-    <Compile Include="Helpers\Logger.cs" />
+    <Compile Include="Lib\AppLogger.cs" />
+    <Compile Include="Helpers\GameBanners.cs" />
     <Compile Include="Lib\ExtListView.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
-using Depressurizer.Helpers;
 
 namespace Depressurizer
 {
@@ -79,17 +78,17 @@ namespace Depressurizer
         {
             if (games == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GamelistNull);
+                Program.Logger.WriteError(GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
             if (db == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_DBNull);
+                Program.Logger.WriteError(GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
             if (game == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GameNull);
+                Program.Logger.WriteError(GlobalStrings.Log_AutoCat_GameNull);
                 return AutoCatResult.Failure;
             }
 

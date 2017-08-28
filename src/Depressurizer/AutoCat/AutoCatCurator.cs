@@ -22,7 +22,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Xml.Serialization;
-using Depressurizer.Helpers;
 
 namespace Depressurizer
 {
@@ -46,7 +45,7 @@ namespace Depressurizer
 
         // Serialization constants
         public const string TypeIdString = "AutoCatCurator";
-            
+
         public AutoCatCurator(string name, string filter = null, string categoryName = null, string curatorUrl = null, List<CuratorRecommendation> includedRecommendations = null,
             bool selected = false)
             : base(name)
@@ -86,7 +85,6 @@ namespace Depressurizer
             this.db = db;
 
             GetRecommendations();
-
         }
 
         private void GetRecommendations()
@@ -96,7 +94,7 @@ namespace Depressurizer
             Match m = curatorIdRegex.Match(CuratorUrl);
             if (!m.Success || !long.TryParse(m.Groups[1].Value, out long curatorId))
             {
-                Logger.Instance.Error($"Failed to parse curator id from url {CuratorUrl}.");
+                Program.Logger.WriteError($"Failed to parse curator id from url {CuratorUrl}.");
                 MessageBox.Show(string.Format(GlobalStrings.AutocatCurator_CuratorIdParsing_Error, CuratorUrl),
                     GlobalStrings.Gen_Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -107,13 +105,12 @@ namespace Depressurizer
 
             if (dlg.Error != null)
             {
-                Logger.Instance.Error(GlobalStrings.AutocatCurator_GetRecommendations_Error, dlg.Error.Message);
+                Program.Logger.WriteError(GlobalStrings.AutocatCurator_GetRecommendations_Error, dlg.Error.Message);
                 MessageBox.Show(string.Format(GlobalStrings.AutocatCurator_GetRecommendations_Error, dlg.Error.Message),
                     GlobalStrings.Gen_Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             else if ((res != DialogResult.Cancel) && (res != DialogResult.Abort))
             {
-
                 curatorRecommendations = dlg.CuratorRecommendations;
             }
         }
@@ -122,12 +119,12 @@ namespace Depressurizer
         {
             if (games == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GamelistNull);
+                Program.Logger.WriteError(GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
             if (game == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GameNull);
+                Program.Logger.WriteError(GlobalStrings.Log_AutoCat_GameNull);
                 return AutoCatResult.Failure;
             }
 
@@ -155,7 +152,7 @@ namespace Depressurizer
         {
             if (!string.IsNullOrEmpty(CategoryName))
             {
-                return CategoryName.Replace("{type}",type);
+                return CategoryName.Replace("{type}", type);
             }
             return type;
         }

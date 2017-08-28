@@ -25,7 +25,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using Depressurizer.Helpers;
 using Depressurizer.Properties;
 using Newtonsoft.Json.Linq;
 using Rallion;
@@ -86,18 +85,24 @@ namespace Depressurizer
                         .Union(GetCuratorRecommendationsFromPage(resultsHtml)).ToDictionary(k => k.Key, v => v.Value);
                 }
             }
-            else { Logger.Instance.Error("Error: CDlgCurator: Couldn't determine total count of recommendations"); }
+            else
+            {
+                Program.Logger.WriteError("Error: CDlgCurator: Couldn't determine total count of recommendations");
+            }
             if (CuratorRecommendations.Count != TotalCount)
             {
-                Logger.Instance.Error("Error: CDlgCurator: Count of recommendations retrieved is different than expected");
+                Program.Logger.WriteError("Error: CDlgCurator: Count of recommendations retrieved is different than expected");
             }
-            else { Logger.Instance.Error(String.Format("Retrieved {0} curator recommendations.", TotalCount)); }
+            else
+            {
+                Program.Logger.WriteError(String.Format("Retrieved {0} curator recommendations.", TotalCount));
+            }
             OnThreadCompletion();
         }
 
         protected override void Finish()
         {
-            if (!Canceled  && CuratorRecommendations.Count>0 && Error == null)
+            if (!Canceled && CuratorRecommendations.Count > 0 && Error == null)
             {
                 OnJobCompletion();
             }
@@ -138,11 +143,11 @@ namespace Depressurizer
                     if (int.TryParse(ma.Groups[1].Value, out int id) && recommendation != CuratorRecommendation.Error)
                     {
                         curatorRecommendations.Add(id, recommendation);
-                        Logger.Instance.Verbose("Retrieved recommendation for game " + id + ": " + ma.Groups[2].Value);
+                        Program.Logger.WriteDebug("Retrieved recommendation for game " + id + ": " + ma.Groups[2].Value);
                     }
                     if (recommendation == CuratorRecommendation.Error)
                     {
-                        Logger.Instance.Error("Error: For game " + id + ": recommendation recognized as \"" + ma.Groups[2].Value + '"');
+                        Program.Logger.WriteError("Error: For game " + id + ": recommendation recognized as \"" + ma.Groups[2].Value + '"');
                     }
                 }
             }

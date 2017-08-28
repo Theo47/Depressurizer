@@ -28,7 +28,6 @@ using System.Net.Cache;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using Depressurizer.Helpers;
 using MaterialSkin.Controls;
 
 namespace Depressurizer
@@ -198,7 +197,7 @@ namespace Depressurizer
             catch
             {
                 if (!ignoreWarning.Contains(id))
-                    Logger.Instance.Warn(string.Format(GlobalStrings.Utility_GetImage, url));
+                    Program.Logger.WriteWarn(string.Format(GlobalStrings.Utility_GetImage, url));
             }
             return null;
         }
@@ -226,7 +225,7 @@ namespace Depressurizer
             catch
             {
                 if (!ignoreWarning.Contains(id))
-                    Logger.Instance.Warn(
+                    Program.Logger.WriteWarn(
                         string.Format(GlobalStrings.Utility_GetImage, url));
             }
             return null;
@@ -259,7 +258,7 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                Logger.Instance.Exception(string.Format(GlobalStrings.Utility_SaveBanner, localPath), e);
+                Program.Logger.WriteException(string.Format(GlobalStrings.Utility_SaveBanner, localPath), e);
                 return false;
             }
         }

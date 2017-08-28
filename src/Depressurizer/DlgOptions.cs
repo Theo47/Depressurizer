@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
-using Depressurizer.Helpers;
 
 namespace Depressurizer
 {
@@ -128,7 +127,7 @@ namespace Depressurizer
             chkRemoveExtraEntries.Checked = settings.RemoveExtraEntries;
 
             cmbLogLevel.SelectedIndex = (int) settings.LogLevel;
-            numLogBackup.Value = settings.LogBackups;
+            numLogDaysToKeep.Value = settings.LogDaysToKeep;
 
             //supported languages have an enum value of 1-5 (en, es, ru, uk, nl). 0 is windows language.
             cmbUILanguage.SelectedIndex = (int) settings.UserLang;
@@ -179,7 +178,7 @@ namespace Depressurizer
             settings.RemoveExtraEntries = chkRemoveExtraEntries.Checked;
 
             settings.LogLevel = (LogLevel) cmbLogLevel.SelectedIndex;
-            settings.LogBackups = (int) numLogBackup.Value;
+            settings.LogDaysToKeep = (int) numLogDaysToKeep.Value;
 
             settings.UserLang = (UILanguage) cmbUILanguage.SelectedIndex;
             settings.StoreLang = (StoreLanguage) cmbStoreLanguage.SelectedIndex;

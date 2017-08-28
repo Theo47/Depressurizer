@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
-using Depressurizer.Helpers;
 
 namespace Depressurizer
 {
@@ -39,6 +38,7 @@ namespace Depressurizer
 
         [XmlElement("RemoveOthers")]
         public bool RemoveOtherGenres { get; set; }
+
         public bool TagFallback { get; set; }
         public string Prefix { get; set; }
 
@@ -134,17 +134,17 @@ namespace Depressurizer
         {
             if (games == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GamelistNull);
+                Program.Logger.WriteError(GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
             if (db == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_DBNull);
+                Program.Logger.WriteError(GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
             if (game == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GameNull);
+                Program.Logger.WriteError(GlobalStrings.Log_AutoCat_GameNull);
                 return AutoCatResult.Failure;
             }
 

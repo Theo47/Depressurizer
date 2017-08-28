@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
-using Depressurizer.Helpers;
 
 namespace Depressurizer
 {
@@ -35,6 +34,7 @@ namespace Depressurizer
     {
         [XmlElement("Text")]
         public string Name { get; set; }
+
         public float MinHours { get; set; }
         public float MaxHours { get; set; }
         public TimeType TimeType { get; set; }
@@ -66,8 +66,7 @@ namespace Depressurizer
         public string Prefix { get; set; }
         public bool IncludeUnknown { get; set; }
         public string UnknownText { get; set; }
-        [XmlElement("Rule")]
-        public List<Hltb_Rule> Rules;
+        [XmlElement("Rule")] public List<Hltb_Rule> Rules;
 
         public override AutoCatType AutoCatType
         {
@@ -130,17 +129,17 @@ namespace Depressurizer
         {
             if (games == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GamelistNull);
+                Program.Logger.WriteError(GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
             if (db == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_DBNull);
+                Program.Logger.WriteError(GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
             if (game == null)
             {
-                Logger.Instance.Error(GlobalStrings.Log_AutoCat_GameNull);
+                Program.Logger.WriteError(GlobalStrings.Log_AutoCat_GameNull);
                 return AutoCatResult.Failure;
             }
 

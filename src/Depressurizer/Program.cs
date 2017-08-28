@@ -18,7 +18,6 @@ along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Windows.Forms;
-using Depressurizer.Helpers;
 using NDesk.Options;
 using Rallion;
 
@@ -27,6 +26,7 @@ namespace Depressurizer
     static class Program
     {
         public static GameDB GameDB;
+        public static AppLogger Logger = AppLogger.Instance;
 
         /// <summary>
         /// The main entry point for the application.
@@ -39,30 +39,27 @@ namespace Depressurizer
 
             FatalError.InitializeHandler();
 
-            Logger.Instance.Level = LogLevel.Debug;
-            Logger.Instance.MaxBackup = 1;
-
             Settings.Instance.Load();
 
-            Logger.Instance.Info(GlobalStrings.Program_ProgramInitialized, Logger.Instance.Level);
+            Logger.WriteInfo(GlobalStrings.Program_ProgramInitialized, Logger.Level);
 
             AutomaticModeOptions autoOpts = ParseAutoOptions(args);
 
             if (autoOpts != null)
             {
-                Logger.Instance.Info("Automatic mode set, loading automatic mode form.");
-                // TODO: Logger.WriteObject(LoggerLevel.Verbose, autoOpts, "Automatic Mode Options:");
+                Logger.WriteInfo("Automatic mode set, loading automatic mode form.");
+                Logger.WriteObject(LogLevel.Verbose, autoOpts, "Automatic Mode Options:");
                 Application.Run(new AutomaticModeForm(autoOpts));
             }
             else
             {
-                Logger.Instance.Info("Automatic mode not set, loading main form.");
+                Logger.WriteInfo("Automatic mode not set, loading main form.");
                 Application.Run(new FormMain());
             }
             Settings.Instance.Save();
 
-            Logger.Instance.Info(GlobalStrings.Program_ProgramClosing);
-            Logger.Instance.Dispose();
+            Logger.WriteInfo(GlobalStrings.Program_ProgramClosing);
+            Logger.Dispose();
         }
 
         static AutomaticModeOptions ParseAutoOptions(string[] args)
