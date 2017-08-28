@@ -1788,10 +1788,11 @@ namespace Depressurizer
                 sb.Append(" *");
             }
             Text = sb.ToString();
+
             //update Avatar picture for new profile
             if (CurrentProfile != null)
             {
-                picAvatar.Image = CurrentProfile.GetAvatar();
+                picAvatar.Image = Steam.GetAvatar(CurrentProfile.SteamID64);
             }
         }
 
@@ -1939,7 +1940,7 @@ namespace Depressurizer
 
             if (gamelist.Count > 0)
             {
-                GameBanners.Grab(new List<GameInfo>(gamelist));
+                Steam.GrabBanners(new List<GameInfo>(gamelist));
             }
 
             lstGames.SetObjects(gamelist);
@@ -2872,7 +2873,7 @@ namespace Depressurizer
         {
             if (lstGames.SelectedObjects.Count > 0)
             {
-                Utility.LaunchStorePage(tlstGames.SelectedObjects[0].Id);
+                Steam.LaunchStorePage(tlstGames.SelectedObjects[0].Id);
             }
         }
 
@@ -3283,7 +3284,7 @@ namespace Depressurizer
             ClearStatus();
             if (lstGames.SelectedObjects.Count > 0)
             {
-                LaunchGame(tlstGames.SelectedObjects[0]);
+                Steam.LaunchApp(tlstGames.SelectedObjects[0].Id);
             }
             FlushStatus();
         }
@@ -3672,8 +3673,7 @@ namespace Depressurizer
 
             // Add game banner to ID column
             GameInfo g = (GameInfo) e.Model;
-            string bannerFile = string.Format(Properties.Resources.GameBannerPath,
-                Path.GetDirectoryName(Application.ExecutablePath), g.Id);
+            string bannerFile = Steam.BannerFile(g.Id);
             if (!File.Exists(bannerFile)) return;
 
             try
@@ -3956,30 +3956,6 @@ namespace Depressurizer
                 {
                     System.Security.Permissions.RegistryPermission.RevertAssert();
                 }
-            }
-        }
-
-        /// <summary>
-        /// Launchs selected game
-        /// <param name="g">Game to launch</param>
-        /// </summary>
-        void LaunchGame(GameInfo g)
-        {
-            if (g != null)
-            {
-                //string gameIdentifier;
-                //if( g.Id < 0 ) {   // External game
-                //    if( g.LaunchString == null ) {
-                //        MessageBox.Show( GlobalStrings.MainForm_LaunchFailed );
-                //        return;
-                //    }
-                //    gameIdentifier = g.LaunchString;
-                //} else {
-                //    // Steam game
-                //    gameIdentifier = g.Id.ToString();
-                //}
-                g.LastPlayed = Utility.GetCurrentUTime();
-                System.Diagnostics.Process.Start(g.Executable);
             }
         }
 

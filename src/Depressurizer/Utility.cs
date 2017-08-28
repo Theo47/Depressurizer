@@ -264,29 +264,6 @@ namespace Depressurizer
             }
         }
 
-        public static bool GrabBanner(int id)
-        {
-            string bannerURL = string.Format(Properties.Resources.UrlGameBanner, id);
-            string bannerPath = string.Format(Properties.Resources.GameBannerPath,
-                Path.GetDirectoryName(Application.ExecutablePath), id);
-
-            try
-            {
-                if (!Directory.Exists(Path.GetDirectoryName(bannerPath)))
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(bannerPath));
-                }
-
-                return SaveRemoteImageToFile(bannerURL, bannerPath, id);
-            }
-            catch
-            {
-                Program.Logger.Write(Rallion.LoggerLevel.Warning,
-                    string.Format(GlobalStrings.GameData_GetBanner, bannerURL));
-                return false;
-            }
-        }
-
         public static bool IsOnScreen(MaterialForm form)
         {
             Screen[] screens = Screen.AllScreens;
@@ -336,19 +313,6 @@ namespace Depressurizer
             lb.Items.Insert(newIndex, selected);
             // Restore selection
             lb.SetSelected(newIndex, true);
-        }
-
-        #endregion
-
-        #region Steam-specific
-
-        /// <summary>
-        /// Opens the store page for the specified app in the default browser.
-        /// </summary>
-        /// <param name="appId"></param>
-        public static void LaunchStorePage(int appId)
-        {
-            System.Diagnostics.Process.Start(string.Format(Properties.Resources.UrlSteamStoreApp, appId));
         }
 
         #endregion

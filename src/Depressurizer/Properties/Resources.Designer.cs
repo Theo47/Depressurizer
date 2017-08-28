@@ -97,15 +97,6 @@ namespace Depressurizer.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}\Game Banners\{1}.jpg.
-        /// </summary>
-        internal static string GameBannerPath {
-            get {
-                return ResourceManager.GetString("GameBannerPath", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {0}\userdata\{1}\config\localconfig.vdf.
         /// </summary>
         internal static string LocalConfigPath {
@@ -165,15 +156,6 @@ namespace Depressurizer.Properties {
         internal static string UrlCustomProfileXml {
             get {
                 return ResourceManager.GetString("UrlCustomProfileXml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to https://steamcdn-a.akamaihd.net/steam/apps/{0}/capsule_sm_120.jpg.
-        /// </summary>
-        internal static string UrlGameBanner {
-            get {
-                return ResourceManager.GetString("UrlGameBanner", resourceCulture);
             }
         }
         
@@ -246,15 +228,6 @@ namespace Depressurizer.Properties {
         internal static string UrlSteamStoreApp {
             get {
                 return ResourceManager.GetString("UrlSteamStoreApp", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to /profile/avatarIcon.
-        /// </summary>
-        internal static string XmlNodeAvatar {
-            get {
-                return ResourceManager.GetString("XmlNodeAvatar", resourceCulture);
             }
         }
     }
