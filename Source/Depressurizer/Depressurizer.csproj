@@ -712,6 +712,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="depressurizer_icon.ico" />
+    <Content Include="readme.txt" />
     <None Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
