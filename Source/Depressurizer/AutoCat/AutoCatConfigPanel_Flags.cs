@@ -51,7 +51,10 @@ namespace Depressurizer
         public override void LoadFromAutoCat(AutoCat autocat)
         {
             AutoCatFlags ac = autocat as AutoCatFlags;
-            if (ac == null) return;
+            if (ac == null)
+            {
+                return;
+            }
 
             txtPrefix.Text = ac.Prefix;
 
@@ -64,7 +67,11 @@ namespace Depressurizer
         public override void SaveToAutoCat(AutoCat autocat)
         {
             AutoCatFlags ac = autocat as AutoCatFlags;
-            if (ac == null) return;
+            if (ac == null)
+            {
+                return;
+            }
+
             ac.Prefix = txtPrefix.Text;
 
             ac.IncludedFlags.Clear();
@@ -77,14 +84,6 @@ namespace Depressurizer
             }
         }
 
-        private void SetAllListCheckStates(ListView list, bool to)
-        {
-            foreach (ListViewItem item in list.Items)
-            {
-                item.Checked = to;
-            }
-        }
-
         private void cmdCheckAll_Click(object sender, EventArgs e)
         {
             SetAllListCheckStates(lstIncluded, true);
@@ -93,6 +92,14 @@ namespace Depressurizer
         private void cmdUncheckAll_Click(object sender, EventArgs e)
         {
             SetAllListCheckStates(lstIncluded, false);
+        }
+
+        private void SetAllListCheckStates(ListView list, bool to)
+        {
+            foreach (ListViewItem item in list.Items)
+            {
+                item.Checked = to;
+            }
         }
     }
 }

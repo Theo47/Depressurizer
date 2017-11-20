@@ -24,40 +24,38 @@ namespace Depressurizer
 {
     public partial class DlgGame : Form
     {
-        GameList Data;
         public GameInfo Game;
+        private readonly GameList Data;
+        private readonly bool editMode;
 
-        bool editMode;
-
-        private DlgGame()
-        {
-            InitializeComponent();
-        }
-
-        public DlgGame(GameList data, GameInfo game = null)
-            : this()
+        public DlgGame(GameList data, GameInfo game = null) : this()
         {
             Data = data;
             Game = game;
             editMode = Game != null;
         }
 
-        private void GameDlg_Load(object sender, EventArgs e)
+        private DlgGame()
         {
-            if (editMode)
+            InitializeComponent();
+        }
+
+        private void btnBrowse_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+
+            try
             {
-                Text = GlobalStrings.DlgGame_EditGame;
-                txtId.Text = Game.Id.ToString();
-                txtName.Text = Game.Name;
-                txtCategory.Text = Game.GetCatString();
-                txtExecutable.Text = Game.Executable;
-                chkFavorite.Checked = Game.IsFavorite();
-                chkHidden.Checked = Game.Hidden;
-                txtId.ReadOnly = true;
+                FileInfo f = new FileInfo(txtExecutable.Text);
+                dlg.InitialDirectory = f.DirectoryName;
+                dlg.FileName = f.Name;
             }
-            else
+            catch (ArgumentException) { }
+
+            DialogResult res = dlg.ShowDialog();
+            if (res == DialogResult.OK)
             {
-                Text = GlobalStrings.DlgGame_CreateGame;
+                txtExecutable.Text = dlg.FileName;
             }
         }
 
@@ -79,16 +77,16 @@ namespace Depressurizer
                 int id;
                 if (!int.TryParse(txtId.Text, out id))
                 {
-                    MessageBox.Show(GlobalStrings.DlgGameDBEntry_IDMustBeInteger, GlobalStrings.Gen_Warning,
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(GlobalStrings.DlgGameDBEntry_IDMustBeInteger, GlobalStrings.Gen_Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
+
                 if (Data.Games.ContainsKey(id))
                 {
-                    MessageBox.Show(GlobalStrings.DBEditDlg_GameIdAlreadyExists, GlobalStrings.DBEditDlg_Error,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(GlobalStrings.DBEditDlg_GameIdAlreadyExists, GlobalStrings.DBEditDlg_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
+
                 Game = new GameInfo(id, txtName.Text, Data, txtExecutable.Text);
                 Game.ApplySource(GameListingSource.Manual);
                 Data.Games.Add(id, Game);
@@ -102,22 +100,22 @@ namespace Depressurizer
             Close();
         }
 
-        private void btnBrowse_Click(object sender, EventArgs e)
+        private void GameDlg_Load(object sender, EventArgs e)
         {
-            OpenFileDialog dlg = new OpenFileDialog();
-
-            try
+            if (editMode)
             {
-                FileInfo f = new FileInfo(txtExecutable.Text);
-                dlg.InitialDirectory = f.DirectoryName;
-                dlg.FileName = f.Name;
+                Text = GlobalStrings.DlgGame_EditGame;
+                txtId.Text = Game.Id.ToString();
+                txtName.Text = Game.Name;
+                txtCategory.Text = Game.GetCatString();
+                txtExecutable.Text = Game.Executable;
+                chkFavorite.Checked = Game.IsFavorite();
+                chkHidden.Checked = Game.Hidden;
+                txtId.ReadOnly = true;
             }
-            catch (ArgumentException) { }
-
-            DialogResult res = dlg.ShowDialog();
-            if (res == DialogResult.OK)
+            else
             {
-                txtExecutable.Text = dlg.FileName;
+                Text = GlobalStrings.DlgGame_CreateGame;
             }
         }
     }

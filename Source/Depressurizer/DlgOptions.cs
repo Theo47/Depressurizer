@@ -34,57 +34,35 @@ namespace Depressurizer
             ttHelp.Ext_SetToolTip(helpIncludeImputedTimes, GlobalStrings.DlgOptions_Help_IncludeImputedTimes);
         }
 
-        private void OptionsForm_Load(object sender, EventArgs e)
+        private void cmdAccept_Click(object sender, EventArgs e)
         {
-            string[] levels = Enum.GetNames(typeof(LoggerLevel));
-            cmbLogLevel.Items.AddRange(levels);
+            SaveFieldsToSettings();
+            Close();
+        }
 
-            //UI languages
-            List<string> UILanguages = new List<string>();
-            foreach (string l in Enum.GetNames(typeof(UILanguage)))
+        private void cmdCancel_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void cmdDefaultProfileBrowse_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            DialogResult res = dlg.ShowDialog();
+            if (res == DialogResult.OK)
             {
-                string name;
-                switch (l)
-                {
-                    case "windows":
-                        name = "Default";
-                        break;
-                    default:
-                        name = CultureInfo.GetCultureInfo(l).NativeName;
-                        break;
-                }
-                UILanguages.Add(name);
+                txtDefaultProfile.Text = dlg.FileName;
             }
-            cmbUILanguage.Items.AddRange(UILanguages.ToArray());
+        }
 
-            //Store Languages
-            List<string> storeLanguages = new List<string>();
-            foreach (string l in Enum.GetNames(typeof(StoreLanguage)))
+        private void cmdSteamPathBrowse_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog dlg = new FolderBrowserDialog();
+            DialogResult res = dlg.ShowDialog();
+            if (res == DialogResult.OK)
             {
-                string name;
-                switch (l)
-                {
-                    case "windows":
-                        name = "Default";
-                        break;
-                    case "zh_Hans":
-                        name = CultureInfo.GetCultureInfo("zh-Hans").NativeName;
-                        break;
-                    case "zh_Hant":
-                        name = CultureInfo.GetCultureInfo("zh-Hant").NativeName;
-                        break;
-                    case "pt_BR":
-                        name = CultureInfo.GetCultureInfo("pt-BR").NativeName;
-                        break;
-                    default:
-                        name = CultureInfo.GetCultureInfo(l).NativeName;
-                        break;
-                }
-                storeLanguages.Add(name);
+                txtSteamPath.Text = dlg.SelectedPath;
             }
-            cmbStoreLanguage.Items.AddRange(storeLanguages.ToArray());
-
-            FillFieldsFromSettings();
         }
 
         private void FillFieldsFromSettings()
@@ -134,6 +112,63 @@ namespace Depressurizer
             //supported languages have an enum value of 1-5 (en, es, ru, uk, nl). 0 is windows language.
             cmbUILanguage.SelectedIndex = (int) settings.UserLang;
             cmbStoreLanguage.SelectedIndex = (int) settings.StoreLang;
+        }
+
+        private void OptionsForm_Load(object sender, EventArgs e)
+        {
+            string[] levels = Enum.GetNames(typeof(LoggerLevel));
+            cmbLogLevel.Items.AddRange(levels);
+
+            //UI languages
+            List<string> UILanguages = new List<string>();
+            foreach (string l in Enum.GetNames(typeof(UILanguage)))
+            {
+                string name;
+                switch (l)
+                {
+                    case "windows":
+                        name = "Default";
+                        break;
+                    default:
+                        name = CultureInfo.GetCultureInfo(l).NativeName;
+                        break;
+                }
+
+                UILanguages.Add(name);
+            }
+
+            cmbUILanguage.Items.AddRange(UILanguages.ToArray());
+
+            //Store Languages
+            List<string> storeLanguages = new List<string>();
+            foreach (string l in Enum.GetNames(typeof(StoreLanguage)))
+            {
+                string name;
+                switch (l)
+                {
+                    case "windows":
+                        name = "Default";
+                        break;
+                    case "zh_Hans":
+                        name = CultureInfo.GetCultureInfo("zh-Hans").NativeName;
+                        break;
+                    case "zh_Hant":
+                        name = CultureInfo.GetCultureInfo("zh-Hant").NativeName;
+                        break;
+                    case "pt_BR":
+                        name = CultureInfo.GetCultureInfo("pt-BR").NativeName;
+                        break;
+                    default:
+                        name = CultureInfo.GetCultureInfo(l).NativeName;
+                        break;
+                }
+
+                storeLanguages.Add(name);
+            }
+
+            cmbStoreLanguage.Items.AddRange(storeLanguages.ToArray());
+
+            FillFieldsFromSettings();
         }
 
         private void SaveFieldsToSettings()
@@ -192,44 +227,8 @@ namespace Depressurizer
             }
             catch (Exception e)
             {
-                MessageBox.Show(GlobalStrings.DlgOptions_ErrorSavingSettingsFile + e.Message,
-                    GlobalStrings.DBEditDlg_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(GlobalStrings.DlgOptions_ErrorSavingSettingsFile + e.Message, GlobalStrings.DBEditDlg_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        #region Event handlers
-
-        private void cmdCancel_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        private void cmdAccept_Click(object sender, EventArgs e)
-        {
-            SaveFieldsToSettings();
-            Close();
-        }
-
-        private void cmdSteamPathBrowse_Click(object sender, EventArgs e)
-        {
-            FolderBrowserDialog dlg = new FolderBrowserDialog();
-            DialogResult res = dlg.ShowDialog();
-            if (res == DialogResult.OK)
-            {
-                txtSteamPath.Text = dlg.SelectedPath;
-            }
-        }
-
-        private void cmdDefaultProfileBrowse_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog dlg = new OpenFileDialog();
-            DialogResult res = dlg.ShowDialog();
-            if (res == DialogResult.OK)
-            {
-                txtDefaultProfile.Text = dlg.FileName;
-            }
-        }
-
-        #endregion
     }
 }

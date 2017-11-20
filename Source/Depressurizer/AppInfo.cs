@@ -48,16 +48,15 @@ namespace Depressurizer
         InclusionAll = (1 << 8) - 1
     }
 
-    class AppInfo
+    internal class AppInfo
     {
+        public AppTypes AppType;
         public int Id;
         public string Name;
-        public AppTypes AppType;
-        public AppPlatforms Platforms;
         public int Parent; // 0 if none
+        public AppPlatforms Platforms;
 
-        public AppInfo(int id, string name = null, AppTypes type = AppTypes.Unknown,
-            AppPlatforms platforms = AppPlatforms.All)
+        public AppInfo(int id, string name = null, AppTypes type = AppTypes.Unknown, AppPlatforms platforms = AppPlatforms.All)
         {
             Id = id;
             Name = name;
@@ -68,11 +67,17 @@ namespace Depressurizer
 
         public static AppInfo FromVdfNode(VdfFileNode commonNode)
         {
-            if (commonNode == null || commonNode.NodeType != ValueType.Array) return null;
+            if (commonNode == null || commonNode.NodeType != ValueType.Array)
+            {
+                return null;
+            }
 
             AppInfo result = null;
 
-            VdfFileNode idNode = commonNode.GetNodeAt(new[] {"gameid"}, false);
+            VdfFileNode idNode = commonNode.GetNodeAt(new[]
+            {
+                "gameid"
+            }, false);
             int id = -1;
             if (idNode != null)
             {
@@ -93,14 +98,26 @@ namespace Depressurizer
             {
                 // Get name
                 string name = null;
-                VdfFileNode nameNode = commonNode.GetNodeAt(new[] {"name"}, false);
-                if (nameNode != null) name = nameNode.NodeData.ToString();
+                VdfFileNode nameNode = commonNode.GetNodeAt(new[]
+                {
+                    "name"
+                }, false);
+                if (nameNode != null)
+                {
+                    name = nameNode.NodeData.ToString();
+                }
 
                 // Get type
                 string typeStr = null;
                 AppTypes type = AppTypes.Unknown;
-                VdfFileNode typeNode = commonNode.GetNodeAt(new[] {"type"}, false);
-                if (typeNode != null) typeStr = typeNode.NodeData.ToString();
+                VdfFileNode typeNode = commonNode.GetNodeAt(new[]
+                {
+                    "type"
+                }, false);
+                if (typeNode != null)
+                {
+                    typeStr = typeNode.NodeData.ToString();
+                }
 
                 if (typeStr != null)
                 {
@@ -113,7 +130,10 @@ namespace Depressurizer
                 // Get platforms
                 string oslist = null;
                 AppPlatforms platforms = AppPlatforms.None;
-                VdfFileNode oslistNode = commonNode.GetNodeAt(new[] {"oslist"}, false);
+                VdfFileNode oslistNode = commonNode.GetNodeAt(new[]
+                {
+                    "oslist"
+                }, false);
                 if (oslistNode != null)
                 {
                     oslist = oslistNode.NodeData.ToString();
@@ -134,7 +154,10 @@ namespace Depressurizer
                 result = new AppInfo(id, name, type, platforms);
 
                 // Get parent
-                VdfFileNode parentNode = commonNode.GetNodeAt(new[] {"parent"}, false);
+                VdfFileNode parentNode = commonNode.GetNodeAt(new[]
+                {
+                    "parent"
+                }, false);
                 if (parentNode != null)
                 {
                     result.Parent = parentNode.NodeInt;
@@ -150,7 +173,18 @@ namespace Depressurizer
             long fileLength = bReader.BaseStream.Length;
 
             // seek to common: start of a new entry
-            byte[] start = {0x00, 0x00, 0x63, 0x6F, 0x6D, 0x6D, 0x6F, 0x6E, 0x00}; // 0x00 0x00 c o m m o n 0x00
+            byte[] start =
+            {
+                0x00,
+                0x00,
+                0x63,
+                0x6F,
+                0x6D,
+                0x6D,
+                0x6F,
+                0x6E,
+                0x00
+            }; // 0x00 0x00 c o m m o n 0x00
 
             VdfFileNode.ReadBin_SeekTo(bReader, start, fileLength);
 
@@ -165,6 +199,7 @@ namespace Depressurizer
                 VdfFileNode.ReadBin_SeekTo(bReader, start, fileLength);
                 node = VdfFileNode.LoadFromBinary(bReader, fileLength);
             }
+
             bReader.Close();
             return result;
         }

@@ -30,10 +30,14 @@ namespace Depressurizer
         public override void LoadFromAutoCat(AutoCat ac)
         {
             AutoCatYear acYear = ac as AutoCatYear;
-            if (acYear == null) return;
-            txtPrefix.Text = (acYear.Prefix == null) ? string.Empty : acYear.Prefix;
+            if (acYear == null)
+            {
+                return;
+            }
+
+            txtPrefix.Text = acYear.Prefix == null ? string.Empty : acYear.Prefix;
             chkIncludeUnknown.Checked = acYear.IncludeUnknown;
-            txtUnknownText.Text = (acYear.UnknownText == null) ? string.Empty : acYear.UnknownText;
+            txtUnknownText.Text = acYear.UnknownText == null ? string.Empty : acYear.UnknownText;
             switch (acYear.GroupingMode)
             {
                 case AutoCatYear_Grouping.Decade:
@@ -51,7 +55,11 @@ namespace Depressurizer
         public override void SaveToAutoCat(AutoCat autocat)
         {
             AutoCatYear ac = autocat as AutoCatYear;
-            if (ac == null) return;
+            if (ac == null)
+            {
+                return;
+            }
+
             ac.Prefix = txtPrefix.Text;
             ac.IncludeUnknown = chkIncludeUnknown.Checked;
             ac.UnknownText = txtUnknownText.Text;

@@ -25,14 +25,12 @@ using Depressurizer;
 
 namespace Rallion
 {
-    delegate DialogResult DLG_MessageBox(string text);
+    internal delegate DialogResult DLG_MessageBox(string text);
 
     public partial class FatalError : Form
     {
-        #region Constants
-
         /// <summary>
-        /// The default height of the Info section
+        ///     The default height of the Info section
         /// </summary>
         private const int DEFAULT_INFO_HEIGHT = 250;
 
@@ -41,43 +39,37 @@ namespace Rallion
         private const int MIN_HEIGHT = 300;
         private const int MAX_HEIGHT = 2000;
 
-        #endregion
-
-        #region Fields
-
         /// <summary>
-        /// The exception being displayed
+        ///     The current height of the info section.
         /// </summary>
-        private Exception ex;
+        private int currentInfoHeight = DEFAULT_INFO_HEIGHT;
 
         /// <summary>
-        /// Stores whether or not the extra info is being shown
+        ///     The exception being displayed
+        /// </summary>
+        private readonly Exception ex;
+
+        /// <summary>
+        ///     Stores whether or not the extra info is being shown
         /// </summary>
         private bool ShowingInfo;
 
         /// <summary>
-        /// The current height of the info section.
+        ///     The minimum height of the form, without info showing.
         /// </summary>
-        private int currentInfoHeight = DEFAULT_INFO_HEIGHT;
+        private int ShortHeight => Height - ClientSize.Height + cmdClose.Bottom + 10;
 
-        #endregion
-
-        #region Properties
-
-        /// <summary>
-        /// The minimum height of the form, without info showing.
-        /// </summary>
-        private int ShortHeight
+        private FatalError(Exception e)
         {
-            get { return (Height - ClientSize.Height) + cmdClose.Bottom + 10; }
+            InitializeComponent();
+            ex = e;
+            ShowingInfo = true;
+            TopMost = true;
+            TopLevel = true;
         }
 
-        #endregion
-
-        #region Static Methods
-
         /// <summary>
-        /// Starts catching all unhandled exceptions for processing.
+        ///     Starts catching all unhandled exceptions for processing.
         /// </summary>
         public static void InitializeHandler()
         {
@@ -96,7 +88,7 @@ namespace Rallion
         }
 
         /// <summary>
-        /// Shows the form and ends the program after an exception makes it to the top level.
+        ///     Shows the form and ends the program after an exception makes it to the top level.
         /// </summary>
         /// <param name="e">The unhandled exception.</param>
         private static void HandleUnhandledException(Exception e)
@@ -107,17 +99,19 @@ namespace Rallion
             Application.Exit();
         }
 
-        #endregion
-
-        #region Construction
-
-        private FatalError(Exception e)
+        private void cmdCopy_Click(object sender, EventArgs e)
         {
-            InitializeComponent();
-            ex = e;
-            ShowingInfo = true;
-            TopMost = true;
-            TopLevel = true;
+            SetClipboardText();
+        }
+
+        private void cmdSave_Click(object sender, EventArgs e)
+        {
+            SaveToFile();
+        }
+
+        private void cmdShow_Click(object sender, EventArgs e)
+        {
+            ToggleInfo();
         }
 
         private void FatalError_Load(object sender, EventArgs e)
@@ -149,31 +143,15 @@ namespace Rallion
             }
         }
 
-        #endregion
-
-        #region Info control
-
         /// <summary>
-        /// Displays the extra info
-        /// </summary>
-        private void ShowInfo()
-        {
-            if (ShowingInfo) return;
-
-            // Increase the form height and allow resizing
-            MinimumSize = new Size(MIN_WIDTH, MIN_HEIGHT);
-            MaximumSize = new Size(MAX_WIDTH, MAX_HEIGHT);
-            Height = ShortHeight + currentInfoHeight;
-            // Show extra components
-            grpMoreInfo.Visible = grpMoreInfo.Enabled = ShowingInfo = true;
-        }
-
-        /// <summary>
-        /// Hides the extra info
+        ///     Hides the extra info
         /// </summary>
         private void HideInfo()
         {
-            if (!ShowingInfo) return;
+            if (!ShowingInfo)
+            {
+                return;
+            }
             // Save the current info height in case we toggle back
             currentInfoHeight = Height - ShortHeight;
             // Resize and disable user resizing
@@ -186,39 +164,7 @@ namespace Rallion
         }
 
         /// <summary>
-        /// Toggles the extra info
-        /// </summary>
-        private void ToggleInfo()
-        {
-            if (ShowingInfo) HideInfo();
-            else ShowInfo();
-        }
-
-        #endregion
-
-        #region Event Handlers
-
-        private void cmdShow_Click(object sender, EventArgs e)
-        {
-            ToggleInfo();
-        }
-
-        private void cmdSave_Click(object sender, EventArgs e)
-        {
-            SaveToFile();
-        }
-
-        private void cmdCopy_Click(object sender, EventArgs e)
-        {
-            SetClipboardText();
-        }
-
-        #endregion
-
-        #region Saving methods
-
-        /// <summary>
-        /// Saves the exception data to a file in the application directory
+        ///     Saves the exception data to a file in the application directory
         /// </summary>
         private void SaveToFile()
         {
@@ -246,7 +192,7 @@ namespace Rallion
         }
 
         /// <summary>
-        /// Copies the exception data to the clipboard
+        ///     Copies the exception data to the clipboard
         /// </summary>
         private void SetClipboardText()
         {
@@ -278,6 +224,37 @@ namespace Rallion
             }
         }
 
-        #endregion
+        /// <summary>
+        ///     Displays the extra info
+        /// </summary>
+        private void ShowInfo()
+        {
+            if (ShowingInfo)
+            {
+                return;
+            }
+
+            // Increase the form height and allow resizing
+            MinimumSize = new Size(MIN_WIDTH, MIN_HEIGHT);
+            MaximumSize = new Size(MAX_WIDTH, MAX_HEIGHT);
+            Height = ShortHeight + currentInfoHeight;
+            // Show extra components
+            grpMoreInfo.Visible = grpMoreInfo.Enabled = ShowingInfo = true;
+        }
+
+        /// <summary>
+        ///     Toggles the extra info
+        /// </summary>
+        private void ToggleInfo()
+        {
+            if (ShowingInfo)
+            {
+                HideInfo();
+            }
+            else
+            {
+                ShowInfo();
+            }
+        }
     }
 }

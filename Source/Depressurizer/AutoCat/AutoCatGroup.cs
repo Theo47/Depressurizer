@@ -26,68 +26,56 @@ namespace Depressurizer
 {
     public class AutoCatGroup : AutoCat
     {
-        #region Properties
+        // Serialization strings
+        public const string TypeIdString = "AutoCatGroup";
 
-        // Autocat configuration properties
-        [XmlArrayItem("Autocat")]
-        public List<string> Autocats { get; set; }
+        public const string XmlName_Name = "Name", XmlName_Filter = "Filter", XmlName_Autocats = "Autocats", XmlName_Autocat = "Autocat";
 
         // Meta properies
-        public override AutoCatType AutoCatType
-        {
-            get { return AutoCatType.Group; }
-        }
+        public override AutoCatType AutoCatType => AutoCatType.Group;
 
         public override string DisplayName
         {
             get
             {
                 string displayName = Name + "[" + Autocats.Count + "]";
-                if (Filter != null) displayName += "*";
+                if (Filter != null)
+                {
+                    displayName += "*";
+                }
                 return displayName;
             }
         }
 
-        // Serialization strings
-        public const string TypeIdString = "AutoCatGroup";
+        // Autocat configuration properties
+        [XmlArrayItem("Autocat")]
+        public List<string> Autocats { get; set; }
 
-        public const string
-            XmlName_Name = "Name",
-            XmlName_Filter = "Filter",
-            XmlName_Autocats = "Autocats",
-            XmlName_Autocat = "Autocat";
-
-        #endregion
-
-        #region Construction
-
-        public AutoCatGroup(string name, string filter = null, List<string> autocats = null, bool selected = false)
-            : base(name)
+        public AutoCatGroup(string name, string filter = null, List<string> autocats = null, bool selected = false) : base(name)
         {
             Filter = filter;
-            Autocats = (autocats == null) ? new List<string>() : autocats;
+            Autocats = autocats == null ? new List<string>() : autocats;
             Selected = selected;
         }
 
-        //XmlSerializer requires a parameterless constructor
-        private AutoCatGroup() { }
-
-        protected AutoCatGroup(AutoCatGroup other)
-            : base(other)
+        protected AutoCatGroup(AutoCatGroup other) : base(other)
         {
             Filter = other.Filter;
             Autocats = new List<string>(other.Autocats);
             Selected = other.Selected;
         }
 
-        public override AutoCat Clone()
+        //XmlSerializer requires a parameterless constructor
+        private AutoCatGroup() { }
+
+        public static AutoCatGroup LoadFromXmlElement(XmlElement xElement)
         {
-            return new AutoCatGroup(this);
+            string name = XmlUtil.GetStringFromNode(xElement[XmlName_Name], TypeIdString);
+            string filter = XmlUtil.GetStringFromNode(xElement[XmlName_Filter], null);
+            List<string> autocats = XmlUtil.GetStringsFromNodeList(xElement.SelectNodes(XmlName_Autocats + "/" + XmlName_Autocat));
+
+            return new AutoCatGroup(name, filter, autocats);
         }
-
-        #endregion
-
-        #region Autocategorization Methods
 
         public override AutoCatResult CategorizeGame(GameInfo game, Filter filter)
         {
@@ -96,34 +84,46 @@ namespace Depressurizer
                 Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GamelistNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
             }
+
             if (db == null)
             {
                 Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_DBNull);
                 throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
             }
+
             if (game == null)
             {
                 Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GameNull);
                 return AutoCatResult.Failure;
             }
 
-            if (!db.Contains(game.Id)) return AutoCatResult.NotInDatabase;
+            if (!db.Contains(game.Id))
+            {
+                return AutoCatResult.NotInDatabase;
+            }
 
-            if (!game.IncludeGame(filter)) return AutoCatResult.Filtered;
+            if (!game.IncludeGame(filter))
+            {
+                return AutoCatResult.Filtered;
+            }
 
             return AutoCatResult.Success;
         }
 
-        #endregion
-
-        #region Serialization methods
+        public override AutoCat Clone()
+        {
+            return new AutoCatGroup(this);
+        }
 
         public override void WriteToXml(XmlWriter writer)
         {
             writer.WriteStartElement(TypeIdString);
 
             writer.WriteElementString(XmlName_Name, Name);
-            if (Filter != null) writer.WriteElementString(XmlName_Filter, Filter);
+            if (Filter != null)
+            {
+                writer.WriteElementString(XmlName_Filter, Filter);
+            }
 
             if (Autocats != null && Autocats.Count > 0)
             {
@@ -132,22 +132,11 @@ namespace Depressurizer
                 {
                     writer.WriteElementString(XmlName_Autocat, name);
                 }
+
                 writer.WriteEndElement();
             }
 
             writer.WriteEndElement(); // type ID string
         }
-
-        public static AutoCatGroup LoadFromXmlElement(XmlElement xElement)
-        {
-            string name = XmlUtil.GetStringFromNode(xElement[XmlName_Name], TypeIdString);
-            string filter = XmlUtil.GetStringFromNode(xElement[XmlName_Filter], null);
-            List<string> autocats =
-                XmlUtil.GetStringsFromNodeList(xElement.SelectNodes(XmlName_Autocats + "/" + XmlName_Autocat));
-
-            return new AutoCatGroup(name, filter, autocats);
-        }
-
-        #endregion
     }
 }

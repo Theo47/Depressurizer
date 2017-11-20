@@ -131,14 +131,6 @@ namespace Depressurizer
             }
         }
 
-        private void SetAllListCheckStates(ListView list, bool to)
-        {
-            foreach (ListViewItem item in list.Items)
-            {
-                item.Checked = to;
-            }
-        }
-
         private void cmdCheckAll_Click(object sender, EventArgs e)
         {
             SetAllListCheckStates(lstInterface, true);
@@ -151,6 +143,14 @@ namespace Depressurizer
             SetAllListCheckStates(lstInterface, false);
             SetAllListCheckStates(lstSubtitles, false);
             SetAllListCheckStates(lstFullAudio, false);
+        }
+
+        private void SetAllListCheckStates(ListView list, bool to)
+        {
+            foreach (ListViewItem item in list.Items)
+            {
+                item.Checked = to;
+            }
         }
     }
 }

@@ -20,21 +20,14 @@ using Rallion;
 
 namespace Depressurizer
 {
-    class HltbPrcDlg : CancelableDlg
+    internal class HltbPrcDlg : CancelableDlg
     {
         public int Updated { get; private set; }
 
-        public HltbPrcDlg()
-            : base(GlobalStrings.CDlgHltb_Title, false)
+        public HltbPrcDlg() : base(GlobalStrings.CDlgHltb_Title, false)
         {
             SetText(GlobalStrings.CDlgHltb_UpdateHltb);
             Updated = 0;
-        }
-
-        protected override void RunProcess()
-        {
-            Updated = Program.GameDB.UpdateFromHltb(Settings.Instance.IncludeImputedTimes);
-            OnThreadCompletion();
         }
 
         protected override void Finish()
@@ -43,6 +36,12 @@ namespace Depressurizer
             {
                 OnJobCompletion();
             }
+        }
+
+        protected override void RunProcess()
+        {
+            Updated = Program.GameDB.UpdateFromHltb(Settings.Instance.IncludeImputedTimes);
+            OnThreadCompletion();
         }
     }
 }

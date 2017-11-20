@@ -56,7 +56,11 @@ namespace Depressurizer
         public override void LoadFromAutoCat(AutoCat autocat)
         {
             AutoCatGenre ac = autocat as AutoCatGenre;
-            if (ac == null) return;
+            if (ac == null)
+            {
+                return;
+            }
+
             chkRemoveExisting.Checked = ac.RemoveOtherGenres;
             chkTagFallback.Checked = ac.TagFallback;
             numMaxCats.Value = ac.MaxCategories;
@@ -71,7 +75,11 @@ namespace Depressurizer
         public override void SaveToAutoCat(AutoCat autocat)
         {
             AutoCatGenre ac = autocat as AutoCatGenre;
-            if (ac == null) return;
+            if (ac == null)
+            {
+                return;
+            }
+
             ac.Prefix = txtPrefix.Text;
             ac.MaxCategories = (int) numMaxCats.Value;
             ac.RemoveOtherGenres = chkRemoveExisting.Checked;
@@ -87,14 +95,6 @@ namespace Depressurizer
             }
         }
 
-        private void SetAllListCheckStates(ListView list, bool to)
-        {
-            foreach (ListViewItem item in list.Items)
-            {
-                item.Checked = to;
-            }
-        }
-
         private void cmdCheckAll_Click(object sender, EventArgs e)
         {
             SetAllListCheckStates(lstIgnore, true);
@@ -103,6 +103,14 @@ namespace Depressurizer
         private void cmdUncheckAll_Click(object sender, EventArgs e)
         {
             SetAllListCheckStates(lstIgnore, false);
+        }
+
+        private void SetAllListCheckStates(ListView list, bool to)
+        {
+            foreach (ListViewItem item in list.Items)
+            {
+                item.Checked = to;
+            }
         }
     }
 }

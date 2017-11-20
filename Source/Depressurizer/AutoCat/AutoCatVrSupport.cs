@@ -27,13 +27,6 @@ namespace Depressurizer
 {
     public class AutoCatVrSupport : AutoCat
     {
-        public override AutoCatType AutoCatType => AutoCatType.VrSupport;
-
-        // AutoCat configuration
-        public string Prefix { get; set; }
-
-        public VrSupport IncludedVrSupportFlags;
-
         // Serialization constants
         public const string TypeIdString = "AutoCatVrSupport";
 
@@ -44,9 +37,14 @@ namespace Depressurizer
         private const string XmlNameInputList = "Input";
         private const string XmlNamePlayAreaList = "PlayArea";
         private const string XmlNameFlag = "Flag";
+        public VrSupport IncludedVrSupportFlags;
 
-        public AutoCatVrSupport(string name, string filter = null, string prefix = null, List<string> headsets = null,
-            List<string> input = null, List<string> playArea = null, bool selected = false) : base(name)
+        public override AutoCatType AutoCatType => AutoCatType.VrSupport;
+
+        // AutoCat configuration
+        public string Prefix { get; set; }
+
+        public AutoCatVrSupport(string name, string filter = null, string prefix = null, List<string> headsets = null, List<string> input = null, List<string> playArea = null, bool selected = false) : base(name)
         {
             Filter = filter;
             Prefix = prefix;
@@ -57,9 +55,6 @@ namespace Depressurizer
             Selected = selected;
         }
 
-        //XmlSerializer requires a parameterless constructor
-        private AutoCatVrSupport() { }
-
         protected AutoCatVrSupport(AutoCatVrSupport other) : base(other)
         {
             Filter = other.Filter;
@@ -68,121 +63,8 @@ namespace Depressurizer
             Selected = other.Selected;
         }
 
-        public override AutoCat Clone() => new AutoCatVrSupport(this);
-
-        public override AutoCatResult CategorizeGame(GameInfo game, Filter filter)
-        {
-            if (games == null)
-            {
-                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GamelistNull);
-                throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
-            }
-
-            if (db == null)
-            {
-                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_DBNull);
-                throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
-            }
-
-            if (game == null)
-            {
-                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GameNull);
-                return AutoCatResult.Failure;
-            }
-
-            if (!db.Contains(game.Id) || (db.Games[game.Id].LastStoreScrape == 0))
-            {
-                return AutoCatResult.NotInDatabase;
-            }
-
-            if (!game.IncludeGame(filter))
-            {
-                return AutoCatResult.Filtered;
-            }
-
-            VrSupport vrSupport = db.GetVrSupport(game.Id);
-
-            vrSupport.Headsets = vrSupport.Headsets ?? new List<string>();
-            vrSupport.Input = vrSupport.Input ?? new List<string>();
-            vrSupport.PlayArea = vrSupport.PlayArea ?? new List<string>();
-
-            IEnumerable<string> headsets = vrSupport.Headsets.Intersect(IncludedVrSupportFlags.Headsets);
-            IEnumerable<string> input = vrSupport.Input.Intersect(IncludedVrSupportFlags.Input);
-            IEnumerable<string> playArea = vrSupport.PlayArea.Intersect(IncludedVrSupportFlags.PlayArea);
-
-            foreach (string catString in headsets)
-            {
-                Category c = games.GetCategory(GetProcessedString(catString));
-                game.AddCategory(c);
-            }
-
-            foreach (string catString in input)
-            {
-                Category c = games.GetCategory(GetProcessedString(catString));
-                game.AddCategory(c);
-            }
-
-            foreach (string catString in playArea)
-            {
-                Category c = games.GetCategory(GetProcessedString(catString));
-                game.AddCategory(c);
-            }
-
-            return AutoCatResult.Success;
-        }
-
-        private string GetProcessedString(string baseString)
-        {
-            if (string.IsNullOrEmpty(Prefix))
-            {
-                return baseString;
-            }
-
-            return Prefix + baseString;
-        }
-
-        public override void WriteToXml(XmlWriter writer)
-        {
-            writer.WriteStartElement(TypeIdString);
-
-            writer.WriteElementString(XmlNameName, Name);
-            if (Filter != null)
-            {
-                writer.WriteElementString(XmlNameFilter, Filter);
-            }
-            if (Prefix != null)
-            {
-                writer.WriteElementString(XmlNamePrefix, Prefix);
-            }
-
-            writer.WriteStartElement(XmlNameHeadsetsList);
-
-            foreach (string s in IncludedVrSupportFlags.Headsets)
-            {
-                writer.WriteElementString(XmlNameFlag, s);
-            }
-
-            writer.WriteEndElement(); // VR Headsets list
-
-            writer.WriteStartElement(XmlNameInputList);
-
-            foreach (string s in IncludedVrSupportFlags.Input)
-            {
-                writer.WriteElementString(XmlNameFlag, s);
-            }
-
-            writer.WriteEndElement(); // VR Input list
-
-            writer.WriteStartElement(XmlNamePlayAreaList);
-
-            foreach (string s in IncludedVrSupportFlags.PlayArea)
-            {
-                writer.WriteElementString(XmlNameFlag, s);
-            }
-
-            writer.WriteEndElement(); // VR Play Area list
-            writer.WriteEndElement(); // type ID string
-        }
+        //XmlSerializer requires a parameterless constructor
+        private AutoCatVrSupport() { }
 
         public static AutoCatVrSupport LoadFromXmlElement(XmlElement xElement)
         {
@@ -237,6 +119,125 @@ namespace Depressurizer
             }
 
             return new AutoCatVrSupport(name, filter, prefix, headsetsList, inputList, playAreaList);
+        }
+
+        public override AutoCatResult CategorizeGame(GameInfo game, Filter filter)
+        {
+            if (games == null)
+            {
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GamelistNull);
+                throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameList);
+            }
+
+            if (db == null)
+            {
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_DBNull);
+                throw new ApplicationException(GlobalStrings.AutoCatGenre_Exception_NoGameDB);
+            }
+
+            if (game == null)
+            {
+                Program.Logger.Write(LoggerLevel.Error, GlobalStrings.Log_AutoCat_GameNull);
+                return AutoCatResult.Failure;
+            }
+
+            if (!db.Contains(game.Id) || db.Games[game.Id].LastStoreScrape == 0)
+            {
+                return AutoCatResult.NotInDatabase;
+            }
+
+            if (!game.IncludeGame(filter))
+            {
+                return AutoCatResult.Filtered;
+            }
+
+            VrSupport vrSupport = db.GetVrSupport(game.Id);
+
+            vrSupport.Headsets = vrSupport.Headsets ?? new List<string>();
+            vrSupport.Input = vrSupport.Input ?? new List<string>();
+            vrSupport.PlayArea = vrSupport.PlayArea ?? new List<string>();
+
+            IEnumerable<string> headsets = vrSupport.Headsets.Intersect(IncludedVrSupportFlags.Headsets);
+            IEnumerable<string> input = vrSupport.Input.Intersect(IncludedVrSupportFlags.Input);
+            IEnumerable<string> playArea = vrSupport.PlayArea.Intersect(IncludedVrSupportFlags.PlayArea);
+
+            foreach (string catString in headsets)
+            {
+                Category c = games.GetCategory(GetProcessedString(catString));
+                game.AddCategory(c);
+            }
+
+            foreach (string catString in input)
+            {
+                Category c = games.GetCategory(GetProcessedString(catString));
+                game.AddCategory(c);
+            }
+
+            foreach (string catString in playArea)
+            {
+                Category c = games.GetCategory(GetProcessedString(catString));
+                game.AddCategory(c);
+            }
+
+            return AutoCatResult.Success;
+        }
+
+        public override AutoCat Clone()
+        {
+            return new AutoCatVrSupport(this);
+        }
+
+        public override void WriteToXml(XmlWriter writer)
+        {
+            writer.WriteStartElement(TypeIdString);
+
+            writer.WriteElementString(XmlNameName, Name);
+            if (Filter != null)
+            {
+                writer.WriteElementString(XmlNameFilter, Filter);
+            }
+            if (Prefix != null)
+            {
+                writer.WriteElementString(XmlNamePrefix, Prefix);
+            }
+
+            writer.WriteStartElement(XmlNameHeadsetsList);
+
+            foreach (string s in IncludedVrSupportFlags.Headsets)
+            {
+                writer.WriteElementString(XmlNameFlag, s);
+            }
+
+            writer.WriteEndElement(); // VR Headsets list
+
+            writer.WriteStartElement(XmlNameInputList);
+
+            foreach (string s in IncludedVrSupportFlags.Input)
+            {
+                writer.WriteElementString(XmlNameFlag, s);
+            }
+
+            writer.WriteEndElement(); // VR Input list
+
+            writer.WriteStartElement(XmlNamePlayAreaList);
+
+            foreach (string s in IncludedVrSupportFlags.PlayArea)
+            {
+                writer.WriteElementString(XmlNameFlag, s);
+            }
+
+            writer.WriteEndElement(); // VR Play Area list
+            writer.WriteEndElement(); // type ID string
+        }
+
+        private string GetProcessedString(string baseString)
+        {
+            if (string.IsNullOrEmpty(Prefix))
+            {
+                return baseString;
+            }
+
+            return Prefix + baseString;
         }
     }
 }

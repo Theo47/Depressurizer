@@ -7,8 +7,8 @@ namespace Depressurizer
 {
     public partial class DlgAutomaticModeHelper : Form
     {
-        private AutomaticModeOptions defaultOpts = new AutomaticModeOptions();
-        Profile profile;
+        private readonly AutomaticModeOptions defaultOpts = new AutomaticModeOptions();
+        private readonly Profile profile;
 
         public DlgAutomaticModeHelper(Profile profile)
         {
@@ -28,9 +28,48 @@ namespace Depressurizer
             ttHelp.Ext_SetToolTip(hlpUpdateHltb, GlobalStrings.AutoMode_Help_UpdateHltb);
         }
 
-        private string GenerateCommand()
+        private void cmdShortcut_Click(object sender, EventArgs e)
         {
-            return '"' + Application.ExecutablePath + '"' + GenerateArguments();
+            CreateShortcut();
+        }
+
+        private void CreateShortcut()
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+
+            dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            dlg.DefaultExt = "lnk";
+            dlg.AddExtension = true;
+            dlg.Filter = "Shortcuts|*.lnk";
+            dlg.FileName = "Depressurizer Auto";
+
+            DialogResult res = dlg.ShowDialog();
+            if (res == DialogResult.OK)
+            {
+                WshShell shell = new WshShell();
+                IWshShortcut shortcut = (IWshShortcut) shell.CreateShortcut(dlg.FileName);
+                shortcut.TargetPath = Application.ExecutablePath;
+                shortcut.WorkingDirectory = Application.StartupPath;
+                shortcut.Arguments = GenerateArguments();
+                shortcut.Save();
+            }
+        }
+
+        private void DlgAutomaticModeHelper_Load(object sender, EventArgs e)
+        {
+            cmbSteamCheck.SelectedIndex = 0;
+            cmbOutputMode.SelectedIndex = 0;
+            cmbLaunch.SelectedIndex = 0;
+
+            txtResult.Text = GenerateCommand();
+
+            if (profile != null && profile.AutoCats != null)
+            {
+                foreach (AutoCat ac in profile.AutoCats)
+                {
+                    lstAutocats.Items.Add(ac.Name);
+                }
+            }
         }
 
         private string GenerateArguments()
@@ -41,19 +80,33 @@ namespace Depressurizer
             sb.Append(profile.FilePath);
             sb.Append('"');
 
-
             switch (cmbSteamCheck.SelectedIndex)
             {
                 case 0: // Check and close
-                    if (!defaultOpts.CheckSteam) sb.Append(" -checksteam+");
-                    if (!defaultOpts.CloseSteam) sb.Append(" -closesteam+");
+                    if (!defaultOpts.CheckSteam)
+                    {
+                        sb.Append(" -checksteam+");
+                    }
+                    if (!defaultOpts.CloseSteam)
+                    {
+                        sb.Append(" -closesteam+");
+                    }
                     break;
                 case 1: // Check and abort
-                    if (!defaultOpts.CheckSteam) sb.Append(" -checksteam+");
-                    if (defaultOpts.CloseSteam) sb.Append(" -closesteam-");
+                    if (!defaultOpts.CheckSteam)
+                    {
+                        sb.Append(" -checksteam+");
+                    }
+                    if (defaultOpts.CloseSteam)
+                    {
+                        sb.Append(" -closesteam-");
+                    }
                     break;
                 case 2: // skip
-                    if (defaultOpts.CheckSteam) sb.Append(" -checksteam-");
+                    if (defaultOpts.CheckSteam)
+                    {
+                        sb.Append(" -checksteam-");
+                    }
                     break;
             }
 
@@ -116,45 +169,24 @@ namespace Depressurizer
             return sb.ToString();
         }
 
+        private string GenerateCommand()
+        {
+            return '"' + Application.ExecutablePath + '"' + GenerateArguments();
+        }
+
         private string GetSwitch(string name, bool val, bool defVal)
         {
             if (val != defVal)
             {
                 return " " + name + GetToggle(val);
             }
+
             return "";
         }
 
         private string GetToggle(bool val)
         {
             return val ? "+" : "-";
-        }
-
-        private void CreateShortcut()
-        {
-            SaveFileDialog dlg = new SaveFileDialog();
-
-            dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            dlg.DefaultExt = "lnk";
-            dlg.AddExtension = true;
-            dlg.Filter = "Shortcuts|*.lnk";
-            dlg.FileName = "Depressurizer Auto";
-
-            DialogResult res = dlg.ShowDialog();
-            if (res == DialogResult.OK)
-            {
-                WshShell shell = new WshShell();
-                IWshShortcut shortcut = (IWshShortcut) shell.CreateShortcut(dlg.FileName);
-                shortcut.TargetPath = Application.ExecutablePath;
-                shortcut.WorkingDirectory = Application.StartupPath;
-                shortcut.Arguments = GenerateArguments();
-                shortcut.Save();
-            }
-        }
-
-        private void cmdShortcut_Click(object sender, EventArgs e)
-        {
-            CreateShortcut();
         }
 
         private void ItemChanged(object sender, EventArgs e)
@@ -165,23 +197,6 @@ namespace Depressurizer
         private void lstAutocats_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
             txtResult.Text = GenerateCommand();
-        }
-
-        private void DlgAutomaticModeHelper_Load(object sender, EventArgs e)
-        {
-            cmbSteamCheck.SelectedIndex = 0;
-            cmbOutputMode.SelectedIndex = 0;
-            cmbLaunch.SelectedIndex = 0;
-
-            txtResult.Text = GenerateCommand();
-
-            if (profile != null && profile.AutoCats != null)
-            {
-                foreach (AutoCat ac in profile.AutoCats)
-                {
-                    lstAutocats.Items.Add(ac.Name);
-                }
-            }
         }
     }
 }

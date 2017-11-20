@@ -23,11 +23,12 @@ namespace Depressurizer
 {
     public partial class DlgAutoCatCreate : Form
     {
-        public string SelectedName { get; set; }
-        public AutoCatType SelectedType { get; set; }
+        private readonly string[] typeNames;
+        private readonly AutoCatType[] types;
 
-        private string[] typeNames;
-        private AutoCatType[] types;
+        public string SelectedName { get; set; }
+
+        public AutoCatType SelectedType { get; set; }
 
         public DlgAutoCatCreate(string name = null, AutoCatType type = AutoCatType.None)
         {
@@ -51,7 +52,6 @@ namespace Depressurizer
                 GlobalStrings.AutoCat_Name_Language,
                 GlobalStrings.AutoCat_Name_Curator,
                 GlobalStrings.AutoCat_Name_Platform
-
             };
             types = new[]
             {
@@ -75,26 +75,19 @@ namespace Depressurizer
             SelectedType = type;
         }
 
-        private string TypeToString(AutoCatType t)
+        private void cmdCreate_Click(object sender, EventArgs e)
         {
-            if (t == AutoCatType.None) return null;
-            int index = Array.IndexOf(types, t);
-            if (index >= 0 && index < typeNames.Length) return typeNames[index];
-            return null;
+            SaveUIToFields();
         }
 
-        private AutoCatType StringToType(string s)
+        private void DlgAutoCatCreate_Load(object sender, EventArgs e)
         {
-            if (s == null) return AutoCatType.None;
-            int index = Array.IndexOf(typeNames, s);
-            if (index >= 0 && index < types.Length) return types[index];
-            return AutoCatType.None;
-        }
+            foreach (string s in typeNames)
+            {
+                cmbType.Items.Add(s);
+            }
 
-        private void SaveUIToFields()
-        {
-            SelectedName = txtName.Text;
-            SelectedType = StringToType(cmbType.SelectedItem as string);
+            LoadUIFromFields();
         }
 
         private void LoadUIFromFields()
@@ -119,18 +112,42 @@ namespace Depressurizer
             }
         }
 
-        private void DlgAutoCatCreate_Load(object sender, EventArgs e)
+        private void SaveUIToFields()
         {
-            foreach (string s in typeNames)
-            {
-                cmbType.Items.Add(s);
-            }
-            LoadUIFromFields();
+            SelectedName = txtName.Text;
+            SelectedType = StringToType(cmbType.SelectedItem as string);
         }
 
-        private void cmdCreate_Click(object sender, EventArgs e)
+        private AutoCatType StringToType(string s)
         {
-            SaveUIToFields();
+            if (s == null)
+            {
+                return AutoCatType.None;
+            }
+
+            int index = Array.IndexOf(typeNames, s);
+            if (index >= 0 && index < types.Length)
+            {
+                return types[index];
+            }
+
+            return AutoCatType.None;
+        }
+
+        private string TypeToString(AutoCatType t)
+        {
+            if (t == AutoCatType.None)
+            {
+                return null;
+            }
+
+            int index = Array.IndexOf(types, t);
+            if (index >= 0 && index < typeNames.Length)
+            {
+                return typeNames[index];
+            }
+
+            return null;
         }
     }
 }

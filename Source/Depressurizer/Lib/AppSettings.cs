@@ -24,15 +24,13 @@ using System.Xml;
 namespace Rallion
 {
     /// <summary>
-    /// Base class for a settings object. Capable of loading and saving values of all public properties.
+    ///     Base class for a settings object. Capable of loading and saving values of all public properties.
     /// </summary>
-    abstract class AppSettings
+    internal abstract class AppSettings
     {
-        protected readonly object threadLock = new object();
-
-        protected bool outOfDate;
-
         public string FilePath;
+        protected readonly object threadLock = new object();
+        protected bool outOfDate;
 
         protected AppSettings()
         {
@@ -40,43 +38,7 @@ namespace Rallion
         }
 
         /// <summary>
-        /// Saves the contents of this instance to the defined config file.
-        /// </summary>
-        /// <param name="force">If false, will only save if the flag indicates that changes have been made. If true, always saves.</param>
-        public void Save(bool force = false)
-        {
-            if (force || outOfDate)
-            {
-                Type t = GetType();
-
-                PropertyInfo[] properties = t.GetProperties();
-                XmlDocument doc = new XmlDocument();
-                XmlElement config = doc.CreateElement("config");
-                lock (threadLock)
-                {
-                    foreach (PropertyInfo pi in properties)
-                    {
-                        object val = pi.GetValue(this, null);
-                        if (val != null)
-                        {
-                            XmlElement element = doc.CreateElement(pi.Name);
-                            element.InnerText = val.ToString();
-                            config.AppendChild(element);
-                        }
-                    }
-                }
-                doc.AppendChild(config);
-                try
-                {
-                    doc.Save(FilePath);
-                }
-                catch (IOException) { }
-                outOfDate = false;
-            }
-        }
-
-        /// <summary>
-        /// Loads settings from the defined config file.
+        ///     Loads settings from the defined config file.
         /// </summary>
         public virtual void Load()
         {
@@ -103,6 +65,44 @@ namespace Rallion
                     }
                 }
                 catch (XmlException) { }
+                catch (IOException) { }
+
+                outOfDate = false;
+            }
+        }
+
+        /// <summary>
+        ///     Saves the contents of this instance to the defined config file.
+        /// </summary>
+        /// <param name="force">If false, will only save if the flag indicates that changes have been made. If true, always saves.</param>
+        public void Save(bool force = false)
+        {
+            if (force || outOfDate)
+            {
+                Type t = GetType();
+
+                PropertyInfo[] properties = t.GetProperties();
+                XmlDocument doc = new XmlDocument();
+                XmlElement config = doc.CreateElement("config");
+                lock (threadLock)
+                {
+                    foreach (PropertyInfo pi in properties)
+                    {
+                        object val = pi.GetValue(this, null);
+                        if (val != null)
+                        {
+                            XmlElement element = doc.CreateElement(pi.Name);
+                            element.InnerText = val.ToString();
+                            config.AppendChild(element);
+                        }
+                    }
+                }
+
+                doc.AppendChild(config);
+                try
+                {
+                    doc.Save(FilePath);
+                }
                 catch (IOException) { }
                 outOfDate = false;
             }

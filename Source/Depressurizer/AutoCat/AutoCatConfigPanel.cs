@@ -26,10 +26,6 @@ namespace Depressurizer
     [TypeDescriptionProvider(typeof(InstantiableClassProvider<AutoCatConfigPanel, UserControl>))]
     public class AutoCatConfigPanel : UserControl
     {
-        public virtual void SaveToAutoCat(AutoCat ac) { }
-
-        public virtual void LoadFromAutoCat(AutoCat ac) { }
-
         public static AutoCatConfigPanel CreatePanel(AutoCat ac, GameList ownedGames, List<AutoCat> autocats)
         {
             AutoCatType t = ac.AutoCatType;
@@ -67,11 +63,23 @@ namespace Depressurizer
                     return null;
             }
         }
+
+        public virtual void LoadFromAutoCat(AutoCat ac) { }
+        public virtual void SaveToAutoCat(AutoCat ac) { }
     }
 
     internal class InstantiableClassProvider<TAbstract, TInstantiable> : TypeDescriptionProvider
     {
         public InstantiableClassProvider() : base(TypeDescriptor.GetProvider(typeof(TAbstract))) { }
+
+        public override object CreateInstance(IServiceProvider provider, Type objectType, Type[] argTypes, object[] args)
+        {
+            if (objectType == typeof(TAbstract))
+            {
+                objectType = typeof(TInstantiable);
+            }
+            return base.CreateInstance(provider, objectType, argTypes, args);
+        }
 
         public override Type GetReflectionType(Type objectType, object instance)
         {
@@ -79,17 +87,8 @@ namespace Depressurizer
             {
                 return typeof(TInstantiable);
             }
-            return base.GetReflectionType(objectType, instance);
-        }
 
-        public override object CreateInstance(IServiceProvider provider, Type objectType, Type[] argTypes,
-            object[] args)
-        {
-            if (objectType == typeof(TAbstract))
-            {
-                objectType = typeof(TInstantiable);
-            }
-            return base.CreateInstance(provider, objectType, argTypes, args);
+            return base.GetReflectionType(objectType, instance);
         }
     }
 }

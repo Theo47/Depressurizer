@@ -24,28 +24,20 @@ namespace Rallion
 {
     public partial class CancelableDlg : Form
     {
-        #region Fields
-
         protected object abortLock = new object();
-
-        protected int threadsToRun = 5;
-        protected int runningThreads;
-
-        protected int totalJobs = 1;
-
-        public int JobsTotal
-        {
-            get { return totalJobs; }
-        }
-
         protected int jobsCompleted;
-
-        public int JobsCompleted
-        {
-            get { return jobsCompleted; }
-        }
-
+        protected int runningThreads;
+        protected int threadsToRun = 5;
+        protected int totalJobs = 1;
         private bool _stopped;
+
+        public int JobsCompleted => jobsCompleted;
+
+        public int JobsTotal => totalJobs;
+
+        public Exception Error { get; protected set; }
+
+        protected bool Canceled { get; private set; }
 
         protected bool Stopped
         {
@@ -65,20 +57,6 @@ namespace Rallion
             }
         }
 
-        protected bool Canceled { get; private set; }
-
-        public Exception Error { get; protected set; }
-
-        delegate void SimpleDelegate();
-
-        delegate void TextUpdateDelegate(string s);
-
-        delegate void EndProcDelegate(bool b);
-
-        #endregion
-
-        #region Initialization
-
         public CancelableDlg(string title, bool stopButton)
         {
             InitializeComponent();
@@ -88,52 +66,19 @@ namespace Rallion
             cmdStop.Enabled = cmdStop.Visible = stopButton;
         }
 
-        protected virtual void UpdateForm_Load(object sender, EventArgs e)
+        protected void DisableAbort()
         {
-            threadsToRun = Math.Min(threadsToRun, totalJobs);
-            for (int i = 0; i < threadsToRun; i++)
+            if (InvokeRequired)
             {
-                Thread t = new Thread(RunProcessChecked);
-                t.Start();
-                runningThreads++;
+                Invoke(new SimpleDelegate(DisableAbort));
             }
-            UpdateText();
-        }
-
-        private void RunProcessChecked()
-        {
-            try
+            else
             {
-                RunProcess();
-            }
-            catch (Exception e)
-            {
-                lock (abortLock)
-                {
-                    Stopped = true;
-                    Error = e;
-                }
-                if (IsHandleCreated)
-                {
-                    Invoke(new SimpleDelegate(Finish));
-                    Invoke(new SimpleDelegate(Close));
-                }
+                cmdStop.Enabled = cmdCancel.Enabled = false;
             }
         }
-
-        #endregion
-
-        #region Methods to override
-
-        protected virtual void RunProcess() { }
-
-        protected virtual void UpdateText() { }
 
         protected virtual void Finish() { }
-
-        #endregion
-
-        #region Status Updaters
 
         protected void OnJobCompletion()
         {
@@ -160,15 +105,69 @@ namespace Rallion
             }
         }
 
-        #endregion
+        protected virtual void RunProcess() { }
 
-        #region Event Handlers
+        protected void SetText(string s)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new TextUpdateDelegate(SetText), s);
+            }
+            else
+            {
+                lblText.Text = s;
+            }
+        }
+
+        protected virtual void UpdateForm_Load(object sender, EventArgs e)
+        {
+            threadsToRun = Math.Min(threadsToRun, totalJobs);
+            for (int i = 0; i < threadsToRun; i++)
+            {
+                Thread t = new Thread(RunProcessChecked);
+                t.Start();
+                runningThreads++;
+            }
+
+            UpdateText();
+        }
+
+        protected virtual void UpdateText() { }
+
+        private void cmdCancel_Click(object sender, EventArgs e)
+        {
+            Stopped = true;
+            Canceled = true;
+            DisableAbort();
+            Close();
+        }
 
         private void cmdStop_Click(object sender, EventArgs e)
         {
             Stopped = true;
             DisableAbort();
             Close();
+        }
+
+        private void RunProcessChecked()
+        {
+            try
+            {
+                RunProcess();
+            }
+            catch (Exception e)
+            {
+                lock (abortLock)
+                {
+                    Stopped = true;
+                    Error = e;
+                }
+                if (IsHandleCreated)
+                {
+                    Invoke(new SimpleDelegate(Finish));
+                    Invoke(new SimpleDelegate(Close));
+                }
+            }
         }
 
         private void UpdateForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -194,42 +193,10 @@ namespace Rallion
             }
         }
 
-        #endregion
+        private delegate void SimpleDelegate();
 
-        #region UI Updaters
+        private delegate void TextUpdateDelegate(string s);
 
-        protected void SetText(string s)
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new TextUpdateDelegate(SetText), s);
-            }
-            else
-            {
-                lblText.Text = s;
-            }
-        }
-
-        protected void DisableAbort()
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new SimpleDelegate(DisableAbort));
-            }
-            else
-            {
-                cmdStop.Enabled = cmdCancel.Enabled = false;
-            }
-        }
-
-        #endregion
-
-        private void cmdCancel_Click(object sender, EventArgs e)
-        {
-            Stopped = true;
-            Canceled = true;
-            DisableAbort();
-            Close();
-        }
+        private delegate void EndProcDelegate(bool b);
     }
 }
