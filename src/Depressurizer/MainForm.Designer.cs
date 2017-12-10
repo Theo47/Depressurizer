@@ -184,6 +184,7 @@ namespace Depressurizer {
             this.menu_Tools_Autocat_List = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menu_Tools_AutonameAll = new System.Windows.Forms.ToolStripMenuItem();
             this.menu_Tools_RemoveEmpty = new System.Windows.Forms.ToolStripMenuItem();
+            this.randomGameSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menu_Tools_Sep1 = new System.Windows.Forms.ToolStripSeparator();
             this.autoModeHelperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menu_Tools_Sep2 = new System.Windows.Forms.ToolStripSeparator();
@@ -1430,6 +1431,7 @@ namespace Depressurizer {
             this.menu_Tools_AutocatAll,
             this.menu_Tools_AutonameAll,
             this.menu_Tools_RemoveEmpty,
+            this.randomGameSelectionToolStripMenuItem,
             this.menu_Tools_Sep1,
             this.autoModeHelperToolStripMenuItem,
             this.menu_Tools_Sep2,
@@ -1464,6 +1466,12 @@ namespace Depressurizer {
             this.menu_Tools_RemoveEmpty.Name = "menu_Tools_RemoveEmpty";
             resources.ApplyResources(this.menu_Tools_RemoveEmpty, "menu_Tools_RemoveEmpty");
             this.menu_Tools_RemoveEmpty.Click += new System.EventHandler(this.menu_Tools_RemoveEmpty_Click);
+            // 
+            // randomGameSelectionToolStripMenuItem
+            // 
+            this.randomGameSelectionToolStripMenuItem.Name = "randomGameSelectionToolStripMenuItem";
+            resources.ApplyResources(this.randomGameSelectionToolStripMenuItem, "randomGameSelectionToolStripMenuItem");
+            this.randomGameSelectionToolStripMenuItem.Click += new System.EventHandler(this.RandomGameSelectionToolStripMenuItem_Click);
             // 
             // menu_Tools_Sep1
             // 
@@ -1731,6 +1739,7 @@ namespace Depressurizer {
         private TableLayoutPanel tblLayoutPanelAutocats;
         private TableLayoutPanel tblLayoutPanelFilterToolbar;
         private ComboBox cboFilter;
+        private System.Windows.Forms.ToolStripMenuItem randomGameSelectionToolStripMenuItem;
     }
 }
 
