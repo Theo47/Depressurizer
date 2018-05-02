@@ -14,7 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Depressurizer.  If not, see <http://www.gnu.org/licenses/>.
+along with Depressurizer.  If not, see <https?://www.gnu.org/licenses/>.
 */
 
 using System;
@@ -121,43 +121,43 @@ namespace Depressurizer
         #region Regex
 
         // If these regexes maches a store page, the app is a game, software or dlc respectively
-        private static Regex regGamecheck = new Regex(@"<a href=""http://store\.steampowered\.com/search/\?term=&snr=",
+        private static Regex regGamecheck = new Regex(@"<a href=""https?://store\.steampowered\.com/search/\?term=&snr=",
             RegexOptions.Compiled);
 
         private static Regex regSoftwarecheck =
-            new Regex(@"<a href=""http://store\.steampowered\.com/search/\?category1=994&snr=", RegexOptions.Compiled);
+            new Regex(@"<a href=""https?://store\.steampowered\.com/search/\?category1=994&snr=", RegexOptions.Compiled);
 
         private static Regex regDLCcheck =
             new Regex(
-                @"<img class=""category_icon"" src=""http://store\.akamai\.steamstatic\.com/public/images/v6/ico/ico_dlc\.png"">",
+                @"<img class=""category_icon"" src=""https?://store\.akamai\.steamstatic\.com/public/images/v6/ico/ico_dlc\.png"">",
                 RegexOptions.Compiled);
 
         private static Regex regGenre =
             new Regex(
-                @"<div class=""details_block"">\s*<b>[^:]*:</b>.*?<br>\s*<b>[^:]*:</b>\s*(<a href=""http://store\.steampowered\.com/genre/[^>]*>([^<]+)</a>,?\s*)+\s*<br>",
+                @"<div class=""details_block"">\s*<b>[^:]*:</b>.*?<br>\s*<b>[^:]*:</b>\s*(<a href=""https?://store\.steampowered\.com/genre/[^>]*>([^<]+)</a>,?\s*)+\s*<br>",
                 RegexOptions.Compiled);
 
         private static Regex regFlags =
-            new Regex(@"<a class=""name"" href=""http://store\.steampowered\.com/search/\?category2=.*?"">([^<]*)</a>",
+            new Regex(@"<a class=""name"" href=""https?://store\.steampowered\.com/search/\?category2=.*?"">([^<]*)</a>",
                 RegexOptions.Compiled);
 
         private static Regex regTags = new Regex(@"<a[^>]*class=""app_tag""[^>]*>([^<]*)</a>", RegexOptions.Compiled);
 
         private static Regex regDevelopers =
             new Regex(
-                @"(<a href=""http://store\.steampowered\.com/search/\?developer=[^""]*"">([^<]+)</a>,?\s*)+\s*<br>",
+                @"(<a href=""https?://store\.steampowered\.com/search/\?developer=[^""]*"">([^<]+)</a>,?\s*)+\s*<br>",
                 RegexOptions.Compiled);
 
         private static Regex regPublishers =
             new Regex(
-                @"(<a href=""http://store\.steampowered\.com/search/\?publisher=[^""]*"">([^<]+)</a>,?\s*)+\s*<br>",
+                @"(<a href=""https?://store\.steampowered\.com/search/\?publisher=[^""]*"">([^<]+)</a>,?\s*)+\s*<br>",
                 RegexOptions.Compiled);
 
         private static Regex regRelDate = new Regex(@"<div class=""release_date"">\s*<div[^>]*>[^<]*<\/div>\s*<div class=""date"">([^<]+)<\/div>", RegexOptions.Compiled);
 
         private static Regex regMetalink =
             new Regex(
-                @"<div id=""game_area_metalink"">\s*<a href=""http://www\.metacritic\.com/game/pc/([^""]*)\?ftag=",
+                @"<div id=""game_area_metalink"">\s*<a href=""https?://www\.metacritic\.com/game/pc/([^""]*)\?ftag=",
                 RegexOptions.Compiled);
 
         private static Regex regReviews =
@@ -190,7 +190,7 @@ namespace Depressurizer
 
         private static Regex regVrSupportFlagMatch =
             new Regex(
-                @"<div class=""game_area_details_specs"">.*?<a class=""name"" href=""http:\/\/store\.steampowered\.com\/search\/\?vrsupport=\d*"">([^<]*)<\/a><\/div>",
+                @"<div class=""game_area_details_specs"">.*?<a class=""name"" href=""https?:\/\/store\.steampowered\.com\/search\/\?vrsupport=\d*"">([^<]*)<\/a><\/div>",
                 RegexOptions.Compiled);
 
         //Language Support
@@ -1350,7 +1350,7 @@ namespace Depressurizer
         {
             XmlDocument doc = new XmlDocument();
             Program.Logger.Write(LoggerLevel.Info, GlobalStrings.GameDB_DownloadingSteamAppList);
-            WebRequest req = WebRequest.Create(@"http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=xml");
+            WebRequest req = WebRequest.Create(@"https?://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=xml");
             using (WebResponse resp = req.GetResponse())
             {
                 doc.Load(resp.GetResponseStream());
