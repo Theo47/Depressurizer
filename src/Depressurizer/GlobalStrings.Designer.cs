@@ -3765,6 +3765,15 @@ namespace Depressurizer {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to load Random Game Banner Image.
+        /// </summary>
+        internal static string RandomGame_Banner_Error {
+            get {
+                return ResourceManager.GetString("RandomGame_Banner_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to and.
         /// </summary>
         internal static string Text_And {
