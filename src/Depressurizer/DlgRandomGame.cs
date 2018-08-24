@@ -56,5 +56,14 @@ namespace Depressurizer
 
             gameTextBox.Text = game.Name;
         }
+
+        private void btnLaunch_Click(object sender, EventArgs e)
+        {
+            if (game != null)
+            {
+                game.LastPlayed = Utility.GetCurrentUTime();
+                System.Diagnostics.Process.Start(game.Executable);
+            }
+        }
     }
 }
