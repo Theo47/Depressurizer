@@ -1,4 +1,4 @@
-**No longer maintained.** You can find an active fork at [Depressurizer/Depressurizer](https://github.com/Depressurizer/Depressurizer).
+**No longer maintained.**
 
 ----
 
