@@ -44,9 +44,9 @@ Next, it will ask you to set up a profile. The easiest thing to do here is to si
 
 After a moment, you should see the game list fill up with all your games. You can now categorize them as you wish.
 
-When you are ready to save your changes, **you must first completely close Steam**. You can this by clicking on Steam > Exit in the client, or by right clicking the Steam icon in your system tray and clicking Exit.
+When you are ready to save your changes, **you must first completely close Steam**. You can do this by clicking on Steam > Exit in the client, or by right clicking the Steam icon in your system tray and clicking Exit.
 
-Once Steam is closed, all you need to do is click on File > Save in Depressurizer. This will save your profile and, if you haven't changed any settings, will also automatically update your Steam config files with your changes. When you re-open Steam, your games should be organized.
+Once Steam is closed, all you need to do is click on File > Save in Depressurizer. This will save your profile and automatically update your Steam config files with your changes. When you re-open Steam, your games should be organized.
 
 By default, Depressurizer will automatically load and update your profile the next time you launch the program.
 
@@ -60,7 +60,7 @@ There are several ways to manually modify your games within Depressurizer.
 
 - **Drag and Drop**
 
-  If you select games in the list, and drag them to a category in the list on the left, you can add them to the selected category. You can drag them to "favorites" to set them as favorites, or to Uncategorized to clear their categories.
+  If you select games in the list and drag them to a category in the list on the left, you can add them to the selected category. You can drag them to "Favorites" to set them as favorites, or to "Uncategorized" to clear their categories.
  
   If you hold `Ctrl` when you drag items, you can remove them from the selected category instead of adding them.
 
@@ -74,7 +74,7 @@ There are a few ways to filter your game list.
 
 - **Simple Filter**
 
-  You can use simple category filter, which lets you select a category and view all games in that category. You can also view all games, all "favorite" games, or all games not assigned to any category.
+  You can use simple category filter, which lets you select a category and view all games in that category. You can also view all games, all "Favorite" games, or all games not assigned to any category.
 
 - **Column-based Filter**
 
@@ -179,7 +179,7 @@ When you **export**, you are manually pushing your data to Steam. You should clo
 
 ##### Will this mess up my Steam / get me VAC banned?
 
-No. The only things that Depressurizer does is to write to your configuration files, and it doesn't do anything that you couldn't do using the client itself.
+No. The only things that Depressurizer does is write to your configuration files and it doesn't do anything that you couldn't do using the client itself.
 
 ##### Why does my profile need to be public?
 
