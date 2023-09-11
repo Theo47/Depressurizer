@@ -2249,7 +2249,7 @@
     <value>&amp;File</value>
   </data>
   <data name="menu_File_NewProfile.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+Alt+N</value>
+    <value>Control+Alt+N</value>
   </data>
   <data name="menu_File_NewProfile.Size" type="System.Drawing.Size, System.Drawing">
     <value>223, 22</value>
@@ -2258,7 +2258,7 @@
     <value>&amp;New Profile...</value>
   </data>
   <data name="menu_File_LoadProfile.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+Alt+L</value>
+    <value>Control+Alt+L</value>
   </data>
   <data name="menu_File_LoadProfile.Size" type="System.Drawing.Size, System.Drawing">
     <value>223, 22</value>
@@ -2267,7 +2267,7 @@
     <value>&amp;Load Profile...</value>
   </data>
   <data name="menu_File_SaveProfile.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+S</value>
+    <value>Control+S</value>
   </data>
   <data name="menu_File_SaveProfile.Size" type="System.Drawing.Size, System.Drawing">
     <value>223, 22</value>
@@ -2285,7 +2285,7 @@
     <value>220, 6</value>
   </data>
   <data name="menu_File_Close.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+F4</value>
+    <value>Control+F4</value>
   </data>
   <data name="menu_File_Close.Size" type="System.Drawing.Size, System.Drawing">
     <value>223, 22</value>
@@ -2324,7 +2324,7 @@
     <value>&amp;Profile</value>
   </data>
   <data name="menu_Profile_Update.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+U</value>
+    <value>Control+U</value>
   </data>
   <data name="menu_Profile_Update.Size" type="System.Drawing.Size, System.Drawing">
     <value>241, 22</value>
@@ -2336,7 +2336,7 @@
     <value>238, 6</value>
   </data>
   <data name="menu_Profile_Import.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+I</value>
+    <value>Control+I</value>
   </data>
   <data name="menu_Profile_Import.Size" type="System.Drawing.Size, System.Drawing">
     <value>241, 22</value>
@@ -2345,7 +2345,7 @@
     <value>&amp;Import Steam Config</value>
   </data>
   <data name="menu_Profile_Export.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+E</value>
+    <value>Control+E</value>
   </data>
   <data name="menu_Profile_Export.Size" type="System.Drawing.Size, System.Drawing">
     <value>241, 22</value>
@@ -2366,7 +2366,7 @@
     <value>238, 6</value>
   </data>
   <data name="menu_Profile_Edit.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+P</value>
+    <value>Control+P</value>
   </data>
   <data name="menu_Profile_Edit.Size" type="System.Drawing.Size, System.Drawing">
     <value>241, 22</value>
@@ -2384,7 +2384,7 @@
     <value>238, 6</value>
   </data>
   <data name="menu_Profile_AutoCats.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+T</value>
+    <value>Control+T</value>
   </data>
   <data name="menu_Profile_AutoCats.Size" type="System.Drawing.Size, System.Drawing">
     <value>241, 22</value>
@@ -2441,7 +2441,7 @@
     <value>240, 6</value>
   </data>
   <data name="menu_Tools_DBEdit.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+D</value>
+    <value>Control+D</value>
   </data>
   <data name="menu_Tools_DBEdit.Size" type="System.Drawing.Size, System.Drawing">
     <value>243, 22</value>
@@ -2453,7 +2453,7 @@
     <value>240, 6</value>
   </data>
   <data name="menu_Tools_SingleCat.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+I</value>
+    <value>Control+I</value>
   </data>
   <data name="menu_Tools_SingleCat.Size" type="System.Drawing.Size, System.Drawing">
     <value>243, 22</value>
@@ -2462,7 +2462,7 @@
     <value>S&amp;ingle Category Mode</value>
   </data>
   <data name="menu_Tools_Settings.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+O</value>
+    <value>Control+O</value>
   </data>
   <data name="menu_Tools_Settings.Size" type="System.Drawing.Size, System.Drawing">
     <value>243, 22</value>

@@ -122,7 +122,7 @@
   </metadata>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="menu_File_Save.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+S</value>
+    <value>Control+S</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="menu_File_Save.Size" type="System.Drawing.Size, System.Drawing">
@@ -132,7 +132,7 @@
     <value>&amp;Save Database</value>
   </data>
   <data name="menu_File_SaveAs.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+Alt+S</value>
+    <value>Control+Alt+S</value>
   </data>
   <data name="menu_File_SaveAs.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 22</value>
@@ -141,7 +141,7 @@
     <value>Save &amp;As...</value>
   </data>
   <data name="menu_File_Load.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+L</value>
+    <value>Control+L</value>
   </data>
   <data name="menu_File_Load.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 22</value>
@@ -153,7 +153,7 @@
     <value>186, 6</value>
   </data>
   <data name="menu_File_Clear.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+C</value>
+    <value>Control+C</value>
   </data>
   <data name="menu_File_Clear.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 22</value>
